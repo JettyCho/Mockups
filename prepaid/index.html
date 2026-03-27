@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 광고머니 목업</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #e8eaed; }
+
+/* ── FLOW NAV ── */
+.flow-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: #1c2033; height: 48px;
+  display: flex; align-items: center; gap: 0;
+  font-size: 12px; overflow-x: auto; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.flow-nav-brand {
+  padding: 0 20px; font-weight: 800; font-size: 13px;
+  color: #ff6b5b; border-right: 1px solid #2e3350;
+  height: 100%; display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+.flow-btn {
+  padding: 0 16px; height: 100%; border: none; background: none;
+  color: #8892a4; cursor: pointer; font-size: 12px;
+  border-right: 1px solid #2e3350; transition: all .15s;
+  font-family: inherit; flex-shrink: 0;
+}
+.flow-btn:hover { background: #252b42; color: #fff; }
+.flow-btn.active { background: #2563eb; color: #fff; font-weight: 700; }
+.flow-step { color: #3d4460; font-size: 10px; padding: 0 6px; flex-shrink: 0; }
+
+/* ── SCREEN ── */
+.screen { display: none; padding-top: 48px; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── APP SHELL ── */
+.app { display: flex; min-height: calc(100vh - 48px); max-width: 1584px; margin: 0 auto; background: #fff; box-shadow: 0 0 60px rgba(0,0,0,.15); }
+
+/* ── TOOLTIP ── */
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+.tooltip-wrap .tooltip-box {
+  display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: #1c2033; color: #fff; font-size: 12px; font-weight: 400;
+  padding: 8px 12px; border-radius: 7px; white-space: nowrap; z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2); pointer-events: none;
+  line-height: 1.5;
+}
+.tooltip-wrap .tooltip-box::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: #1c2033;
+}
+.tooltip-wrap:hover .tooltip-box { display: block; }
+
+/* LOCKED ACCOUNT FIELD */
+.locked-account-field {
+  background: #f9fafb; border: 1.5px solid #e5e7eb; border-radius: 8px;
+  padding: 11px 14px; font-size: 14px; color: #6b7280;
+  display: flex; align-items: center; justify-content: space-between; cursor: default;
+}
+.locked-account-field .lock-icon { font-size: 13px; color: #9ca3af; margin-left: 8px; flex-shrink: 0; }
+.locked-account-value { font-weight: 600; color: #374151; }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 48px; z-index: 100;
+  background: #fff; border-bottom: 1px solid #e5e7eb;
+  height: 52px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; width: 100%;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 17px; color: #111; text-decoration: none; }
+.logo-mark { width: 26px; height: 26px; background: #E8352A; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 13px; font-style: italic; }
+.topbar-right { display: flex; align-items: center; gap: 20px; font-size: 13px; color: #555; }
+.topbar-right a { color: #555; text-decoration: none; }
+.user-btn { display: flex; align-items: center; gap: 6px; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: #333; cursor: pointer; }
+.user-btn .chevron { font-size: 10px; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: #f9fafb; border-right: 1px solid #e5e7eb;
+  padding: 16px 0; min-height: calc(100vh - 100px);
+}
+.biz-selector {
+  margin: 0 12px 20px; padding: 10px 12px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.biz-selector .biz-label { font-size: 10px; color: #999; margin-bottom: 2px; }
+.biz-selector .biz-name { font-size: 13px; font-weight: 600; color: #111; }
+.biz-selector .chevron { color: #999; font-size: 12px; }
+
+.nav-section-label { font-size: 10px; color: #999; font-weight: 600; padding: 12px 20px 6px; letter-spacing: .5px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; font-size: 13px; color: #555;
+  cursor: pointer; border-radius: 0; transition: all .12s;
+  position: relative;
+}
+.nav-item:hover { background: #f0f0f0; color: #111; }
+.nav-item.active { background: #eff4ff; color: #2563eb; font-weight: 600; }
+.nav-item .nav-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.nav-item .badge { margin-left: auto; background: #f0f0f0; color: #999; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
+
+/* ── MAIN ── */
+.main { flex: 1; padding: 32px 36px; background: #fff; min-width: 0; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.page-title { font-size: 22px; font-weight: 700; color: #111; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-primary { background: #2563eb; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+.btn-secondary:hover { background: #f9fafb; }
+.btn-danger { background: #ef4444; color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; width: 100%; justify-content: center; }
+.btn-outline { background: #fff; color: #2563eb; border: 1.5px solid #2563eb; }
+
+/* ── CARDS ── */
+.summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 22px 24px; }
+.summary-card.highlight { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-color: #bfdbfe; }
+.card-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+.card-value { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 4px; }
+.card-value .unit { font-size: 16px; font-weight: 600; }
+.card-sub { font-size: 12px; color: #9ca3af; }
+.card-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-info-item { }
+.card-info-label { font-size: 11px; color: #9ca3af; margin-bottom: 4px; }
+.card-info-value { font-size: 14px; font-weight: 600; color: #111; }
+.card-info-sub { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.edit-btn { font-size: 12px; color: #2563eb; border: 1px solid #bfdbfe; background: #eff6ff; padding: 4px 10px; border-radius: 5px; cursor: pointer; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; }
+.tab { padding: 10px 18px; font-size: 13px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; }
+.tab.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 700; }
+
+/* ── TABLE ── */
+.table-wrap { border: 1px solid #f0f0f0; border-radius: 10px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: #f9fafb; }
+th { padding: 11px 16px; text-align: left; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 1px solid #e5e7eb; }
+td { padding: 14px 16px; color: #374151; border-bottom: 1px solid #f3f4f6; }
+tr:last-child td { border-bottom: none; }
+.type-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 5px; }
+.badge-charge { background: #f0fdf4; color: #16a34a; }
+.badge-refund { background: #fff7ed; color: #ea580c; }
+.badge-deduct { background: #fef2f2; color: #dc2626; }
+.amount-plus { color: #16a34a; font-weight: 700; }
+.amount-minus { color: #dc2626; font-weight: 700; }
+.table-footer { padding: 16px 20px; background: #f9fafb; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af; }
+
+/* ── NOTICE BOX ── */
+.notice-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 18px; font-size: 12px; color: #92400e; line-height: 1.7; margin-top: 24px; }
+.notice-box ul { padding-left: 16px; }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  position: fixed; inset: 48px 0 0 0; z-index: 500;
+  background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  background: #fff; border-radius: 14px; width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden;
+  max-height: calc(100vh - 100px); overflow-y: auto;
+}
+.modal-header {
+  padding: 22px 24px 18px; border-bottom: 1px solid #f0f0f0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.modal-title { font-size: 18px; font-weight: 700; color: #111; }
+.modal-subtitle { font-size: 13px; color: #6b7280; margin-top: 3px; }
+.modal-close { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; padding: 0 4px; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; }
+
+/* ── FORM ── */
+.form-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; display: block; }
+.form-group { margin-bottom: 18px; }
+.form-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; color: #111; outline: none; font-family: inherit;
+  transition: border-color .15s;
+}
+.form-input:focus { border-color: #2563eb; }
+.form-input.highlight { border-color: #2563eb; background: #eff6ff; }
+.input-with-unit { display: flex; gap: 8px; align-items: center; }
+.input-unit { font-size: 14px; color: #374151; font-weight: 600; white-space: nowrap; }
+.form-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; }
+.form-hint.error { color: #ef4444; }
+
+/* AMOUNT PRESETS */
+.amount-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.preset-btn {
+  padding: 7px 14px; border: 1.5px solid #e5e7eb; border-radius: 7px;
+  font-size: 13px; color: #374151; cursor: pointer; background: #fff;
+  transition: all .15s; font-family: inherit; font-weight: 500;
+}
+.preset-btn:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+.preset-btn.active { border-color: #2563eb; color: #2563eb; background: #eff6ff; font-weight: 700; }
+
+/* PAYMENT TABS */
+.pay-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1.5px solid #e5e7eb; border-radius: 9px; overflow: hidden; }
+.pay-tab {
+  flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600;
+  color: #6b7280; cursor: pointer; background: #f9fafb; border: none;
+  font-family: inherit; transition: all .15s;
+}
+.pay-tab.active { background: #2563eb; color: #fff; }
+
+/* ACCOUNT BOX */
+.account-box {
+  background: #f8faff; border: 1.5px solid #bfdbfe; border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 16px;
+}
+.account-box .acc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+.account-box .acc-value { font-size: 18px; font-weight: 800; color: #1d4ed8; letter-spacing: .5px; }
+.account-box .acc-sub { font-size: 12px; color: #6b7280; margin-top: 4px; }
+.copy-btn {
+  margin-top: 10px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+  border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600;
+}
+.info-list { list-style: none; }
+.info-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+.info-list li:last-child { border-bottom: none; }
+.info-list .key { color: #6b7280; }
+.info-list .val { color: #111; font-weight: 600; }
+.info-list .val.big { font-size: 16px; color: #2563eb; }
+
+/* TOSS MOCK */
+.toss-mock {
+  background: #1a1a2e; border-radius: 12px; padding: 20px;
+  color: #fff; font-size: 13px;
+}
+.toss-mock .t-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.toss-logo { background: #0064ff; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
+.toss-mock .t-title { font-size: 15px; font-weight: 700; }
+.pay-method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.pay-method-item {
+  background: #252540; border-radius: 8px; padding: 10px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; transition: all .12s; border: 1.5px solid transparent;
+}
+.pay-method-item:hover { border-color: #0064ff; }
+.pay-method-item.active { border-color: #0064ff; background: #1a3a6e; }
+.pay-method-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.pay-method-label { font-size: 10px; color: #aaa; }
+.toss-confirm-btn { background: #0064ff; color: #fff; border: none; border-radius: 8px; padding: 13px; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+/* RECEIPT */
+.receipt-wrap { background: #fff; }
+.receipt-header { text-align: center; padding: 28px 24px 20px; border-bottom: 1px solid #f0f0f0; }
+.receipt-icon { width: 52px; height: 52px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 12px; }
+.receipt-title { font-size: 20px; font-weight: 800; color: #111; }
+.receipt-amount { font-size: 30px; font-weight: 900; color: #2563eb; margin-top: 6px; }
+.receipt-body { padding: 20px 24px; }
+.receipt-table { width: 100%; }
+.receipt-table tr td { padding: 9px 0; font-size: 13px; border-bottom: 1px solid #f9f9f9; }
+.receipt-table tr td:first-child { color: #6b7280; }
+.receipt-table tr td:last-child { text-align: right; font-weight: 600; color: #111; }
+.receipt-notice { font-size: 11px; color: #9ca3af; line-height: 1.7; padding: 14px 24px 20px; border-top: 1px solid #f0f0f0; }
+
+/* REFUND */
+.file-upload-area {
+  border: 2px dashed #d1d5db; border-radius: 10px; padding: 28px;
+  text-align: center; cursor: pointer; transition: all .15s;
+}
+.file-upload-area:hover { border-color: #2563eb; background: #f8faff; }
+.file-upload-icon { font-size: 28px; margin-bottom: 8px; }
+.file-upload-text { font-size: 13px; color: #6b7280; }
+.file-upload-text strong { color: #2563eb; }
+.refund-tabs { display: flex; gap: 0; border: 1.5px solid #e5e7eb; border-radius: 9px; overflow: hidden; margin-bottom: 20px; }
+.refund-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: #6b7280; cursor: pointer; background: #f9fafb; border: none; font-family: inherit; }
+.refund-tab.active { background: #2563eb; color: #fff; }
+
+/* DEDUCT CONFIRM */
+.deduct-box {
+  background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 20px;
+}
+.deduct-box .d-title { font-size: 13px; font-weight: 700; color: #c2410c; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.deduct-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.deduct-row .k { color: #6b7280; }
+.deduct-row .v { font-weight: 600; color: #111; }
+.deduct-row.total { border-top: 1px dashed #fed7aa; padding-top: 10px; margin-top: 6px; }
+.deduct-row.total .v { color: #c2410c; font-size: 16px; font-weight: 800; }
+.balance-after { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; font-size: 13px; display: flex; justify-content: space-between; }
+.balance-after .ba-label { color: #6b7280; }
+.balance-after .ba-value { font-weight: 800; color: #16a34a; font-size: 16px; }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; }
+
+/* PAGINATION */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 24px; }
+.page-btn { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #374151; }
+.page-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+/* STEP INDICATOR */
+.step-indicator { display: flex; align-items: center; margin-bottom: 24px; }
+.step { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9ca3af; }
+.step.active { color: #2563eb; font-weight: 700; }
+.step.done { color: #16a34a; }
+.step-num { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.step-done-icon { width: 22px; height: 22px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; }
+.step-line { flex: 1; height: 1px; background: #e5e7eb; margin: 0 10px; }
+.step-line.done { background: #16a34a; }
+
+/* CHECKBOX */
+.check-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6b7280; margin-top: 12px; }
+.check-row input { margin-top: 2px; accent-color: #2563eb; }
+.check-row a { color: #2563eb; text-decoration: underline; }
+
+/* ALERT */
+.alert { border-radius: 8px; padding: 12px 16px; font-size: 12px; margin-bottom: 16px; display: flex; gap: 8px; }
+.alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.alert-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.alert-icon { flex-shrink: 0; }
+
+/* SECTION DIVIDER */
+.section-divider { height: 1px; background: #f3f4f6; margin: 20px 0; }
+
+/* DISABLED */
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+</style>
+</head>
+<body>
+
+<!-- FLOW NAV -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand">🎯 광고머니 목업</div>
+  <button class="flow-btn active" onclick="show('s1')">① 메인</button>
+<button class="flow-btn" onclick="show('s2')">② 충전 — 금액 입력</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s3a')">③-A 카드결제 (토스)</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s3b')">③-B 계좌입금 안내</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s4')">④ 충전 완료 영수증</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s5')">⑤ 광고신청 차감 확인</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s6')">⑥ 환불 요청</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="show('s1e')">① 잔액 0원 (빈 상태)</button>
+</nav>
+
+<!-- ═══════════════════════════════ SCREEN 1: 메인 ═══════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector">
+        <div>
+          <div class="biz-label">운영그룹</div>
+          <div class="biz-name">이니스프리</div>
+          <div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item"><span class="nav-icon">📺</span> 라이브커머스</div>
+      <div class="nav-item"><span class="nav-icon">🤝</span> 협력 광고</div>
+      <div class="nav-item"><span class="nav-icon">🤖</span> AI 리뷰픽 <span class="badge">예정</span></div>
+      <div class="nav-section-label">도구</div>
+      <div class="nav-item"><span class="nav-icon">📊</span> 리포트</div>
+      <div class="nav-item"><span class="nav-icon">🏷️</span> 카탈로그</div>
+      <div class="nav-item"><span class="nav-icon">🎯</span> 타겟팅 <span class="badge">예정</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h1 class="page-title">광고머니</h1>
+        <button class="btn btn-primary" onclick="show('s2')">충전하기</button>
+      </div>
+
+
+      <div class="summary-cards">
+        <div class="summary-card highlight">
+          <div class="card-label">광고머니 잔액</div>
+          <div class="card-value">120,000<span class="unit">원</span></div>
+          <div class="card-sub">이니스프리 협력광고</div>
+        </div>
+        <div class="summary-card">
+          <div class="card-row">
+            <div class="card-info-item">
+              <div class="card-info-label">정산 담당자</div>
+              <div class="card-info-value">ads.center@buzzvil.com</div>
+              <div class="card-info-sub">매드업</div>
+            </div>
+            <div class="card-info-item" style="text-align:right">
+              <div class="card-info-label" style="display:flex;align-items:center;justify-content:flex-end;gap:4px">
+                대표 환불 계좌
+                <div class="tooltip-wrap">
+                  <span style="width:14px;height:14px;border-radius:50%;background:#d1d5db;color:#6b7280;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:default">?</span>
+                  <div class="tooltip-box">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+                </div>
+              </div>
+              <div class="card-info-value">100-02-8181052</div>
+              <div class="card-info-sub">신한은행 매드업</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">전체</div>
+        <div class="tab">충전</div>
+        <div class="tab">차감</div>
+        <div class="tab">환불</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>유형</th>
+              <th>상세 내역</th>
+              <th style="text-align:right">금액</th>
+              <th>잔액</th>
+              <th style="text-align:right">일시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="type-badge badge-charge">충전</span></td>
+              <td>카드결제 (신한카드 1234)</td>
+              <td style="text-align:right" class="amount-plus">+100,000원</td>
+              <td style="color:#6b7280">120,000원</td>
+              <td style="text-align:right; color:#9ca3af">2026.02.09 11:30:23</td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-refund">환불</span></td>
+              <td>환불 처리됨 (운영팀 확인)</td>
+              <td style="text-align:right" class="amount-minus">-80,000원</td>
+              <td style="color:#6b7280">20,000원</td>
+              <td style="text-align:right; color:#9ca3af">2026.02.09 11:25:01</td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-deduct">차감</span></td>
+              <td>이니스프리 협력광고 신청 (부가세 포함)</td>
+              <td style="text-align:right" class="amount-minus">-110,000원</td>
+              <td style="color:#6b7280">100,000원</td>
+              <td style="text-align:right; color:#9ca3af">2026.02.08 09:14:02</td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-charge">충전</span></td>
+              <td>계좌입금 확인 (신한은행)</td>
+              <td style="text-align:right" class="amount-plus">+200,000원</td>
+              <td style="color:#6b7280">210,000원</td>
+              <td style="text-align:right; color:#9ca3af">2026.02.07 15:42:17</td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-charge" style="background:#f5f3ff;color:#7c3aed">무상</span></td>
+              <td>신규 계정 웰컴 보너스 (만료: 2026.08.07)</td>
+              <td style="text-align:right; color:#7c3aed; font-weight:700">+10,000원</td>
+              <td style="color:#6b7280">10,000원</td>
+              <td style="text-align:right; color:#9ca3af">2026.02.07 10:00:00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button class="page-btn">‹</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">›</button>
+      </div>
+
+      <div class="notice-box">
+        <ul>
+          <li>광고머니 유효기간은 최초 충전일로부터 <strong>3년</strong>이며, 이후 자동 소멸됩니다.</li>
+          <li>미사용 광고머니 환불은 고객센터를 통해 요청하실 수 있습니다.</li>
+          <li>카드 충전 건은 카드 승인 취소, 계좌 입금 건은 현금 환불로 처리됩니다.</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 1-E: 빈 상태 ═══════════════════════════════ -->
+<div class="screen" id="s1e">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector">
+        <div>
+          <div class="biz-label">운영그룹</div>
+          <div class="biz-name">이니스프리</div>
+          <div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item"><span class="nav-icon">📺</span> 라이브커머스</div>
+      <div class="nav-item"><span class="nav-icon">🤝</span> 협력 광고</div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main">
+      <div class="page-header">
+        <h1 class="page-title">광고머니</h1>
+        <button class="btn btn-primary" onclick="show('s2')">충전하기</button>
+      </div>
+
+      <div class="summary-cards">
+        <div class="summary-card" style="background:#fafafa;">
+          <div class="card-label">광고머니 잔액</div>
+          <div class="card-value" style="color:#9ca3af">0<span class="unit">원</span></div>
+          <div class="card-sub">충전 후 광고를 시작해보세요</div>
+        </div>
+        <div class="summary-card">
+          <div style="font-size:12px;color:#9ca3af;margin-bottom:8px">환불 계좌가 등록되지 않았습니다.</div>
+          <button class="btn btn-secondary btn-sm">+ 환불 계좌 등록하기</button>
+        </div>
+      </div>
+
+      <div class="empty-state">
+        <div class="empty-icon">💰</div>
+        <div class="empty-text">아직 광고머니 내역이 없습니다.<br>충전 후 광고를 시작해보세요.</div>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="show('s2')">지금 충전하기</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 2: 충전 금액 입력 ═══════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector">
+        <div>
+          <div class="biz-label">운영그룹</div>
+          <div class="biz-name">이니스프리</div>
+          <div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:560px">
+      <div class="page-header" style="margin-bottom:8px">
+        <div>
+          <div style="font-size:12px;color:#9ca3af;margin-bottom:4px;cursor:pointer" onclick="show('s1')">← 광고머니로 돌아가기</div>
+          <h1 class="page-title">광고머니 충전</h1>
+        </div>
+      </div>
+
+      <div class="step-indicator" style="margin-bottom:28px">
+        <div class="step active"><div class="step-num">1</div> 금액 입력</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">2</div> 결제</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">3</div> 완료</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">충전 금액</label>
+        <div class="input-with-unit">
+          <input class="form-input highlight" type="text" value="100,000" style="font-size:20px;font-weight:800;text-align:right">
+          <span class="input-unit">원</span>
+        </div>
+        <div class="form-hint">최소 충전 금액은 <strong>10만 원</strong>이며, 1만 원 단위로 입력 가능합니다.</div>
+        <div class="amount-presets">
+          <button class="preset-btn active" onclick="selectPreset(this)">+10만</button>
+          <button class="preset-btn" onclick="selectPreset(this)">+30만</button>
+          <button class="preset-btn" onclick="selectPreset(this)">+50만</button>
+          <button class="preset-btn" onclick="selectPreset(this)">+100만</button>
+          <button class="preset-btn" onclick="selectPreset(this)">+200만</button>
+          <button class="preset-btn" onclick="selectPreset(this)">직접 입력</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="form-group">
+        <label class="form-label">결제 수단</label>
+        <div class="pay-tabs">
+          <button class="pay-tab active" id="pt-card" onclick="selectPayTab('card')">💳 카드결제</button>
+          <button class="pay-tab" id="pt-bank" onclick="selectPayTab('bank')">🏦 계좌입금</button>
+        </div>
+        <div id="pay-info-card" class="alert alert-info">
+          <span class="alert-icon">ℹ️</span>
+          <span>신용·체크카드로 즉시 충전됩니다. 토스페이먼츠 결제창이 열립니다.</span>
+        </div>
+        <div id="pay-info-bank" style="display:none" class="alert alert-warn">
+          <span class="alert-icon">⏱️</span>
+          <span>지정 계좌로 입금 후 <strong>최대 24시간</strong> 내 확인되어 충전됩니다.</span>
+        </div>
+      </div>
+
+      <div class="info-list" style="border:1px solid #f0f0f0;border-radius:10px;padding:0 16px;margin-bottom:20px">
+        <li class="info-list" style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:13px">
+          <span style="color:#6b7280">현재 잔액</span><span style="font-weight:600">120,000원</span>
+        </li>
+        <li style="display:flex;justify-content:space-between;padding:12px 0;font-size:13px">
+          <span style="color:#6b7280">충전 후 예상 잔액</span><span style="font-weight:700;color:#2563eb;font-size:16px">220,000원</span>
+        </li>
+      </div>
+
+      <div class="check-row">
+        <input type="checkbox" checked>
+        <span><a href="#">이용약관</a> 및 <a href="#">개인정보 처리방침</a>에 동의합니다.</span>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-secondary" style="flex:1" onclick="show('s1')">취소</button>
+        <button class="btn btn-primary" style="flex:2" onclick="goToPayment()">결제하기 →</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 3-A: 카드결제 (토스 모달) ═══════════════════════════════ -->
+<div class="screen" id="s3a">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div></div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:560px">
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:16px;cursor:pointer" onclick="show('s2')">← 충전 금액 변경</div>
+      <div class="step-indicator" style="margin-bottom:28px">
+        <div class="step done"><div class="step-done-icon">✓</div> 금액 입력</div>
+        <div class="step-line done"></div>
+        <div class="step active"><div class="step-num">2</div> 결제</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">3</div> 완료</div>
+      </div>
+      <div class="toss-mock">
+        <div class="t-header">
+          <div class="toss-logo">t</div>
+          <div>
+            <div class="t-title">toss payments</div>
+            <div style="font-size:11px;color:#888">버즈빌 광고센터 | ads.buzzvil.com</div>
+          </div>
+          <button style="margin-left:auto;background:none;border:none;color:#888;font-size:18px;cursor:pointer" onclick="show('s2')">✕</button>
+        </div>
+        <div style="background:#252540;border-radius:10px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:12px;color:#888;margin-bottom:4px">결제 금액</div>
+          <div style="font-size:24px;font-weight:900;color:#fff">100,000원</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">광고머니 충전 · 이니스프리</div>
+        </div>
+        <div style="font-size:11px;color:#888;margin-bottom:8px;font-weight:600">결제 수단 선택</div>
+        <div class="pay-method-grid">
+          <div class="pay-method-item active">
+            <div class="pay-method-icon" style="background:#1a4fa0">💳</div>
+            <div class="pay-method-label">신한카드</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#006400">💳</div>
+            <div class="pay-method-label">국민카드</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#ff6600">🧡</div>
+            <div class="pay-method-label">카카오페이</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#03c75a">💚</div>
+            <div class="pay-method-label">네이버페이</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#0064ff">🔵</div>
+            <div class="pay-method-label">토스페이</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#333">🏧</div>
+            <div class="pay-method-label">계좌이체</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#555">🏦</div>
+            <div class="pay-method-label">무통장</div>
+          </div>
+          <div class="pay-method-item">
+            <div class="pay-method-icon" style="background:#444">➕</div>
+            <div class="pay-method-label">더보기</div>
+          </div>
+        </div>
+        <div style="background:#252540;border-radius:8px;padding:12px 14px;margin-bottom:14px">
+          <div style="font-size:11px;color:#888;margin-bottom:8px">신한카드 정보 입력</div>
+          <input style="width:100%;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:6px;font-family:inherit" placeholder="카드 번호" value="1234 - 5678 - 9012 - ****">
+          <div style="display:flex;gap:8px">
+            <input style="flex:1;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;font-family:inherit" placeholder="유효기간 MM/YY" value="12/27">
+            <input style="flex:1;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;font-family:inherit" placeholder="CVC" value="***">
+          </div>
+        </div>
+        <div class="check-row" style="color:#888;margin-bottom:14px">
+          <input type="checkbox" checked style="accent-color:#0064ff">
+          <span style="font-size:11px"><a href="#" style="color:#6699ff">이용약관</a> 및 결제 정보 저장에 동의합니다.</span>
+        </div>
+        <button class="toss-confirm-btn" onclick="show('s4')">100,000원 결제하기</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 3-B: 계좌입금 안내 ═══════════════════════════════ -->
+<div class="screen" id="s3b">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div></div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:560px">
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:16px;cursor:pointer" onclick="show('s2')">← 충전 금액 변경</div>
+      <div class="step-indicator" style="margin-bottom:28px">
+        <div class="step done"><div class="step-done-icon">✓</div> 금액 입력</div>
+        <div class="step-line done"></div>
+        <div class="step active"><div class="step-num">2</div> 입금 안내</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">3</div> 확인 대기</div>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:20px">
+        <span class="alert-icon">ℹ️</span>
+        <div><strong>아래 운영그룹 전용 가상계좌로 정확한 금액을 입금해주세요.</strong><br>입금 확인 후 영업일 기준 최대 24시간 내 광고머니가 충전됩니다.</div>
+      </div>
+
+      <div class="account-box">
+        <div class="acc-label">입금 전용 가상계좌 (이니스프리 운영그룹)</div>
+        <div class="acc-value">100-032-817423</div>
+        <div class="acc-sub">신한은행 · 예금주: 버즈빌(주)</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:8px;line-height:1.5">이 가상계좌는 이니스프리 운영그룹 전용입니다. 다른 운영그룹에는 별도의 가상계좌가 발급됩니다.</div>
+        <button class="copy-btn" onclick="this.textContent='✓ 복사됨!'">📋 계좌번호 복사</button>
+      </div>
+
+      <ul class="info-list" style="border:1px solid #f0f0f0;border-radius:10px;padding:0 16px;margin-bottom:20px">
+        <li class="info-list"><span class="key">입금 금액</span><span class="val big">100,000원</span></li>
+        <li class="info-list">
+          <span class="key" style="display:flex;align-items:center;gap:4px">
+            입금자명
+            <div class="tooltip-wrap">
+              <span style="background:#e0f2fe;color:#0369a1;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;cursor:default;white-space:nowrap">반드시 일치</span>
+              <div class="tooltip-box" style="white-space:nowrap">입금자명이 일치하지 않는 경우<br>입금 확인에 추가 시간이 소요될 수 있습니다.</div>
+            </div>
+          </span>
+          <span class="val">이니스프리</span>
+        </li>
+        <li class="info-list"><span class="key">충전 후 잔액 (예정)</span><span class="val">220,000원</span></li>
+        <li class="info-list"><span class="key">입금 확인 소요 시간</span><span class="val">최대 24시간 (영업일 기준)</span></li>
+      </ul>
+
+      <div class="notice-box">
+        <ul>
+          <li>입금자명이 다를 경우 충전이 지연될 수 있습니다.</li>
+          <li>최소 입금 금액은 100,000원이며, 1만 원 단위로만 입금 가능합니다.</li>
+          <li>입금 확인 후 등록된 이메일로 알림이 발송됩니다.</li>
+        </ul>
+      </div>
+
+      <!-- 입금 완료 CTA -->
+      <button class="btn btn-primary btn-lg" style="margin-top:20px" id="bank-cta-btn" onclick="handleBankCTA()">입금 완료</button>
+
+      <!-- Spinner -->
+      <div id="bank-spinner" style="display:none;margin-top:24px;text-align:center;padding:20px">
+        <div style="display:inline-block;width:36px;height:36px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+        <div style="margin-top:12px;font-size:13px;color:#6b7280">입금 내역을 확인하는 중입니다...</div>
+      </div>
+
+      <!-- 성공 결과 -->
+      <div id="bank-result-success" style="display:none;margin-top:24px;border:1.5px solid #bbf7d0;background:#f0fdf4;border-radius:12px;padding:22px 24px;text-align:center">
+        <div style="font-size:30px;margin-bottom:10px">✅</div>
+        <div style="font-size:16px;font-weight:800;color:#15803d;margin-bottom:4px">입금확인이 완료되었습니다</div>
+        <div style="font-size:13px;color:#16a34a;margin-bottom:20px">100,000원이 광고머니로 충전되었습니다.</div>
+        <button class="btn btn-primary" onclick="show('s4')" style="width:100%;justify-content:center">충전 영수증 확인하기</button>
+      </div>
+
+      <!-- 실패 결과 -->
+      <div id="bank-result-fail" style="display:none;margin-top:24px;border:1.5px solid #fde68a;background:#fffbeb;border-radius:12px;padding:22px 24px;text-align:center">
+        <div style="font-size:30px;margin-bottom:10px">⏱️</div>
+        <div style="font-size:16px;font-weight:800;color:#92400e;margin-bottom:4px">입금확인에 최대 24시간이 소요될 수 있습니다.</div>
+        <div style="font-size:13px;color:#b45309;margin-bottom:20px">입금이 확인되면 등록된 이메일로 알림을 보내드립니다.</div>
+        <button class="btn btn-secondary" onclick="show('s1')" style="width:100%;justify-content:center">광고머니 페이지로 돌아가기</button>
+      </div>
+
+      <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+      </style>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 4: 충전 완료 영수증 ═══════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div></div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:540px">
+      <div class="step-indicator" style="margin-bottom:28px">
+        <div class="step done"><div class="step-done-icon">✓</div> 금액 입력</div>
+        <div class="step-line done"></div>
+        <div class="step done"><div class="step-done-icon">✓</div> 결제</div>
+        <div class="step-line done"></div>
+        <div class="step active"><div class="step-num">3</div> 완료</div>
+      </div>
+
+      <div class="receipt-wrap" style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden">
+        <div class="receipt-header">
+          <div class="receipt-icon">✅</div>
+          <div class="receipt-title">충전이 완료되었습니다!</div>
+          <div class="receipt-amount">+100,000원</div>
+          <div style="font-size:13px;color:#9ca3af;margin-top:6px">광고머니 충전 완료 · 이니스프리</div>
+        </div>
+        <div class="receipt-body">
+          <table class="receipt-table">
+            <tr><td>충전 금액</td><td>100,000원</td></tr>
+            <tr><td>결제 수단</td><td>신한카드 1234</td></tr>
+            <tr><td>결제 일시</td><td>2026.03.12 14:23:41</td></tr>
+            <tr><td>승인 번호</td><td>CAT3621103</td></tr>
+            <tr><td>충전 전 잔액</td><td>120,000원</td></tr>
+            <tr><td style="font-weight:700;color:#111">충전 후 잔액</td><td style="font-weight:800;color:#2563eb;font-size:16px">220,000원</td></tr>
+            <tr><td>광고주</td><td>(주) 아모레퍼시픽</td></tr>
+            <tr><td>운영그룹</td><td>이니스프리</td></tr>
+          </table>
+        </div>
+        <div class="receipt-notice">
+          본 충전 건은 광고를 진행하기 위한 사이버머니로, 부가가치세 과세 대상이 아닙니다.<br>
+          문의사항은 고객센터(ads-support@buzzvil.com)로 연락해 주세요.
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-secondary" style="flex:1">영수증 출력</button>
+        <button class="btn btn-primary" style="flex:1" onclick="show('s1')">광고머니로 돌아가기</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 5: 광고신청 차감 확인 ═══════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div></div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item active" style="color:#e53e3e"><span class="nav-icon">📺</span> 라이브커머스</div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:600px">
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:8px">← 광고 설정으로 돌아가기</div>
+      <h1 class="page-title" style="margin-bottom:24px">광고 신청 확인</h1>
+
+      <div class="alert alert-warn" style="margin-bottom:24px">
+        <span class="alert-icon">⚠️</span>
+        <div>광고 신청 시 광고머니가 <strong>즉시 차감</strong>됩니다. 내용을 확인 후 신청해주세요.</div>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;font-weight:600">광고 정보</div>
+        <ul class="info-list">
+          <li><span class="key">상품</span><span class="val">라이브커머스 (슬롯형)</span></li>
+          <li><span class="key">광고 이름</span><span class="val">이니스프리 봄 신상 라이브</span></li>
+          <li><span class="key">방송 일정</span><span class="val">2026.04.15 (수) 19:00 ~ 20:00</span></li>
+          <li><span class="key">광고 예산</span><span class="val">1,000,000원</span></li>
+        </ul>
+      </div>
+
+      <div class="deduct-box">
+        <div class="d-title">💸 광고머니 차감 내역</div>
+        <div class="deduct-row"><span class="k">광고 금액</span><span class="v">1,000,000원</span></div>
+        <div class="deduct-row"><span class="k">부가세 (10%)</span><span class="v">100,000원</span></div>
+        <div class="deduct-row total"><span class="k" style="font-weight:700;color:#111">즉시 차감액</span><span class="v">1,100,000원</span></div>
+      </div>
+
+      <div class="balance-after" style="margin-bottom:20px">
+        <div>
+          <div class="ba-label">현재 광고머니 잔액</div>
+          <div style="font-size:13px;color:#374151;font-weight:600;margin-top:2px">1,320,000원</div>
+        </div>
+        <div style="text-align:right">
+          <div class="ba-label">차감 후 잔액</div>
+          <div class="ba-value">220,000원</div>
+        </div>
+      </div>
+
+      <div class="notice-box" style="margin-bottom:20px">
+        <ul>
+          <li>슬롯형 광고는 광고 생성 시점에 광고머니가 차감됩니다.</li>
+          <li>광고 집행 전 취소 시 광고머니가 전액 환급됩니다 (위약금 정책 적용 가능).</li>
+        </ul>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" style="flex:1">이전으로</button>
+        <button class="btn btn-primary" style="flex:2">광고머니 차감 후 광고 신청하기</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SCREEN 6: 환불 요청 ═══════════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div style="font-size:10px;color:#bbb;margin-top:1px">(주) 아모레퍼시픽</div></div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item active"><span class="nav-icon">💳</span> 광고머니</div>
+    </aside>
+    <main class="main" style="max-width:560px">
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;cursor:pointer" onclick="show('s1')">← 광고머니로 돌아가기</div>
+      <h1 class="page-title" style="margin-bottom:6px">환불 요청</h1>
+      <div style="font-size:13px;color:#6b7280;margin-bottom:24px">미사용 광고머니를 환불받을 수 있습니다.</div>
+
+      <div style="background:#f8faff;border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:12px;color:#6b7280;margin-bottom:4px">환불 가능 잔액</div>
+          <div style="font-size:22px;font-weight:800;color:#1d4ed8">220,000원</div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:#9ca3af">
+          <div>유상머니: 210,000원</div>
+          <div>무상머니: 10,000원 (환불 불가)</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">환불 금액</label>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" placeholder="환불 금액 입력">
+          <span class="input-unit">원</span>
+        </div>
+        <div class="form-hint">무상머니(10,000원)는 환불 대상에서 제외됩니다. 최대 210,000원 환불 가능합니다.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:4px">
+          환불 계좌
+          <div class="tooltip-wrap">
+            <span style="width:14px;height:14px;border-radius:50%;background:#d1d5db;color:#6b7280;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:default">?</span>
+            <div class="tooltip-box">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+          </div>
+        </label>
+        <div class="tooltip-wrap" style="width:100%">
+          <div class="locked-account-field" style="width:100%">
+            <div>
+              <span class="locked-account-value">100-02-8181052</span>
+              <span style="color:#9ca3af;font-size:12px;margin-left:8px">신한은행 · 매드업</span>
+            </div>
+            <span class="lock-icon">🔒</span>
+          </div>
+          <div class="tooltip-box" style="left:50%;white-space:nowrap">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+        </div>
+        <div class="form-hint" style="margin-top:6px">환불 계좌는 운영그룹의 대표 환불 계좌로 고정됩니다.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">환불 사유 <span style="color:#9ca3af;font-weight:400">(선택)</span></label>
+        <select class="form-input">
+          <option value="">사유를 선택해주세요</option>
+          <option>광고 계획 변경</option>
+          <option>서비스 이용 종료</option>
+          <option>기타</option>
+        </select>
+      </div>
+
+      <div class="notice-box" style="margin-bottom:20px">
+        <ul>
+          <li>환불 요청 후 운영팀 검토를 거쳐 <strong>3~5 영업일</strong> 내 처리됩니다.</li>
+          <li>카드 충전 건은 카드 승인 취소, 계좌 입금 건은 현금 환불로 진행됩니다.</li>
+          <li>무상머니는 환불 대상에서 제외됩니다.</li>
+        </ul>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" style="flex:1" onclick="show('s1')">취소</button>
+        <button class="btn btn-danger" style="flex:2">환불 요청하기</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('active'));
+  const map = {s1:'① 메인',s1e:'① 잔액',s2:'②',s3a:'③-A',s3b:'③-B',s4:'④',s5:'⑤',s6:'⑥'};
+  document.querySelectorAll('.flow-btn').forEach(b => {
+    if (b.id === 'flow-btn-agency') return;
+    if (b.textContent.trim().startsWith(map[id] || '__')) b.classList.add('active');
+  });
+  if (id === 's1') {
+    document.getElementById('agency-change-banner').style.display = 'none';
+  }
+  if (id === 's3b') {
+    document.getElementById('bank-cta-btn').style.display = '';
+    document.getElementById('bank-spinner').style.display = 'none';
+    document.getElementById('bank-result-success').style.display = 'none';
+    document.getElementById('bank-result-fail').style.display = 'none';
+  }
+  window.scrollTo(0, 0);
+}
+
+function selectPreset(btn) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectPayTab(tab) {
+  document.getElementById('pt-card').classList.toggle('active', tab === 'card');
+  document.getElementById('pt-bank').classList.toggle('active', tab === 'bank');
+  document.getElementById('pay-info-card').style.display = tab === 'card' ? '' : 'none';
+  document.getElementById('pay-info-bank').style.display = tab === 'bank' ? '' : 'none';
+}
+
+function goToPayment() {
+  const isBank = document.getElementById('pt-bank').classList.contains('active');
+  show(isBank ? 's3b' : 's3a');
+}
+
+let _bankCTAToggle = false;
+
+function handleBankCTA() {
+  document.getElementById('bank-cta-btn').style.display = 'none';
+  document.getElementById('bank-result-success').style.display = 'none';
+  document.getElementById('bank-result-fail').style.display = 'none';
+  document.getElementById('bank-spinner').style.display = 'block';
+
+  setTimeout(function () {
+    document.getElementById('bank-spinner').style.display = 'none';
+    _bankCTAToggle = !_bankCTAToggle;
+    if (_bankCTAToggle) {
+      document.getElementById('bank-result-success').style.display = 'block';
+    } else {
+      document.getElementById('bank-result-fail').style.display = 'block';
+    }
+  }, 1500);
+}
+
+
+function selectRefundTab(tab) {
+  document.getElementById('rt-doc').classList.toggle('active', tab === 'doc');
+  document.getElementById('rt-manual').classList.toggle('active', tab === 'manual');
+  document.getElementById('refund-doc').style.display = tab === 'doc' ? '' : 'none';
+  document.getElementById('refund-manual').style.display = tab === 'manual' ? '' : 'none';
+}
+</script>
+</body>
+</html>

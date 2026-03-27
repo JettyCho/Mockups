@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 비즈머니 선불충전 목업</title>
+<!-- Pretendard Variable -->
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<!-- Material Symbols Rounded -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── CSS CUSTOM PROPERTIES ── */
+:root {
+  /* Primary */
+  --primary: #3b82f6;
+  --primary-hover: #1d4ed8;
+  --primary-moderate: #1e3a8a;
+  --primary-subtle: #eff6ff;
+  --primary-subtle-em: #dbeafe;
+  /* Base */
+  --bg-page: #f1f5f9;
+  --bg-white: #ffffff;
+  --bg-subtle: #e2e8f0;
+  --bg-emphasis: #1e293b;
+  --border: #CBD5E1;
+  --border-default: #64748b;
+  /* Text */
+  --text-high: #0f172a;
+  --text-em: #334155;
+  --text-default: #64748b;
+  --text-subtle: #94a3b8;
+  /* Status */
+  --success-bg: #f0fdf4; --success-fg: #15803d; --success-stroke: #bbf7d0; --success-shape: #22c55e;
+  --warning-bg: #fffbeb; --warning-fg: #92400e; --warning-stroke: #fde68a;
+  --error-bg: #fef2f2; --error-fg: #dc2626; --error-stroke: #fecaca;
+  --violet-bg: #f5f3ff; --violet-fg: #7c3aed;
+  --orange-bg: #fff7ed; --orange-fg: #ea580c;
+  /* Danger */
+  --danger: #ef4444; --danger-hover: #b91c1c;
+  /* Spacing */
+  --xxs: 2px; --xs: 4px; --sm: 8px; --md: 12px; --lg: 16px; --xl: 24px; --huge: 32px;
+  /* Radius */
+  --r-sm: 4px; --r-md: 8px; --r-lg: 16px; --r-pill: 999px;
+  /* Shadows */
+  --shadow-modal: 0 20px 60px rgba(0,0,0,.15);
+  --shadow-dropdown: 0 4px 24px rgba(0,0,0,.12);
+}
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-em);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── ICON ── */
+.icon {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal; font-style: normal;
+  font-size: 24px; line-height: 1;
+  display: inline-block; white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+  vertical-align: middle;
+}
+.icon-40 { font-size: 40px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 40; }
+.icon-20 { font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+.icon-18 { font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+.icon-16 { font-size: 16px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+
+/* ── FLOW NAV (프로토타입 전환) ── */
+.flow-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--bg-emphasis); height: 44px;
+  display: flex; align-items: center;
+  font-size: 12px; overflow-x: auto; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.flow-nav-brand {
+  padding: 0 20px; font-weight: 800; font-size: 13px;
+  color: #f87171; border-right: 1px solid #334155;
+  height: 100%; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.flow-btn {
+  padding: 0 16px; height: 100%; border: none; background: none;
+  color: var(--text-subtle); cursor: pointer; font-size: 12px;
+  border-right: 1px solid #334155; transition: all .15s;
+  font-family: inherit; flex-shrink: 0;
+}
+.flow-btn:hover { background: #334155; color: #fff; }
+.flow-btn.active { background: var(--primary); color: #fff; font-weight: 700; }
+.flow-step { color: #475569; font-size: 10px; padding: 0 6px; flex-shrink: 0; }
+
+/* ── SCREEN ── */
+.screen { display: none; padding-top: 44px; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ── TOPNAV ── */
+.topnav {
+  height: 56px; background: var(--bg-white);
+  box-shadow: inset 0px -1px 0px 0px var(--border);
+  position: fixed; top: 44px; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; padding: 0 var(--lg);
+}
+.topnav-logo { display: flex; align-items: center; gap: var(--sm); text-decoration: none; }
+.topnav-logo-mark {
+  width: 28px; height: 28px; background: var(--primary); border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 900; font-size: 14px; font-style: italic;
+}
+.topnav-logo-text { font-size: 14px; font-weight: 700; color: var(--text-high); }
+.topnav-divider { width: 1px; height: 20px; background: var(--border); margin: 0 var(--sm); }
+.topnav-breadcrumb { display: flex; align-items: center; gap: var(--xs); font-size: 14px; }
+.topnav-breadcrumb .crumb-muted { color: var(--text-subtle); }
+.topnav-breadcrumb .crumb-sep { color: var(--text-subtle); margin: 0 var(--xs); }
+.topnav-breadcrumb .crumb-current { font-weight: 700; color: var(--text-high); }
+.topnav-right { margin-left: auto; display: flex; align-items: center; gap: var(--md); }
+.topnav-right .help-link { font-size: 14px; color: var(--text-default); text-decoration: none; }
+.topnav-user {
+  height: 32px; padding: 0 var(--md);
+  display: flex; align-items: center; gap: var(--xs);
+  border-radius: var(--r-md); background: var(--bg-page);
+  font-size: 14px; color: var(--text-em); cursor: pointer;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px; background: var(--bg-white);
+  box-shadow: inset -1px 0px 0px 0px var(--border);
+  position: fixed; top: 100px; left: 0; bottom: 0;
+  padding: var(--xl) 6px; overflow-y: auto;
+}
+.biz-selector {
+  margin: 0 6px var(--xl); padding: var(--md);
+  background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--r-md);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.biz-selector .biz-label { font-size: 10px; color: var(--text-subtle); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+.biz-selector .biz-name { font-size: 13px; font-weight: 700; color: var(--text-high); margin-top: 2px; }
+.biz-selector .biz-sub { font-size: 10px; color: var(--text-subtle); margin-top: 1px; }
+.biz-selector .icon { color: var(--text-subtle); }
+
+.nav-section-label {
+  font-size: 10px; color: var(--text-subtle); font-weight: 700;
+  padding: var(--md) var(--md) var(--xs); letter-spacing: .5px; text-transform: uppercase;
+}
+.nav-item {
+  display: flex; align-items: center; gap: var(--sm);
+  padding: var(--sm) var(--md); font-size: 14px; color: var(--text-default);
+  cursor: pointer; border-radius: var(--r-md); transition: all .12s;
+  border: 1px solid transparent; font-weight: 400;
+}
+.nav-item:hover { background: var(--bg-page); color: var(--text-em); }
+.nav-item.active {
+  background: var(--primary-subtle); color: var(--primary);
+  font-weight: 600; border-color: var(--primary-subtle-em);
+}
+.nav-item .icon { font-size: 18px; }
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--bg-page); color: var(--text-subtle);
+  font-size: 10px; padding: 1px 6px; border-radius: var(--r-pill); font-weight: 600;
+}
+
+/* ── MAIN ── */
+.main {
+  margin-left: 240px;
+  padding: var(--huge);
+  padding-top: calc(100px + var(--huge));
+  min-height: 100vh;
+}
+
+/* ── PAGE HEADER ── */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--xl); }
+.page-title { font-size: 24px; font-weight: 700; color: var(--text-high); line-height: 36px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: var(--sm) var(--md); border-radius: var(--r-md);
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  border: none; transition: all .15s; font-family: inherit;
+  line-height: 20px;
+}
+.btn .icon { font-size: 18px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--bg-white); color: var(--text-default); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-page); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+.btn-ghost-blue { background: var(--primary-subtle-em); color: var(--primary); padding: var(--xs) var(--sm); border-radius: var(--r-md); }
+.btn-outline { background: var(--bg-white); color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; width: 100%; justify-content: center; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: var(--xl);
+}
+.summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--lg); margin-bottom: var(--xl); }
+.summary-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 22px var(--xl); }
+.summary-card.highlight { background: linear-gradient(135deg, var(--primary-subtle) 0%, var(--primary-subtle-em) 100%); border-color: #93c5fd; }
+.card-label { font-size: 12px; color: var(--text-default); margin-bottom: var(--sm); font-weight: 700; }
+.card-value { font-size: 26px; font-weight: 800; color: var(--text-high); margin-bottom: var(--xs); }
+.card-value .unit { font-size: 16px; font-weight: 600; }
+.card-sub { font-size: 12px; color: var(--text-subtle); }
+.card-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-info-label { font-size: 11px; color: var(--text-subtle); margin-bottom: var(--xs); }
+.card-info-value { font-size: 14px; font-weight: 700; color: var(--text-high); }
+.card-info-sub { font-size: 11px; color: var(--text-subtle); margin-top: 2px; }
+
+/* ── PILL TABS (Segmented Control) ── */
+.pill-tabs {
+  display: flex; gap: var(--xs);
+  background: var(--bg-page); padding: var(--xs); border-radius: var(--r-md);
+  margin-bottom: var(--xl);
+}
+.pill-tab {
+  padding: var(--xs) var(--md); border-radius: var(--r-sm);
+  font-size: 14px; font-weight: 500; color: var(--text-default);
+  cursor: pointer; border: none; background: transparent;
+  transition: all .15s; font-family: inherit;
+}
+.pill-tab:hover { color: var(--text-em); }
+.pill-tab.active {
+  background: var(--bg-white); color: var(--text-high);
+  font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ── TABLE ── */
+.table-wrap { border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr {
+  background: var(--bg-page);
+  box-shadow: inset 0px 1px 0px 0px var(--border), inset 0px -2px 0px 0px var(--border);
+}
+th { padding: var(--md); text-align: left; color: var(--text-default); font-weight: 700; font-size: 12px; }
+td { padding: var(--md); color: var(--text-em); }
+tbody tr { background: var(--bg-white); box-shadow: inset 0px -1px 0px 0px rgba(97,117,134,.2); }
+tbody tr:last-child { box-shadow: none; }
+
+.type-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700; padding: 3px var(--sm); border-radius: var(--r-sm);
+}
+.badge-charge { background: var(--success-bg); color: var(--success-fg); }
+.badge-refund { background: var(--orange-bg); color: var(--orange-fg); }
+.badge-deduct { background: var(--error-bg); color: var(--error-fg); }
+.badge-free { background: var(--violet-bg); color: var(--violet-fg); }
+.amount-plus { color: var(--success-fg); font-weight: 700; }
+.amount-minus { color: var(--error-fg); font-weight: 700; }
+
+/* ── PAGINATION ── */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: var(--xl); }
+.page-btn {
+  width: 32px; height: 32px; border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--bg-white); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--text-em); font-family: inherit;
+}
+.page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── NOTICE BOX ── */
+.notice-box {
+  background: var(--warning-bg); border: 1px solid var(--warning-stroke);
+  border-radius: var(--r-md); padding: 14px 18px;
+  font-size: 12px; color: var(--warning-fg); line-height: 1.7; margin-top: var(--xl);
+}
+.notice-box ul { padding-left: var(--lg); }
+
+/* ── EMPTY STATE ── */
+.empty-state { padding: 60px 20px; text-align: center; }
+.empty-icon-wrap {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--bg-page);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto var(--lg);
+}
+.empty-icon-wrap .icon { color: var(--text-subtle); }
+.empty-title { font-size: 14px; font-weight: 700; color: var(--text-em); }
+.empty-desc { font-size: 14px; color: var(--text-default); margin-top: var(--xs); }
+
+/* ── STEP INDICATOR ── */
+.step-indicator { display: flex; align-items: center; margin-bottom: var(--xl); }
+.step { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-subtle); }
+.step.active { color: var(--primary); font-weight: 700; }
+.step.done { color: var(--success-fg); }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+}
+.step-done-icon {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--success-shape);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.step-done-icon .icon { font-size: 16px; }
+.step-line { flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
+.step-line.done { background: var(--success-shape); }
+
+/* ── FORM ── */
+.form-label { font-size: 12px; font-weight: 700; color: var(--text-em); margin-bottom: var(--sm); display: block; }
+.form-group { margin-bottom: 18px; }
+.form-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--r-md);
+  font-size: 14px; color: var(--text-high); outline: none; font-family: inherit;
+  transition: border-color .15s; background: var(--bg-white);
+}
+.form-input:focus { border-color: var(--primary); }
+.form-input.highlight { border-color: var(--primary); background: var(--primary-subtle); }
+.input-with-unit { display: flex; gap: var(--sm); align-items: center; }
+.input-unit { font-size: 14px; color: var(--text-em); font-weight: 600; white-space: nowrap; }
+.form-hint { font-size: 11px; color: var(--text-subtle); margin-top: 5px; }
+.form-hint.error { color: var(--danger); }
+
+/* ── AMOUNT PRESETS ── */
+.amount-presets { display: flex; gap: var(--sm); flex-wrap: wrap; margin-top: 10px; }
+.preset-btn {
+  padding: 7px 14px; border: 1.5px solid var(--border); border-radius: var(--r-md);
+  font-size: 13px; color: var(--text-em); cursor: pointer; background: var(--bg-white);
+  transition: all .15s; font-family: inherit; font-weight: 500;
+}
+.preset-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-subtle); }
+.preset-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-subtle); font-weight: 700; }
+
+/* ── PAYMENT TABS (Segmented) ── */
+.pay-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  border: 1.5px solid var(--border); border-radius: var(--r-md); overflow: hidden;
+}
+.pay-tab {
+  flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600;
+  color: var(--text-default); cursor: pointer; background: var(--bg-page); border: none;
+  font-family: inherit; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.pay-tab .icon { font-size: 18px; }
+.pay-tab.active { background: var(--primary); color: #fff; }
+
+/* ── ACCOUNT BOX ── */
+.account-box {
+  background: var(--primary-subtle); border: 1.5px solid #93c5fd; border-radius: var(--r-md);
+  padding: 18px 20px; margin-bottom: var(--lg);
+}
+.account-box .acc-label { font-size: 11px; color: var(--text-default); margin-bottom: var(--xs); }
+.account-box .acc-value { font-size: 18px; font-weight: 800; color: var(--primary-hover); letter-spacing: .5px; }
+.account-box .acc-sub { font-size: 12px; color: var(--text-default); margin-top: var(--xs); }
+
+/* ── INFO LIST ── */
+.info-list { list-style: none; }
+.info-list li { display: flex; justify-content: space-between; padding: var(--sm) 0; border-bottom: 1px solid var(--bg-page); font-size: 13px; }
+.info-list li:last-child { border-bottom: none; }
+.info-list .key { color: var(--text-default); }
+.info-list .val { color: var(--text-high); font-weight: 600; }
+.info-list .val.big { font-size: 16px; color: var(--primary); }
+
+/* ── ALERT ── */
+.alert { border-radius: var(--r-md); padding: var(--md) var(--lg); font-size: 12px; margin-bottom: var(--lg); display: flex; gap: var(--sm); align-items: flex-start; }
+.alert-info { background: var(--primary-subtle); color: var(--primary-hover); border: 1px solid #93c5fd; }
+.alert-warn { background: var(--warning-bg); color: var(--warning-fg); border: 1px solid var(--warning-stroke); }
+.alert .icon { flex-shrink: 0; font-size: 18px; }
+
+/* ── TOSS MOCK ── */
+.toss-mock { background: #1a1a2e; border-radius: var(--r-md); padding: 20px; color: #fff; font-size: 13px; }
+.toss-mock .t-header { display: flex; align-items: center; gap: var(--sm); margin-bottom: var(--lg); }
+.toss-logo { background: #0064ff; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
+.toss-mock .t-title { font-size: 15px; font-weight: 700; }
+.pay-method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sm); margin-bottom: var(--lg); }
+.pay-method-item {
+  background: #252540; border-radius: var(--r-md); padding: 10px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; transition: all .12s; border: 1.5px solid transparent;
+}
+.pay-method-item:hover { border-color: #0064ff; }
+.pay-method-item.active { border-color: #0064ff; background: #1a3a6e; }
+.pay-method-icon { width: 30px; height: 30px; border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.pay-method-label { font-size: 10px; color: #aaa; }
+.toss-confirm-btn { background: #0064ff; color: #fff; border: none; border-radius: var(--r-md); padding: 13px; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+/* ── RECEIPT ── */
+.receipt-wrap { background: var(--bg-white); }
+.receipt-header { text-align: center; padding: 28px var(--xl) 20px; border-bottom: 1px solid var(--bg-page); }
+.receipt-icon { width: 52px; height: 52px; background: var(--success-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--md); }
+.receipt-icon .icon { color: var(--success-shape); font-size: 28px; }
+.receipt-title { font-size: 20px; font-weight: 800; color: var(--text-high); }
+.receipt-amount { font-size: 30px; font-weight: 900; color: var(--primary); margin-top: 6px; }
+.receipt-body { padding: 20px var(--xl); }
+.receipt-table { width: 100%; }
+.receipt-table tr td { padding: 9px 0; font-size: 13px; border-bottom: 1px solid var(--bg-page); }
+.receipt-table tr:last-child td { border-bottom: none; }
+.receipt-table tr td:first-child { color: var(--text-default); }
+.receipt-table tr td:last-child { text-align: right; font-weight: 600; color: var(--text-high); }
+.receipt-notice { font-size: 11px; color: var(--text-subtle); line-height: 1.7; padding: 14px var(--xl) 20px; border-top: 1px solid var(--bg-page); }
+
+/* ── DEDUCT ── */
+.deduct-box { background: var(--orange-bg); border: 1.5px solid #fed7aa; border-radius: var(--r-md); padding: 18px 20px; margin-bottom: 20px; }
+.deduct-box .d-title { font-size: 13px; font-weight: 700; color: #c2410c; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.deduct-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.deduct-row .k { color: var(--text-default); }
+.deduct-row .v { font-weight: 600; color: var(--text-high); }
+.deduct-row.total { border-top: 1px dashed #fed7aa; padding-top: 10px; margin-top: 6px; }
+.deduct-row.total .v { color: #c2410c; font-size: 16px; font-weight: 800; }
+
+.balance-after { background: var(--success-bg); border: 1px solid var(--success-stroke); border-radius: var(--r-md); padding: var(--md) var(--lg); font-size: 13px; display: flex; justify-content: space-between; }
+.balance-after .ba-label { color: var(--text-default); }
+.balance-after .ba-value { font-weight: 800; color: var(--success-fg); font-size: 16px; }
+
+/* ── LOCKED FIELD ── */
+.locked-account-field {
+  background: var(--bg-page); border: 1.5px solid var(--border); border-radius: var(--r-md);
+  padding: 11px 14px; font-size: 14px; color: var(--text-default);
+  display: flex; align-items: center; justify-content: space-between; cursor: default;
+}
+.locked-account-value { font-weight: 600; color: var(--text-em); }
+
+/* ── TOOLTIP ── */
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+.tooltip-wrap .tooltip-box {
+  display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: var(--bg-emphasis); color: #fff; font-size: 12px; font-weight: 400;
+  padding: var(--sm) var(--md); border-radius: var(--r-md); white-space: nowrap; z-index: 200;
+  box-shadow: var(--shadow-dropdown); pointer-events: none; line-height: 1.5;
+}
+.tooltip-wrap .tooltip-box::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--bg-emphasis);
+}
+.tooltip-wrap:hover .tooltip-box { display: block; }
+
+/* ── CHECKBOX ROW ── */
+.check-row { display: flex; align-items: flex-start; gap: var(--sm); font-size: 12px; color: var(--text-default); margin-top: var(--md); }
+.check-row input { margin-top: 2px; accent-color: var(--primary); }
+.check-row a { color: var(--primary); text-decoration: underline; }
+
+/* ── SECTION DIVIDER ── */
+.section-divider { height: 1px; background: var(--bg-page); margin: 20px 0; }
+
+/* ── COPY BTN ── */
+.copy-btn {
+  margin-top: 10px; background: var(--primary-subtle-em); color: var(--primary); border: 1px solid #93c5fd;
+  border-radius: var(--r-md); padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600;
+  display: inline-flex; align-items: center; gap: var(--xs);
+}
+
+/* ── SPINNER ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block; width: 36px; height: 36px;
+  border: 3px solid var(--primary-subtle-em); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin .8s linear infinite;
+}
+
+/* ── BACK LINK ── */
+.back-link {
+  font-size: 12px; color: var(--text-subtle); cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--xs); margin-bottom: var(--lg);
+}
+.back-link:hover { color: var(--primary); }
+.back-link .icon { font-size: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ── FLOW NAV ── -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand"><span class="icon icon-16" style="color:#f87171">target</span> 비즈머니 목업</div>
+  <button class="flow-btn active" onclick="showScreen('s1')">① 메인</button>
+  <button class="flow-btn" onclick="showScreen('s2')">② 충전 — 금액 입력</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s3a')">③-A 카드결제 (토스)</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s3b')">③-B 계좌입금 안내</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s4')">④ 충전 완료 영수증</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s5')">⑤ 광고신청 차감 확인</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s6')">⑥ 환불 요청</button>
+  <span class="flow-step">▸</span>
+  <button class="flow-btn" onclick="showScreen('s1e')">① 빈 상태</button>
+</nav>
+
+<!-- ════════════════════════════ SCREEN 1: 비즈머니 메인 ════════════════════════════ -->
+<div class="screen active" id="s1">
+  <!-- Topnav -->
+  <header class="topnav">
+    <a class="topnav-logo" href="#">
+      <div class="topnav-logo-mark">b</div>
+      <span class="topnav-logo-text">buzzvil</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb">
+      <span class="crumb-muted">관리</span>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-current">비즈머니</span>
+    </nav>
+    <div class="topnav-right">
+      <a class="help-link" href="#">이용 방법</a>
+      <div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="biz-selector">
+      <div>
+        <div class="biz-label">운영그룹</div>
+        <div class="biz-name">이니스프리</div>
+        <div class="biz-sub">(주) 아모레퍼시픽</div>
+      </div>
+      <span class="icon icon-20">expand_more</span>
+    </div>
+    <div class="nav-section-label">광고</div>
+    <div class="nav-item"><span class="icon icon-18">smart_display</span> 라이브커머스</div>
+    <div class="nav-item"><span class="icon icon-18">handshake</span> 협력 광고</div>
+    <div class="nav-section-label">도구</div>
+    <div class="nav-item"><span class="icon icon-18">bar_chart</span> 리포트</div>
+    <div class="nav-item"><span class="icon icon-18">sell</span> 카탈로그</div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+    <div class="nav-item"><span class="icon icon-18">receipt_long</span> 정산</div>
+    <div class="nav-item"><span class="icon icon-18">group</span> 멤버</div>
+    <div class="nav-item"><span class="icon icon-18">settings</span> 운영 그룹 정보</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">비즈머니</h1>
+      <button class="btn btn-primary" onclick="showScreen('s2')"><span class="icon icon-18">add</span> 충전하기</button>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card highlight">
+        <div class="card-label">비즈머니 잔액</div>
+        <div class="card-value">120,000<span class="unit">원</span></div>
+        <div class="card-sub">이니스프리 협력광고</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-row">
+          <div>
+            <div class="card-info-label">정산 담당자</div>
+            <div class="card-info-value">ads.center@buzzvil.com</div>
+            <div class="card-info-sub">매드업</div>
+          </div>
+          <div style="text-align:right">
+            <div class="card-info-label" style="display:flex;align-items:center;justify-content:flex-end;gap:4px">
+              대표 환불 계좌
+              <div class="tooltip-wrap">
+                <span class="icon icon-16" style="color:var(--text-subtle);cursor:default">help</span>
+                <div class="tooltip-box">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+              </div>
+            </div>
+            <div class="card-info-value">100-02-8181052</div>
+            <div class="card-info-sub">신한은행 매드업</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pill Tabs -->
+    <div class="pill-tabs" id="filter-tabs-s1">
+      <button class="pill-tab active" onclick="filterTab(this)">전체</button>
+      <button class="pill-tab" onclick="filterTab(this)">충전</button>
+      <button class="pill-tab" onclick="filterTab(this)">차감</button>
+      <button class="pill-tab" onclick="filterTab(this)">환불</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>유형</th>
+            <th>상세 내역</th>
+            <th style="text-align:right">금액</th>
+            <th>잔액</th>
+            <th style="text-align:right">일시</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="type-badge badge-charge">충전</span></td>
+            <td>카드결제 (신한카드 1234)</td>
+            <td style="text-align:right" class="amount-plus">+100,000원</td>
+            <td style="color:var(--text-default)">120,000원</td>
+            <td style="text-align:right;color:var(--text-subtle)">2026.02.09 11:30:23</td>
+          </tr>
+          <tr>
+            <td><span class="type-badge badge-refund">환불</span></td>
+            <td>환불 처리됨 (운영팀 확인)</td>
+            <td style="text-align:right" class="amount-minus">-80,000원</td>
+            <td style="color:var(--text-default)">20,000원</td>
+            <td style="text-align:right;color:var(--text-subtle)">2026.02.09 11:25:01</td>
+          </tr>
+          <tr>
+            <td><span class="type-badge badge-deduct">차감</span></td>
+            <td>이니스프리 협력광고 신청 (부가세 포함)</td>
+            <td style="text-align:right" class="amount-minus">-110,000원</td>
+            <td style="color:var(--text-default)">100,000원</td>
+            <td style="text-align:right;color:var(--text-subtle)">2026.02.08 09:14:02</td>
+          </tr>
+          <tr>
+            <td><span class="type-badge badge-charge">충전</span></td>
+            <td>계좌입금 확인 (신한은행)</td>
+            <td style="text-align:right" class="amount-plus">+200,000원</td>
+            <td style="color:var(--text-default)">210,000원</td>
+            <td style="text-align:right;color:var(--text-subtle)">2026.02.07 15:42:17</td>
+          </tr>
+          <tr>
+            <td><span class="type-badge badge-free">무상</span></td>
+            <td>신규 계정 웰컴 보너스 (만료: 2026.08.07)</td>
+            <td style="text-align:right;color:var(--violet-fg);font-weight:700">+10,000원</td>
+            <td style="color:var(--text-default)">10,000원</td>
+            <td style="text-align:right;color:var(--text-subtle)">2026.02.07 10:00:00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button class="page-btn" onclick="selectPage(this)"><span class="icon icon-16">chevron_left</span></button>
+      <button class="page-btn active" onclick="selectPage(this)">1</button>
+      <button class="page-btn" onclick="selectPage(this)">2</button>
+      <button class="page-btn" onclick="selectPage(this)"><span class="icon icon-16">chevron_right</span></button>
+    </div>
+
+    <div class="notice-box">
+      <ul>
+        <li>비즈머니 유효기간은 최초 충전일로부터 <strong>3년</strong>이며, 이후 자동 소멸됩니다.</li>
+        <li>미사용 비즈머니 환불은 고객센터를 통해 요청하실 수 있습니다.</li>
+        <li>카드 충전 건은 카드 승인 취소, 계좌 입금 건은 현금 환불로 처리됩니다.</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 1-E: 빈 상태 ════════════════════════════ -->
+<div class="screen" id="s1e">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-current">비즈머니</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">광고</div>
+    <div class="nav-item"><span class="icon icon-18">smart_display</span> 라이브커머스</div>
+    <div class="nav-item"><span class="icon icon-18">handshake</span> 협력 광고</div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">비즈머니</h1>
+      <button class="btn btn-primary" onclick="showScreen('s2')"><span class="icon icon-18">add</span> 충전하기</button>
+    </div>
+    <div class="summary-cards">
+      <div class="summary-card" style="background:var(--bg-page)">
+        <div class="card-label">비즈머니 잔액</div>
+        <div class="card-value" style="color:var(--text-subtle)">0<span class="unit">원</span></div>
+        <div class="card-sub">충전 후 광고를 시작해보세요</div>
+      </div>
+      <div class="summary-card">
+        <div style="font-size:12px;color:var(--text-subtle);margin-bottom:var(--sm)">환불 계좌가 등록되지 않았습니다.</div>
+        <button class="btn btn-secondary btn-sm"><span class="icon icon-16">add</span> 환불 계좌 등록하기</button>
+      </div>
+    </div>
+    <div class="empty-state">
+      <div class="empty-icon-wrap"><span class="icon">search_off</span></div>
+      <div class="empty-title">아직 비즈머니 내역이 없습니다.</div>
+      <div class="empty-desc">충전 후 광고를 시작해보세요.</div>
+      <button class="btn btn-primary" style="margin-top:var(--lg)" onclick="showScreen('s2')">지금 충전하기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 2: 충전 금액 입력 ════════════════════════════ -->
+<div class="screen" id="s2">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-muted" style="cursor:pointer" onclick="showScreen('s1')">비즈머니</span><span class="crumb-sep">/</span><span class="crumb-current">충전</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+  </aside>
+  <main class="main" style="max-width:600px">
+    <div class="back-link" onclick="showScreen('s1')"><span class="icon icon-16">arrow_back</span> 비즈머니로 돌아가기</div>
+    <h1 class="page-title" style="margin-bottom:var(--xl)">비즈머니 충전</h1>
+
+    <div class="step-indicator" style="margin-bottom:28px">
+      <div class="step active"><div class="step-num">1</div> 금액 입력</div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">2</div> 결제</div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">3</div> 완료</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">충전 금액</label>
+      <div class="input-with-unit">
+        <input class="form-input highlight" type="text" value="100,000" style="font-size:20px;font-weight:800;text-align:right" id="charge-amount">
+        <span class="input-unit">원</span>
+      </div>
+      <div class="form-hint">최소 충전 금액은 <strong>10만 원</strong>이며, 1만 원 단위로 입력 가능합니다.</div>
+      <div class="amount-presets">
+        <button class="preset-btn active" onclick="selectPreset(this, '100,000')">+10만</button>
+        <button class="preset-btn" onclick="selectPreset(this, '300,000')">+30만</button>
+        <button class="preset-btn" onclick="selectPreset(this, '500,000')">+50만</button>
+        <button class="preset-btn" onclick="selectPreset(this, '1,000,000')">+100만</button>
+        <button class="preset-btn" onclick="selectPreset(this, '2,000,000')">+200만</button>
+        <button class="preset-btn" onclick="selectPreset(this, '')">직접 입력</button>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="form-group">
+      <label class="form-label">결제 수단</label>
+      <div class="pay-tabs">
+        <button class="pay-tab active" id="pt-card" onclick="selectPayTab('card')"><span class="icon icon-18">credit_card</span> 카드결제</button>
+        <button class="pay-tab" id="pt-bank" onclick="selectPayTab('bank')"><span class="icon icon-18">account_balance</span> 계좌입금</button>
+      </div>
+      <div id="pay-info-card" class="alert alert-info">
+        <span class="icon icon-18">info</span>
+        <span>신용·체크카드로 즉시 충전됩니다. 토스페이먼츠 결제창이 열립니다.</span>
+      </div>
+      <div id="pay-info-bank" style="display:none" class="alert alert-warn">
+        <span class="icon icon-18">schedule</span>
+        <span>지정 계좌로 입금 후 <strong>최대 24시간</strong> 내 확인되어 충전됩니다.</span>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:0 var(--lg);margin-bottom:20px">
+      <ul class="info-list">
+        <li><span class="key">현재 잔액</span><span class="val">120,000원</span></li>
+        <li><span class="key">충전 후 예상 잔액</span><span class="val big">220,000원</span></li>
+      </ul>
+    </div>
+
+    <div class="check-row">
+      <input type="checkbox" checked>
+      <span><a href="#">이용약관</a> 및 <a href="#">개인정보 처리방침</a>에 동의합니다.</span>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-secondary" style="flex:1" onclick="showScreen('s1')">취소</button>
+      <button class="btn btn-primary" style="flex:2" onclick="goToPayment()"><span class="icon icon-18">arrow_forward</span> 결제하기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 3-A: 카드결제 (토스) ════════════════════════════ -->
+<div class="screen" id="s3a">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-muted" style="cursor:pointer" onclick="showScreen('s1')">비즈머니</span><span class="crumb-sep">/</span><span class="crumb-current">충전</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+  </aside>
+  <main class="main" style="max-width:600px">
+    <div class="back-link" onclick="showScreen('s2')"><span class="icon icon-16">arrow_back</span> 충전 금액 변경</div>
+
+    <div class="step-indicator" style="margin-bottom:28px">
+      <div class="step done"><div class="step-done-icon"><span class="icon icon-16">check</span></div> 금액 입력</div>
+      <div class="step-line done"></div>
+      <div class="step active"><div class="step-num">2</div> 결제</div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">3</div> 완료</div>
+    </div>
+
+    <div class="toss-mock">
+      <div class="t-header">
+        <div class="toss-logo">t</div>
+        <div>
+          <div class="t-title">toss payments</div>
+          <div style="font-size:11px;color:#888">버즈빌 광고센터 | ads.buzzvil.com</div>
+        </div>
+        <button style="margin-left:auto;background:none;border:none;color:#888;font-size:18px;cursor:pointer" onclick="showScreen('s2')"><span class="icon" style="color:#888">close</span></button>
+      </div>
+      <div style="background:#252540;border-radius:var(--r-md);padding:14px 16px;margin-bottom:var(--lg)">
+        <div style="font-size:12px;color:#888;margin-bottom:4px">결제 금액</div>
+        <div style="font-size:24px;font-weight:900;color:#fff">100,000원</div>
+        <div style="font-size:11px;color:#666;margin-top:2px">비즈머니 충전 · 이니스프리</div>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px;font-weight:600">결제 수단 선택</div>
+      <div class="pay-method-grid">
+        <div class="pay-method-item active">
+          <div class="pay-method-icon" style="background:#1a4fa0;color:#fff;font-size:12px;font-weight:700">신한</div>
+          <div class="pay-method-label">신한카드</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#006400;color:#fff;font-size:12px;font-weight:700">KB</div>
+          <div class="pay-method-label">국민카드</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#ff6600;color:#fff;font-size:12px;font-weight:700">K</div>
+          <div class="pay-method-label">카카오페이</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#03c75a;color:#fff;font-size:12px;font-weight:700">N</div>
+          <div class="pay-method-label">네이버페이</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#0064ff;color:#fff;font-size:12px;font-weight:700">T</div>
+          <div class="pay-method-label">토스페이</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#333;color:#fff;font-size:14px"><span class="icon icon-18" style="color:#fff">account_balance</span></div>
+          <div class="pay-method-label">계좌이체</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#555;color:#fff;font-size:14px"><span class="icon icon-18" style="color:#fff">savings</span></div>
+          <div class="pay-method-label">무통장</div>
+        </div>
+        <div class="pay-method-item">
+          <div class="pay-method-icon" style="background:#444;color:#fff;font-size:14px"><span class="icon icon-18" style="color:#fff">more_horiz</span></div>
+          <div class="pay-method-label">더보기</div>
+        </div>
+      </div>
+      <div style="background:#252540;border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:11px;color:#888;margin-bottom:8px">신한카드 정보 입력</div>
+        <input style="width:100%;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:6px;font-family:inherit" placeholder="카드 번호" value="1234 - 5678 - 9012 - ****">
+        <div style="display:flex;gap:8px">
+          <input style="flex:1;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;font-family:inherit" placeholder="유효기간 MM/YY" value="12/27">
+          <input style="flex:1;background:#1a1a2e;border:1px solid #444;border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;font-family:inherit" placeholder="CVC" value="***">
+        </div>
+      </div>
+      <div class="check-row" style="color:#888;margin-bottom:14px">
+        <input type="checkbox" checked style="accent-color:#0064ff">
+        <span style="font-size:11px"><a href="#" style="color:#6699ff">이용약관</a> 및 결제 정보 저장에 동의합니다.</span>
+      </div>
+      <button class="toss-confirm-btn" onclick="showScreen('s4')">100,000원 결제하기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 3-B: 계좌입금 안내 ════════════════════════════ -->
+<div class="screen" id="s3b">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-muted" style="cursor:pointer" onclick="showScreen('s1')">비즈머니</span><span class="crumb-sep">/</span><span class="crumb-current">충전</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+  </aside>
+  <main class="main" style="max-width:600px">
+    <div class="back-link" onclick="showScreen('s2')"><span class="icon icon-16">arrow_back</span> 충전 금액 변경</div>
+
+    <div class="step-indicator" style="margin-bottom:28px">
+      <div class="step done"><div class="step-done-icon"><span class="icon icon-16">check</span></div> 금액 입력</div>
+      <div class="step-line done"></div>
+      <div class="step active"><div class="step-num">2</div> 입금 안내</div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">3</div> 확인 대기</div>
+    </div>
+
+    <div class="alert alert-info" style="margin-bottom:20px">
+      <span class="icon icon-18">info</span>
+      <div><strong>아래 운영그룹 전용 가상계좌로 정확한 금액을 입금해주세요.</strong><br>입금 확인 후 영업일 기준 최대 24시간 내 비즈머니가 충전됩니다.</div>
+    </div>
+
+    <div class="account-box">
+      <div class="acc-label">입금 전용 가상계좌 (이니스프리 운영그룹)</div>
+      <div class="acc-value">100-032-817423</div>
+      <div class="acc-sub">신한은행 · 예금주: 버즈빌(주)</div>
+      <div style="font-size:11px;color:var(--text-default);margin-top:8px;line-height:1.5">이 가상계좌는 이니스프리 운영그룹 전용입니다. 다른 운영그룹에는 별도의 가상계좌가 발급됩니다.</div>
+      <button class="copy-btn" onclick="copyAccount(this)"><span class="icon icon-16">content_copy</span> 계좌번호 복사</button>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:0 var(--lg);margin-bottom:20px">
+      <ul class="info-list">
+        <li><span class="key">입금 금액</span><span class="val big">100,000원</span></li>
+        <li>
+          <span class="key" style="display:flex;align-items:center;gap:4px">
+            입금자명
+            <span style="background:var(--primary-subtle-em);color:var(--primary-hover);font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--r-sm);white-space:nowrap">반드시 일치</span>
+          </span>
+          <span class="val">이니스프리</span>
+        </li>
+        <li><span class="key">충전 후 잔액 (예정)</span><span class="val">220,000원</span></li>
+        <li><span class="key">입금 확인 소요 시간</span><span class="val">최대 24시간 (영업일 기준)</span></li>
+      </ul>
+    </div>
+
+    <div class="notice-box" style="margin-top:0">
+      <ul>
+        <li>입금자명이 다를 경우 충전이 지연될 수 있습니다.</li>
+        <li>최소 입금 금액은 100,000원이며, 1만 원 단위로만 입금 가능합니다.</li>
+        <li>입금 확인 후 등록된 이메일로 알림이 발송됩니다.</li>
+      </ul>
+    </div>
+
+    <!-- 입금 완료 CTA -->
+    <button class="btn btn-primary btn-lg" style="margin-top:20px" id="bank-cta-btn" onclick="handleBankCTA()">입금 완료</button>
+
+    <!-- Spinner -->
+    <div id="bank-spinner" style="display:none;margin-top:24px;text-align:center;padding:20px">
+      <div class="spinner"></div>
+      <div style="margin-top:12px;font-size:13px;color:var(--text-default)">입금 내역을 확인하는 중입니다...</div>
+    </div>
+
+    <!-- 성공 결과 -->
+    <div id="bank-result-success" style="display:none;margin-top:24px;border:1.5px solid var(--success-stroke);background:var(--success-bg);border-radius:var(--r-md);padding:22px 24px;text-align:center">
+      <div style="margin-bottom:10px"><span class="icon icon-40" style="color:var(--success-shape)">check_circle</span></div>
+      <div style="font-size:16px;font-weight:800;color:var(--success-fg);margin-bottom:4px">입금확인이 완료되었습니다</div>
+      <div style="font-size:13px;color:var(--success-shape);margin-bottom:20px">100,000원이 비즈머니로 충전되었습니다.</div>
+      <button class="btn btn-primary" onclick="showScreen('s4')" style="width:100%;justify-content:center">충전 영수증 확인하기</button>
+    </div>
+
+    <!-- 실패 결과 -->
+    <div id="bank-result-fail" style="display:none;margin-top:24px;border:1.5px solid var(--warning-stroke);background:var(--warning-bg);border-radius:var(--r-md);padding:22px 24px;text-align:center">
+      <div style="margin-bottom:10px"><span class="icon icon-40" style="color:#f59e0b">schedule</span></div>
+      <div style="font-size:16px;font-weight:800;color:var(--warning-fg);margin-bottom:4px">입금확인에 최대 24시간이 소요될 수 있습니다.</div>
+      <div style="font-size:13px;color:#b45309;margin-bottom:20px">입금이 확인되면 등록된 이메일로 알림을 보내드립니다.</div>
+      <button class="btn btn-secondary" onclick="showScreen('s1')" style="width:100%;justify-content:center">비즈머니 페이지로 돌아가기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 4: 충전 완료 영수증 ════════════════════════════ -->
+<div class="screen" id="s4">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-muted" style="cursor:pointer" onclick="showScreen('s1')">비즈머니</span><span class="crumb-sep">/</span><span class="crumb-current">충전 완료</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+  </aside>
+  <main class="main" style="max-width:540px">
+    <div class="step-indicator" style="margin-bottom:28px">
+      <div class="step done"><div class="step-done-icon"><span class="icon icon-16">check</span></div> 금액 입력</div>
+      <div class="step-line done"></div>
+      <div class="step done"><div class="step-done-icon"><span class="icon icon-16">check</span></div> 결제</div>
+      <div class="step-line done"></div>
+      <div class="step active"><div class="step-num">3</div> 완료</div>
+    </div>
+
+    <div class="receipt-wrap" style="border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden">
+      <div class="receipt-header">
+        <div class="receipt-icon"><span class="icon" style="color:var(--success-shape);font-size:28px">check_circle</span></div>
+        <div class="receipt-title">충전이 완료되었습니다!</div>
+        <div class="receipt-amount">+100,000원</div>
+        <div style="font-size:13px;color:var(--text-subtle);margin-top:6px">비즈머니 충전 완료 · 이니스프리</div>
+      </div>
+      <div class="receipt-body">
+        <table class="receipt-table">
+          <tr><td>충전 금액</td><td>100,000원</td></tr>
+          <tr><td>결제 수단</td><td>신한카드 1234</td></tr>
+          <tr><td>결제 일시</td><td>2026.03.12 14:23:41</td></tr>
+          <tr><td>승인 번호</td><td>CAT3621103</td></tr>
+          <tr><td>충전 전 잔액</td><td>120,000원</td></tr>
+          <tr><td style="font-weight:700;color:var(--text-high)">충전 후 잔액</td><td style="font-weight:800;color:var(--primary);font-size:16px">220,000원</td></tr>
+          <tr><td>광고주</td><td>(주) 아모레퍼시픽</td></tr>
+          <tr><td>운영그룹</td><td>이니스프리</td></tr>
+        </table>
+      </div>
+      <div class="receipt-notice">
+        본 충전 건은 광고를 진행하기 위한 사이버머니로, 부가가치세 과세 대상이 아닙니다.<br>
+        문의사항은 고객센터(ads-support@buzzvil.com)로 연락해 주세요.
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-secondary" style="flex:1"><span class="icon icon-18">print</span> 영수증 출력</button>
+      <button class="btn btn-primary" style="flex:1" onclick="showScreen('s1')">비즈머니로 돌아가기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 5: 광고신청 차감 확인 ════════════════════════════ -->
+<div class="screen" id="s5">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">광고</span><span class="crumb-sep">/</span><span class="crumb-muted">라이브커머스</span><span class="crumb-sep">/</span><span class="crumb-current">광고 신청 확인</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">광고</div>
+    <div class="nav-item active"><span class="icon icon-18">smart_display</span> 라이브커머스</div>
+    <div class="nav-item"><span class="icon icon-18">handshake</span> 협력 광고</div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item"><span class="icon icon-18">payments</span> 비즈머니</div>
+    <div class="nav-item"><span class="icon icon-18">receipt_long</span> 정산</div>
+    <div class="nav-item"><span class="icon icon-18">group</span> 멤버</div>
+    <div class="nav-item"><span class="icon icon-18">settings</span> 운영 그룹 정보</div>
+  </aside>
+  <main class="main" style="max-width:600px">
+    <div class="back-link"><span class="icon icon-16">arrow_back</span> 광고 설정으로 돌아가기</div>
+    <h1 class="page-title" style="margin-bottom:var(--xl)">광고 신청 확인</h1>
+
+    <div class="alert alert-warn" style="margin-bottom:var(--xl)">
+      <span class="icon icon-18">warning</span>
+      <div>광고 신청 시 비즈머니가 <strong>즉시 차감</strong>됩니다. 내용을 확인 후 신청해주세요.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--text-subtle);margin-bottom:var(--md);font-weight:700">광고 정보</div>
+      <ul class="info-list">
+        <li><span class="key">상품</span><span class="val">라이브커머스 (슬롯형)</span></li>
+        <li><span class="key">광고 이름</span><span class="val">이니스프리 봄 신상 라이브</span></li>
+        <li><span class="key">방송 일정</span><span class="val">2026.04.15 (수) 19:00 ~ 20:00</span></li>
+        <li><span class="key">광고 예산</span><span class="val">1,000,000원</span></li>
+      </ul>
+    </div>
+
+    <div class="deduct-box">
+      <div class="d-title"><span class="icon icon-18" style="color:#c2410c">payments</span> 비즈머니 차감 내역</div>
+      <div class="deduct-row"><span class="k">광고 금액</span><span class="v">1,000,000원</span></div>
+      <div class="deduct-row"><span class="k">부가세 (10%)</span><span class="v">100,000원</span></div>
+      <div class="deduct-row total"><span class="k" style="font-weight:700;color:var(--text-high)">즉시 차감액</span><span class="v">1,100,000원</span></div>
+    </div>
+
+    <div class="balance-after" style="margin-bottom:20px">
+      <div>
+        <div class="ba-label">현재 비즈머니 잔액</div>
+        <div style="font-size:13px;color:var(--text-em);font-weight:600;margin-top:2px">1,320,000원</div>
+      </div>
+      <div style="text-align:right">
+        <div class="ba-label">차감 후 잔액</div>
+        <div class="ba-value">220,000원</div>
+      </div>
+    </div>
+
+    <div class="notice-box" style="margin-top:0;margin-bottom:20px">
+      <ul>
+        <li>슬롯형 광고는 광고 생성 시점에 비즈머니가 차감됩니다.</li>
+        <li>광고 집행 전 취소 시 비즈머니가 전액 환급됩니다 (위약금 정책 적용 가능).</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" style="flex:1">이전으로</button>
+      <button class="btn btn-primary" style="flex:2">비즈머니 차감 후 광고 신청하기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════ SCREEN 6: 환불 요청 ════════════════════════════ -->
+<div class="screen" id="s6">
+  <header class="topnav">
+    <a class="topnav-logo" href="#"><div class="topnav-logo-mark">b</div><span class="topnav-logo-text">buzzvil</span></a>
+    <div class="topnav-divider"></div>
+    <nav class="topnav-breadcrumb"><span class="crumb-muted">관리</span><span class="crumb-sep">/</span><span class="crumb-muted" style="cursor:pointer" onclick="showScreen('s1')">비즈머니</span><span class="crumb-sep">/</span><span class="crumb-current">환불 요청</span></nav>
+    <div class="topnav-right"><a class="help-link" href="#">이용 방법</a><div class="topnav-user">ads.center@buzzvil.com <span class="icon icon-16">expand_more</span></div></div>
+  </header>
+  <aside class="sidebar">
+    <div class="biz-selector"><div><div class="biz-label">운영그룹</div><div class="biz-name">이니스프리</div><div class="biz-sub">(주) 아모레퍼시픽</div></div><span class="icon icon-20">expand_more</span></div>
+    <div class="nav-section-label">광고</div>
+    <div class="nav-item"><span class="icon icon-18">smart_display</span> 라이브커머스</div>
+    <div class="nav-item"><span class="icon icon-18">handshake</span> 협력 광고</div>
+    <div class="nav-section-label">도구</div>
+    <div class="nav-item"><span class="icon icon-18">bar_chart</span> 리포트</div>
+    <div class="nav-item"><span class="icon icon-18">sell</span> 카탈로그</div>
+    <div class="nav-section-label">관리</div>
+    <div class="nav-item active"><span class="icon icon-18">payments</span> 비즈머니</div>
+    <div class="nav-item"><span class="icon icon-18">receipt_long</span> 정산</div>
+    <div class="nav-item"><span class="icon icon-18">group</span> 멤버</div>
+    <div class="nav-item"><span class="icon icon-18">settings</span> 운영 그룹 정보</div>
+  </aside>
+  <main class="main" style="max-width:600px">
+    <div class="back-link" onclick="showScreen('s1')"><span class="icon icon-16">arrow_back</span> 비즈머니로 돌아가기</div>
+    <h1 class="page-title" style="margin-bottom:6px">환불 요청</h1>
+    <div style="font-size:13px;color:var(--text-default);margin-bottom:var(--xl)">미사용 비즈머니를 환불받을 수 있습니다.</div>
+
+    <div style="background:var(--primary-subtle);border:1px solid #93c5fd;border-radius:var(--r-md);padding:var(--lg) 20px;margin-bottom:var(--xl);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:12px;color:var(--text-default);margin-bottom:4px">환불 가능 잔액</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary-hover)">220,000원</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--text-subtle)">
+        <div>유상머니: 210,000원</div>
+        <div>무상머니: 10,000원 (환불 불가)</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">환불 금액</label>
+      <div class="input-with-unit">
+        <input class="form-input" type="text" placeholder="환불 금액 입력">
+        <span class="input-unit">원</span>
+      </div>
+      <div class="form-hint">무상머니(10,000원)는 환불 대상에서 제외됩니다. 최대 210,000원 환불 가능합니다.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" style="display:flex;align-items:center;gap:4px">
+        환불 계좌
+        <div class="tooltip-wrap">
+          <span class="icon icon-16" style="color:var(--text-subtle);cursor:default">help</span>
+          <div class="tooltip-box">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+        </div>
+      </label>
+      <div class="tooltip-wrap" style="width:100%">
+        <div class="locked-account-field" style="width:100%">
+          <div>
+            <span class="locked-account-value">100-02-8181052</span>
+            <span style="color:var(--text-subtle);font-size:12px;margin-left:8px">신한은행 · 매드업</span>
+          </div>
+          <span class="icon icon-18" style="color:var(--text-subtle)">lock</span>
+        </div>
+        <div class="tooltip-box" style="left:50%;white-space:nowrap">해당 운영그룹에 등록된<br>대표 환불 계좌로 환불됩니다.</div>
+      </div>
+      <div class="form-hint" style="margin-top:6px">환불 계좌는 운영그룹의 대표 환불 계좌로 고정됩니다.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">환불 사유 <span style="color:var(--text-subtle);font-weight:400">(선택)</span></label>
+      <select class="form-input">
+        <option value="">사유를 선택해주세요</option>
+        <option>광고 계획 변경</option>
+        <option>서비스 이용 종료</option>
+        <option>기타</option>
+      </select>
+    </div>
+
+    <div class="notice-box" style="margin-top:0;margin-bottom:20px">
+      <ul>
+        <li>환불 요청 후 운영팀 검토를 거쳐 <strong>3~5 영업일</strong> 내 처리됩니다.</li>
+        <li>카드 충전 건은 카드 승인 취소, 계좌 입금 건은 현금 환불로 진행됩니다.</li>
+        <li>무상머니는 환불 대상에서 제외됩니다.</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" style="flex:1" onclick="showScreen('s1')">취소</button>
+      <button class="btn btn-danger" style="flex:2">환불 요청하기</button>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════ JAVASCRIPT ══════════════════════════════ -->
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  // Flow nav active state
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('active'));
+  const map = {s1:'① 메인', s1e:'① 빈', s2:'②', s3a:'③-A', s3b:'③-B', s4:'④', s5:'⑤', s6:'⑥'};
+  document.querySelectorAll('.flow-btn').forEach(b => {
+    if (b.textContent.trim().startsWith(map[id] || '__')) b.classList.add('active');
+  });
+
+  // Reset s3b state when navigating to it
+  if (id === 's3b') {
+    document.getElementById('bank-cta-btn').style.display = '';
+    document.getElementById('bank-spinner').style.display = 'none';
+    document.getElementById('bank-result-success').style.display = 'none';
+    document.getElementById('bank-result-fail').style.display = 'none';
+  }
+
+  window.scrollTo(0, 0);
+}
+
+function selectPreset(btn, value) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (value) {
+    document.getElementById('charge-amount').value = value;
+  }
+}
+
+function selectPayTab(tab) {
+  document.getElementById('pt-card').classList.toggle('active', tab === 'card');
+  document.getElementById('pt-bank').classList.toggle('active', tab === 'bank');
+  document.getElementById('pay-info-card').style.display = tab === 'card' ? '' : 'none';
+  document.getElementById('pay-info-bank').style.display = tab === 'bank' ? '' : 'none';
+}
+
+function goToPayment() {
+  var isBank = document.getElementById('pt-bank').classList.contains('active');
+  showScreen(isBank ? 's3b' : 's3a');
+}
+
+var _bankCTAToggle = false;
+
+function handleBankCTA() {
+  document.getElementById('bank-cta-btn').style.display = 'none';
+  document.getElementById('bank-result-success').style.display = 'none';
+  document.getElementById('bank-result-fail').style.display = 'none';
+  document.getElementById('bank-spinner').style.display = 'block';
+
+  setTimeout(function() {
+    document.getElementById('bank-spinner').style.display = 'none';
+    _bankCTAToggle = !_bankCTAToggle;
+    if (_bankCTAToggle) {
+      document.getElementById('bank-result-success').style.display = 'block';
+    } else {
+      document.getElementById('bank-result-fail').style.display = 'block';
+    }
+  }, 1500);
+}
+
+function copyAccount(btn) {
+  navigator.clipboard.writeText('100-032-817423').then(function() {
+    var origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="icon icon-16">check</span> 복사됨!';
+    setTimeout(function() { btn.innerHTML = origHTML; }, 2000);
+  });
+}
+
+function filterTab(btn) {
+  btn.parentElement.querySelectorAll('.pill-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectPage(btn) {
+  btn.parentElement.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

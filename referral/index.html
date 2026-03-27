@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 쿠폰 시스템 목업 v2</title>
+<!-- Pretendard Variable -->
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<!-- Material Symbols Rounded -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── CSS CUSTOM PROPERTIES ── */
+:root {
+  --primary: #3b82f6;
+  --primary-hover: #1d4ed8;
+  --primary-moderate: #1e3a8a;
+  --primary-subtle: #eff6ff;
+  --primary-subtle-em: #dbeafe;
+  --bg-page: #f1f5f9;
+  --bg-white: #ffffff;
+  --bg-subtle: #e2e8f0;
+  --bg-emphasis: #1e293b;
+  --border: #CBD5E1;
+  --border-default: #64748b;
+  --text-high: #0f172a;
+  --text-em: #334155;
+  --text-default: #64748b;
+  --text-subtle: #94a3b8;
+  --success-bg: #f0fdf4; --success-fg: #15803d; --success-stroke: #bbf7d0; --success-shape: #22c55e;
+  --warning-bg: #fffbeb; --warning-fg: #92400e; --warning-stroke: #fde68a;
+  --error-bg: #fef2f2; --error-fg: #dc2626; --error-stroke: #fecaca;
+  --violet-bg: #f5f3ff; --violet-fg: #7c3aed;
+  --orange-bg: #fff7ed; --orange-fg: #ea580c;
+  --danger: #ef4444; --danger-hover: #b91c1c;
+  --xxs: 2px; --xs: 4px; --sm: 8px; --md: 12px; --lg: 16px; --xl: 24px; --huge: 32px;
+  --r-sm: 4px; --r-md: 8px; --r-lg: 16px; --r-pill: 999px;
+  --shadow-modal: 0 20px 60px rgba(0,0,0,.15);
+  --shadow-dropdown: 0 4px 24px rgba(0,0,0,.12);
+}
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-em);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── ICON ── */
+.icon {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal; font-style: normal;
+  font-size: 24px; line-height: 1;
+  display: inline-block; white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  user-select: none; vertical-align: middle;
+}
+.icon-40 { font-size: 40px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 40; }
+.icon-20 { font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+.icon-18 { font-size: 18px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+.icon-16 { font-size: 16px; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
+
+/* ── FLOW NAV ── */
+.flow-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--bg-emphasis); height: 44px;
+  display: flex; align-items: center;
+  font-size: 12px; overflow-x: auto; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.flow-nav-brand {
+  padding: 0 20px; font-weight: 800; font-size: 13px;
+  color: #f87171; border-right: 1px solid #334155;
+  height: 100%; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.flow-btn {
+  padding: 0 16px; height: 100%; border: none; background: none;
+  color: var(--text-subtle); cursor: pointer; font-size: 12px;
+  border-right: 1px solid #334155; transition: all .15s;
+  font-family: inherit; flex-shrink: 0;
+}
+.flow-btn:hover { background: #334155; color: #fff; }
+.flow-btn.active { background: var(--primary); color: #fff; font-weight: 700; }
+
+/* ── SCREEN ── */
+.screen { display: none; padding-top: 44px; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ── TOPNAV ── */
+.topnav {
+  height: 56px; background: var(--bg-white);
+  box-shadow: inset 0px -1px 0px 0px var(--border);
+  position: fixed; top: 44px; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; padding: 0 var(--lg);
+}
+.topnav-logo { display: flex; align-items: center; gap: var(--sm); text-decoration: none; }
+.topnav-logo-mark {
+  width: 28px; height: 28px; background: var(--primary); border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 900; font-size: 14px; font-style: italic;
+}
+.topnav-logo-text { font-size: 14px; font-weight: 700; color: var(--text-high); }
+.topnav-divider { width: 1px; height: 20px; background: var(--border); margin: 0 var(--sm); }
+.topnav-breadcrumb { display: flex; align-items: center; gap: var(--xs); font-size: 14px; }
+.topnav-breadcrumb .crumb-muted { color: var(--text-subtle); }
+.topnav-breadcrumb .crumb-sep { color: var(--text-subtle); margin: 0 var(--xs); }
+.topnav-breadcrumb .crumb-current { font-weight: 700; color: var(--text-high); }
+.topnav-right { margin-left: auto; display: flex; align-items: center; gap: var(--md); }
+.topnav-user {
+  height: 32px; padding: 0 var(--md);
+  display: flex; align-items: center; gap: var(--xs);
+  border-radius: var(--r-md); background: var(--bg-page);
+  font-size: 14px; color: var(--text-em); cursor: pointer;
+  position: relative;
+}
+
+/* ── PROFILE DROPDOWN ── */
+.profile-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); box-shadow: var(--shadow-dropdown);
+  min-width: 180px; z-index: 200; display: none;
+  padding: var(--xs) 0;
+}
+.profile-dropdown.open { display: block; }
+.profile-dropdown-item {
+  display: flex; align-items: center; gap: var(--sm);
+  padding: var(--sm) var(--md); font-size: 13px; color: var(--text-em);
+  cursor: pointer; border: none; background: none; width: 100%;
+  font-family: inherit; text-align: left;
+}
+.profile-dropdown-item:hover { background: var(--bg-page); }
+.profile-dropdown-item .icon { font-size: 18px; color: var(--text-default); }
+.profile-dropdown-divider { height: 1px; background: var(--border); margin: var(--xs) 0; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px; background: var(--bg-white);
+  box-shadow: inset -1px 0px 0px 0px var(--border);
+  position: fixed; top: 100px; left: 0; bottom: 0;
+  padding: var(--xl) 6px; overflow-y: auto;
+}
+.nav-section-label {
+  font-size: 10px; color: var(--text-subtle); font-weight: 700;
+  padding: var(--md) var(--md) var(--xs); letter-spacing: .5px; text-transform: uppercase;
+}
+.nav-item {
+  display: flex; align-items: center; gap: var(--sm);
+  padding: var(--sm) var(--md); font-size: 14px; color: var(--text-default);
+  cursor: pointer; border-radius: var(--r-md); transition: all .12s;
+  border: 1px solid transparent; font-weight: 400;
+}
+.nav-item:hover { background: var(--bg-page); color: var(--text-em); }
+.nav-item.active {
+  background: var(--primary-subtle); color: var(--primary);
+  font-weight: 600; border-color: var(--primary-subtle-em);
+}
+.nav-item .icon { font-size: 18px; }
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--bg-page); color: var(--text-subtle);
+  font-size: 10px; padding: 1px 6px; border-radius: var(--r-pill); font-weight: 600;
+}
+.nav-item[data-screen].active .icon { color: var(--primary); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 240px; padding: var(--huge);
+  padding-top: calc(100px + var(--huge)); min-height: 100vh;
+}
+.main-full {
+  margin-left: 0; padding: var(--huge);
+  padding-top: calc(100px + var(--huge)); min-height: 100vh;
+  max-width: 1100px; margin-left: auto; margin-right: auto;
+}
+
+/* ── PAGE HEADER ── */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--xl); }
+.page-title { font-size: 24px; font-weight: 700; color: var(--text-high); line-height: 36px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: var(--sm) var(--md); border-radius: var(--r-md);
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  border: none; transition: all .15s; font-family: inherit; line-height: 20px;
+}
+.btn .icon { font-size: 18px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--bg-white); color: var(--text-default); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-page); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+.btn-ghost-blue { background: var(--primary-subtle-em); color: var(--primary); padding: var(--xs) var(--sm); border-radius: var(--r-md); }
+.btn-outline { background: var(--bg-white); color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; width: 100%; justify-content: center; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: var(--xl);
+}
+.summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--lg); margin-bottom: var(--xl); }
+.summary-card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 22px var(--xl);
+}
+.summary-card.highlight {
+  background: linear-gradient(135deg, var(--primary-subtle) 0%, var(--primary-subtle-em) 100%);
+  border-color: #93c5fd;
+}
+.card-label { font-size: 12px; color: var(--text-default); margin-bottom: var(--sm); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.card-value { font-size: 26px; font-weight: 800; color: var(--text-high); margin-bottom: var(--xs); }
+.card-value .unit { font-size: 16px; font-weight: 600; }
+.card-sub { font-size: 12px; color: var(--text-subtle); }
+
+/* ── PILL TABS ── */
+.pill-tabs {
+  display: flex; gap: var(--xs);
+  background: var(--bg-page); padding: var(--xs); border-radius: var(--r-md);
+  margin-bottom: var(--xl);
+}
+.pill-tab {
+  padding: var(--xs) var(--md); border-radius: var(--r-sm);
+  font-size: 14px; font-weight: 500; color: var(--text-default);
+  cursor: pointer; border: none; background: transparent;
+  transition: all .15s; font-family: inherit;
+}
+.pill-tab:hover { color: var(--text-em); }
+.pill-tab.active {
+  background: var(--bg-white); color: var(--text-high);
+  font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ── TABLE ── */
+.table-wrap { border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr {
+  background: var(--bg-page);
+  box-shadow: inset 0px 1px 0px 0px var(--border), inset 0px -2px 0px 0px var(--border);
+}
+th { padding: var(--md); text-align: left; color: var(--text-default); font-weight: 700; font-size: 12px; }
+td { padding: var(--md); color: var(--text-em); }
+tbody tr { background: var(--bg-white); box-shadow: inset 0px -1px 0px 0px rgba(97,117,134,.2); }
+tbody tr:last-child { box-shadow: none; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; padding: 3px 8px;
+  border-radius: var(--r-sm); white-space: nowrap;
+}
+.badge-proposal { background: var(--primary-subtle); color: var(--primary); }
+.badge-deal { background: var(--success-bg); color: var(--success-fg); }
+.badge-lost { background: var(--error-bg); color: var(--error-fg); }
+.badge-pending { background: var(--warning-bg); color: var(--warning-fg); }
+.badge-active { background: var(--success-bg); color: var(--success-fg); }
+.badge-expired { background: #f3f4f6; color: var(--text-default); }
+.badge-used { background: var(--primary-subtle); color: var(--primary); }
+.badge-discount { background: var(--orange-bg); color: var(--orange-fg); }
+.badge-credit { background: var(--violet-bg); color: var(--violet-fg); }
+.badge-advertiser { background: var(--primary-subtle); color: var(--primary); }
+.badge-agency { background: var(--violet-bg); color: var(--violet-fg); }
+.badge-agency-managed { background: var(--warning-bg); color: var(--warning-fg); }
+.badge-exhausted { background: var(--error-bg); color: var(--error-fg); }
+.badge-campaign { background: #ecfdf5; color: #059669; }
+
+/* ── SEARCH & FILTER ── */
+.search-filter-bar { display: flex; gap: var(--md); margin-bottom: var(--lg); flex-wrap: wrap; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: var(--xs); }
+.filter-group.flex-1 { flex: 1; min-width: 200px; }
+.filter-label { font-size: 11px; font-weight: 600; color: var(--text-default); }
+.filter-select {
+  padding: 9px 14px; border: 1.5px solid var(--border); border-radius: var(--r-md);
+  font-size: 13px; color: var(--text-em); outline: none; font-family: inherit;
+  background: var(--bg-white); cursor: pointer; min-width: 140px;
+}
+.filter-select:focus { border-color: var(--primary); }
+.search-input {
+  flex: 1; min-width: 200px; padding: 9px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--r-md); font-size: 13px; color: var(--text-high);
+  outline: none; font-family: inherit; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--primary); }
+
+/* ── FUNNEL ── */
+.funnel-container { display: flex; gap: var(--lg); margin-bottom: var(--xl); }
+.funnel-stage {
+  flex: 1; background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: var(--xl); text-align: center;
+  position: relative;
+}
+.funnel-stage::after {
+  content: ''; position: absolute; right: -12px; top: 50%;
+  transform: translateY(-50%); width: 0; height: 0;
+  border-left: 8px solid var(--border); border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+.funnel-stage:last-child::after { display: none; }
+.funnel-label { font-size: 12px; font-weight: 700; color: var(--text-default); margin-bottom: var(--sm); }
+.funnel-value { font-size: 28px; font-weight: 800; color: var(--text-high); }
+.funnel-sub { font-size: 11px; color: var(--text-subtle); margin-top: var(--xs); }
+.funnel-stage.stage-issued { border-top: 3px solid var(--primary); }
+.funnel-stage.stage-registered { border-top: 3px solid #f59e0b; }
+.funnel-stage.stage-applied { border-top: 3px solid var(--success-shape); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { display: flex; align-items: center; gap: var(--sm); }
+.progress-track { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; min-width: 40px; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-label { font-size: 11px; color: var(--text-default); white-space: nowrap; }
+
+/* ── RESULTS COUNT ── */
+.results-count { font-size: 12px; color: var(--text-subtle); margin-bottom: var(--md); }
+
+/* ── CLICKABLE ── */
+.clickable { color: var(--primary); cursor: pointer; font-weight: 600; }
+.clickable:hover { text-decoration: underline; }
+
+/* ── TABLE CELL HELPERS ── */
+td .cell-main { font-size: 13px; font-weight: 600; color: var(--text-high); }
+td .cell-sub { font-size: 11px; color: var(--text-subtle); margin-top: 1px; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: var(--xl); margin-bottom: var(--xl);
+}
+.detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--lg); }
+.detail-title { font-size: 16px; font-weight: 700; color: var(--text-high); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.45); z-index: 10000;
+  justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-white); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-modal);
+  width: 680px; max-width: 90vw; max-height: 85vh; overflow-y: auto;
+  padding: var(--xl) var(--huge);
+}
+.modal-title {
+  font-size: 18px; font-weight: 700; color: var(--text-high);
+  margin-bottom: var(--xl); display: flex; align-items: center; justify-content: space-between;
+}
+.modal-close {
+  background: none; border: none; font-size: 20px; color: var(--text-subtle);
+  cursor: pointer; padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text-em); }
+
+/* ── FORM ── */
+.form-group { margin-bottom: var(--lg); }
+.form-label { font-size: 13px; font-weight: 700; color: var(--text-high); margin-bottom: var(--sm); display: block; }
+.form-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--r-md); font-size: 14px; color: var(--text-high);
+  outline: none; font-family: inherit; transition: border-color .15s;
+}
+.form-input:focus { border-color: var(--primary); }
+.form-select {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--r-md); font-size: 14px; color: var(--text-em);
+  outline: none; font-family: inherit; background: var(--bg-white); cursor: pointer;
+}
+.form-select:focus { border-color: var(--primary); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--lg); }
+.form-hint { font-size: 11px; color: var(--text-subtle); margin-top: var(--xs); }
+.form-actions { display: flex; gap: var(--sm); justify-content: flex-end; margin-top: var(--xl); }
+.form-divider { height: 1px; background: var(--border); margin: var(--xl) 0; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 60px var(--xl); color: var(--text-subtle); }
+.empty-state .icon { font-size: 48px; color: var(--border); margin-bottom: var(--md); }
+.empty-state p { font-size: 14px; }
+
+/* ══════════════════════════════════════════
+   NEW: COUPON CARD DESIGN (4 THEMES)
+   ══════════════════════════════════════════ */
+.coupon-card {
+  border-radius: var(--r-lg); padding: 28px 24px; color: #fff;
+  position: relative; overflow: hidden;
+}
+.coupon-card::before {
+  content: ''; position: absolute; right: -30px; top: -30px;
+  width: 140px; height: 140px; background: rgba(255,255,255,.1);
+  border-radius: 50%;
+}
+.coupon-card::after {
+  content: ''; position: absolute; right: 50px; bottom: -40px;
+  width: 100px; height: 100px; background: rgba(255,255,255,.06);
+  border-radius: 50%;
+}
+.coupon-card.theme-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.coupon-card.theme-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.coupon-card.theme-orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+.coupon-card.theme-dark { background: linear-gradient(135deg, #334155, #0f172a); }
+
+.coupon-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--lg); position: relative; z-index: 1;
+}
+.coupon-card-logo { font-size: 14px; font-weight: 900; letter-spacing: 1px; opacity: .9; font-style: italic; }
+.coupon-card-tag {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  background: rgba(255,255,255,.2); border-radius: var(--r-pill);
+  letter-spacing: .3px;
+}
+.coupon-card-benefit {
+  font-size: 32px; font-weight: 900; margin-bottom: var(--xs);
+  position: relative; z-index: 1;
+}
+.coupon-card-name {
+  font-size: 14px; font-weight: 600; opacity: .9;
+  margin-bottom: var(--xs); position: relative; z-index: 1;
+}
+.coupon-card-client {
+  font-size: 12px; opacity: .7; margin-bottom: var(--sm);
+  position: relative; z-index: 1;
+}
+.coupon-card-validity {
+  font-size: 11px; opacity: .6; margin-bottom: var(--md);
+  position: relative; z-index: 1;
+}
+.coupon-card-code {
+  font-family: 'Courier New', monospace; font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; background: rgba(0,0,0,.2); padding: 8px 14px;
+  border-radius: var(--r-md); text-align: center; margin-bottom: var(--lg);
+  position: relative; z-index: 1;
+}
+.coupon-signature {
+  display: flex; align-items: center; gap: var(--sm);
+  border-top: 1px solid rgba(255,255,255,.2); padding-top: var(--md);
+  position: relative; z-index: 1;
+}
+.coupon-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; border: 2px solid rgba(255,255,255,.5);
+  flex-shrink: 0;
+}
+.coupon-sig-info { flex: 1; }
+.coupon-sig-name { font-size: 12px; font-weight: 700; }
+.coupon-sig-msg { font-size: 11px; opacity: .7; margin-top: 1px; }
+
+/* ── COUPON REGISTER ANIMATION ── */
+@keyframes couponReveal {
+  0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  70% { transform: scale(0.95) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.coupon-reveal-anim {
+  animation: couponReveal .6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes confettiFade {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-20px) scale(1.3); }
+}
+.success-check {
+  animation: confettiFade 1.5s ease forwards;
+  animation-delay: .4s;
+}
+
+/* ── THEME PICKER ── */
+.theme-picker { display: flex; gap: var(--sm); }
+.theme-swatch {
+  width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  border: 3px solid transparent; transition: all .15s;
+  position: relative;
+}
+.theme-swatch:hover { transform: scale(1.1); }
+.theme-swatch.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.3); }
+.theme-swatch.sw-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.theme-swatch.sw-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.theme-swatch.sw-orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+.theme-swatch.sw-dark { background: linear-gradient(135deg, #334155, #0f172a); }
+
+/* ── COUPON GRID (S5) ── */
+.coupon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--xl); }
+.coupon-grid-item { position: relative; cursor: pointer; transition: transform .15s; }
+.coupon-grid-item:hover { transform: translateY(-2px); }
+.coupon-grid-item .coupon-card { font-size: 13px; }
+.coupon-grid-item .coupon-card-benefit { font-size: 24px; }
+.coupon-grid-item .status-overlay {
+  position: absolute; top: var(--sm); right: var(--sm); z-index: 2;
+}
+
+/* ── CAMPAIGN SETTING (S6) ── */
+.campaign-field { margin-bottom: var(--xl); }
+.campaign-field-label { font-size: 14px; font-weight: 700; color: var(--text-high); margin-bottom: var(--sm); }
+.coupon-select-list { display: flex; flex-direction: column; gap: var(--md); }
+.coupon-select-item {
+  display: flex; align-items: center; gap: var(--lg);
+  padding: var(--lg); border: 2px solid var(--border); border-radius: var(--r-md);
+  cursor: pointer; transition: all .15s;
+}
+.coupon-select-item:hover { border-color: var(--primary); background: var(--primary-subtle); }
+.coupon-select-item.selected { border-color: var(--primary); background: var(--primary-subtle); }
+.coupon-select-item input[type=radio] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; }
+.coupon-select-mini {
+  flex: 1; display: flex; align-items: center; gap: var(--md);
+}
+.coupon-select-mini-card {
+  width: 60px; height: 40px; border-radius: var(--r-sm); display: flex;
+  align-items: center; justify-content: center; color: #fff;
+  font-size: 11px; font-weight: 800; flex-shrink: 0;
+}
+.coupon-select-info { flex: 1; }
+.coupon-select-info .cs-benefit { font-size: 14px; font-weight: 700; color: var(--text-high); }
+.coupon-select-info .cs-meta { font-size: 12px; color: var(--text-default); margin-top: 2px; }
+.discount-preview {
+  background: var(--success-bg); border: 1px solid var(--success-stroke);
+  border-radius: var(--r-md); padding: var(--lg); margin-top: var(--lg);
+}
+.discount-preview-title { font-size: 13px; font-weight: 700; color: var(--success-fg); margin-bottom: var(--sm); }
+.discount-preview-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: var(--xs); }
+.discount-preview-row.total { font-weight: 800; font-size: 16px; color: var(--success-fg); border-top: 1px solid var(--success-stroke); padding-top: var(--sm); margin-top: var(--sm); }
+
+/* ── CENTER CONTAINER (S4, S5) ── */
+.center-container {
+  max-width: 560px; margin: 0 auto; padding: 0 var(--xl);
+}
+
+/* ── COUPON DETAIL VIEW ── */
+tr.clickable-row:hover { background: var(--primary-subtle) !important; }
+.detail-back-btn {
+  display: inline-flex; align-items: center; gap: var(--xs);
+  font-size: 13px; color: var(--text-default); cursor: pointer;
+  background: none; border: none; font-family: inherit; padding: 0;
+  margin-bottom: var(--lg);
+}
+.detail-back-btn:hover { color: var(--primary); }
+.detail-grid { display: grid; grid-template-columns: 380px 1fr; gap: var(--xl); margin-bottom: var(--xl); }
+.detail-panel {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: var(--xl); margin-bottom: var(--xl);
+}
+.detail-panel-title {
+  font-size: 16px; font-weight: 700; color: var(--text-high);
+  margin-bottom: var(--lg); display: flex; align-items: center; gap: var(--sm);
+}
+.detail-meta-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--sm) 0; border-bottom: 1px solid var(--bg-page);
+  font-size: 14px;
+}
+.detail-meta-row:last-child { border-bottom: none; }
+.detail-meta-label { color: var(--text-default); }
+.detail-meta-value { font-weight: 600; color: var(--text-high); }
+.detail-empty {
+  text-align: center; padding: var(--xl) 0; color: var(--text-subtle); font-size: 14px;
+}
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- FLOW NAV -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand">COUPON v2</div>
+  <button class="flow-btn active" onclick="showScreen('s1')" id="flow-s1">① 영업활동 대시보드</button>
+  <button class="flow-btn" onclick="showScreen('s2')" id="flow-s2">② 쿠폰 현황</button>
+  <button class="flow-btn" onclick="showScreen('s3')" id="flow-s3">③ 쿠폰 발급</button>
+  <button class="flow-btn" onclick="showScreen('s4')" id="flow-s4">④ 쿠폰 등록</button>
+  <button class="flow-btn" onclick="showScreen('s5')" id="flow-s5">⑤ 쿠폰함</button>
+  <button class="flow-btn" onclick="showScreen('s6')" id="flow-s6">⑥ 광고세팅 쿠폰적용</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 1: 영업활동 대시보드
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">내부 관리</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">영업활동 대시보드</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user"><span class="icon icon-18">person</span> admin@buzzvil.com</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="nav-section-label">쿠폰 관리</div>
+    <div class="nav-item active" data-screen="s1" onclick="showScreen('s1')">
+      <span class="icon icon-18">monitoring</span> 영업활동 대시보드
+    </div>
+    <div class="nav-item" data-screen="s2" onclick="showScreen('s2')">
+      <span class="icon icon-18">confirmation_number</span> 쿠폰 현황
+      <span class="nav-badge" id="navCouponCount">12</span>
+    </div>
+    <div class="nav-item" data-screen="s3" onclick="showScreen('s3')">
+      <span class="icon icon-18">add_circle</span> 쿠폰 발급
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">영업활동 대시보드</h1>
+      <div style="display:flex;gap:var(--sm);align-items:center">
+        <select class="filter-select" id="dashPeriod" onchange="updateDashboard()">
+          <option value="week">이번 주</option>
+          <option value="month" selected>이번 달</option>
+          <option value="quarter">이번 분기</option>
+          <option value="year">올해</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FUNNEL -->
+    <div class="funnel-container">
+      <div class="funnel-stage stage-issued">
+        <div class="funnel-label"><span class="icon icon-16" style="color:var(--primary)">confirmation_number</span> 쿠폰 발급</div>
+        <div class="funnel-value" id="funnelIssued">62</div>
+        <div class="funnel-sub">영업자가 발급한 총 쿠폰 수</div>
+      </div>
+      <div class="funnel-stage stage-registered">
+        <div class="funnel-label"><span class="icon icon-16" style="color:#f59e0b">how_to_reg</span> 쿠폰 등록</div>
+        <div class="funnel-value" id="funnelRegistered">38</div>
+        <div class="funnel-sub">고객이 코드를 입력하여 등록한 수</div>
+      </div>
+      <div class="funnel-stage stage-applied">
+        <div class="funnel-label"><span class="icon icon-16" style="color:var(--success-shape)">rocket_launch</span> 캠페인 적용</div>
+        <div class="funnel-value" id="funnelApplied">21</div>
+        <div class="funnel-sub">실제 캠페인에 쿠폰을 적용한 수</div>
+      </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-cards">
+      <div class="summary-card highlight">
+        <div class="card-label"><span class="icon icon-16">trending_up</span> 등록 전환율 (발급→등록)</div>
+        <div class="card-value">61.3<span class="unit">%</span></div>
+        <div class="card-sub">전월 대비 +5.1%p</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label"><span class="icon icon-16">rocket_launch</span> 적용 전환율 (등록→적용)</div>
+        <div class="card-value">55.3<span class="unit">%</span></div>
+        <div class="card-sub">전월 대비 +2.8%p</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label"><span class="icon icon-16">confirmation_number</span> 활성 쿠폰</div>
+        <div class="card-value">45<span class="unit">건</span></div>
+        <div class="card-sub">등록 가능한 쿠폰</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label"><span class="icon icon-16">payments</span> 쿠폰 기반 매출</div>
+        <div class="card-value">2,840<span class="unit">만원</span></div>
+        <div class="card-sub">쿠폰 적용 캠페인 예산 합계</div>
+      </div>
+    </div>
+
+    <!-- MANAGER TABLE -->
+    <div class="detail-panel">
+      <div class="detail-header">
+        <div class="detail-title">매니저별 실적</div>
+        <div class="search-filter-bar" style="margin-bottom:0">
+          <input class="search-input" type="text" id="managerSearch" placeholder="매니저 이름 검색" oninput="filterManagerTable()" style="min-width:160px;max-width:240px">
+        </div>
+      </div>
+
+      <div class="table-wrap" style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>매니저</th>
+              <th style="text-align:center">발급</th>
+              <th style="text-align:center">등록</th>
+              <th style="text-align:center">적용</th>
+              <th>등록 전환율</th>
+              <th>적용 전환율</th>
+              <th style="text-align:right">쿠폰 매출</th>
+            </tr>
+          </thead>
+          <tbody id="managerTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 2: 쿠폰 현황
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb" id="s2Breadcrumb">
+      <span class="crumb-muted">쿠폰 관리</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">쿠폰 현황</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user"><span class="icon icon-18">person</span> admin@buzzvil.com</div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="nav-section-label">쿠폰 관리</div>
+    <div class="nav-item" data-screen="s1" onclick="showScreen('s1')"><span class="icon icon-18">monitoring</span> 영업활동 대시보드</div>
+    <div class="nav-item active" data-screen="s2" onclick="showScreen('s2')"><span class="icon icon-18">confirmation_number</span> 쿠폰 현황<span class="nav-badge" id="navCouponCount2">12</span></div>
+    <div class="nav-item" data-screen="s3" onclick="showScreen('s3')"><span class="icon icon-18">add_circle</span> 쿠폰 발급</div>
+  </div>
+  <main class="main">
+    <div id="s2-list-view">
+    <div class="page-header">
+      <h1 class="page-title">쿠폰 현황</h1>
+      <div style="display:flex;gap:var(--sm);align-items:center">
+        <select class="filter-select" id="couponPeriod">
+          <option value="week">이번 주</option>
+          <option value="month" selected>이번 달</option>
+          <option value="quarter">이번 분기</option>
+          <option value="year">올해</option>
+        </select>
+        <button class="btn btn-primary" onclick="showScreen('s3')"><span class="icon icon-18">add</span> 새 쿠폰 발급</button>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="card-label">전체 발급</div>
+        <div class="card-value" id="s2TotalIssued">62<span class="unit">건</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label" style="color:var(--success-fg)">등록 완료</div>
+        <div class="card-value" style="color:var(--success-fg)" id="s2TotalRegistered">38<span class="unit">건</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label" style="color:var(--primary)">적용 완료</div>
+        <div class="card-value" style="color:var(--primary)" id="s2TotalApplied">21<span class="unit">건</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label" style="color:var(--text-subtle)">만료</div>
+        <div class="card-value" style="color:var(--text-subtle)" id="s2TotalExpired">8<span class="unit">건</span></div>
+      </div>
+    </div>
+
+    <!-- PILL TABS -->
+    <div class="pill-tabs" id="couponTabs">
+      <button class="pill-tab active" onclick="switchCouponTab('all')">전체</button>
+      <button class="pill-tab" onclick="switchCouponTab('active')">활성</button>
+      <button class="pill-tab" onclick="switchCouponTab('registered')">등록완료</button>
+      <button class="pill-tab" onclick="switchCouponTab('applied')">적용완료</button>
+      <button class="pill-tab" onclick="switchCouponTab('expired')">만료</button>
+    </div>
+
+    <!-- FILTER -->
+    <div class="search-filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">담당 매니저</span>
+        <select class="filter-select" id="couponManagerFilter" onchange="filterCouponTable()">
+          <option value="">전체</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">혜택 유형</span>
+        <select class="filter-select" id="couponTypeFilter" onchange="filterCouponTable()">
+          <option value="">전체</option>
+          <option value="discount">할인형</option>
+          <option value="credit">크레딧형</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">대상 유형</span>
+        <select class="filter-select" id="couponTargetFilter" onchange="onTargetFilterChange()">
+          <option value="">전체</option>
+          <option value="advertiser">광고주</option>
+          <option value="agency-managed">대행사 관리고객</option>
+          <option value="agency">대행사</option>
+        </select>
+      </div>
+      <div class="filter-group" id="clientFilterGroup" style="display:none">
+        <span class="filter-label">고객사명</span>
+        <input class="search-input" type="text" id="clientNameFilter" placeholder="고객사 검색" oninput="filterCouponTable()" style="min-width:140px">
+      </div>
+      <div class="filter-group flex-1">
+        <span class="filter-label">쿠폰명 검색</span>
+        <input class="search-input" type="text" id="couponSearch" placeholder="쿠폰명 검색" oninput="filterCouponTable()">
+      </div>
+    </div>
+
+    <div class="results-count" id="couponResultsCount">쿠폰 12건</div>
+
+    <div class="table-wrap" style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>쿠폰명</th>
+            <th>혜택</th>
+            <th>대상</th>
+            <th>담당 매니저</th>
+            <th>유효기간</th>
+            <th style="text-align:center">발급</th>
+            <th style="text-align:center">등록</th>
+            <th style="text-align:center">적용</th>
+            <th>등록률</th>
+            <th>적용률</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody id="couponTableBody"></tbody>
+      </table>
+    </div>
+    </div><!-- /s2-list-view -->
+
+    <div id="s2-detail-view" style="display:none">
+      <button class="detail-back-btn" onclick="backToCouponList()">
+        <span class="icon icon-18">arrow_back</span> 쿠폰 현황으로 돌아가기
+      </button>
+      <h1 class="page-title" id="s2DetailTitle" style="margin-bottom:var(--xl)"></h1>
+
+      <div class="detail-grid">
+        <div id="s2DetailCard"></div>
+        <div class="detail-panel">
+          <div class="detail-panel-title"><span class="icon icon-20" style="color:var(--primary)">info</span> 쿠폰 상세 정보</div>
+          <div id="s2DetailMeta"></div>
+        </div>
+      </div>
+
+      <div class="detail-panel">
+        <div class="detail-panel-title"><span class="icon icon-20" style="color:var(--warning-fg)">group</span> 등록 유저 목록</div>
+        <div id="s2DetailRegistrations"></div>
+      </div>
+
+      <div class="detail-panel">
+        <div class="detail-panel-title"><span class="icon icon-20" style="color:var(--success-fg)">campaign</span> 적용 캠페인 목록</div>
+        <div id="s2DetailCampaigns"></div>
+      </div>
+    </div><!-- /s2-detail-view -->
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 3: 쿠폰 발급 (생성 폼 + 실시간 프리뷰)
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">쿠폰 관리</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">쿠폰 발급</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user"><span class="icon icon-18">person</span> admin@buzzvil.com</div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="nav-section-label">쿠폰 관리</div>
+    <div class="nav-item" data-screen="s1" onclick="showScreen('s1')"><span class="icon icon-18">monitoring</span> 영업활동 대시보드</div>
+    <div class="nav-item" data-screen="s2" onclick="showScreen('s2')"><span class="icon icon-18">confirmation_number</span> 쿠폰 현황<span class="nav-badge">12</span></div>
+    <div class="nav-item active" data-screen="s3" onclick="showScreen('s3')"><span class="icon icon-18">add_circle</span> 쿠폰 발급</div>
+  </div>
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">새 쿠폰 발급</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:var(--xl);align-items:start">
+      <!-- FORM -->
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">쿠폰명</label>
+          <input class="form-input" type="text" placeholder="예: BAT 전용 올영협력광고 쿠폰" id="couponName" oninput="updatePreview()" value="BAT 전용 올영협력광고 쿠폰">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">혜택 유형</label>
+            <select class="form-select" id="couponBenefitType" onchange="updatePreview()">
+              <option value="discount">할인형 (% 할인)</option>
+              <option value="credit">크레딧형 (금액 지급)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">혜택 값</label>
+            <input class="form-input" type="text" placeholder="예: 20 또는 500000" id="couponBenefitValue" oninput="updatePreview()" value="20">
+            <div class="form-hint" id="benefitHint">할인 퍼센트를 입력하세요 (1~100)</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">대상 유형</label>
+          <select class="form-select" id="couponTargetType" onchange="onFormTargetChange()">
+            <option value="advertiser">광고주</option>
+            <option value="agency-managed">대행사 관리고객</option>
+            <option value="agency" selected>대행사</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="formClientGroup">
+          <label class="form-label">대상 고객사</label>
+          <select class="form-select" id="couponClientSelect" onchange="updatePreview()">
+          </select>
+          <div class="form-hint" id="formClientHint"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">캠페인 유형</label>
+          <select class="form-select" id="couponCampaignType" onchange="updatePreview()">
+            <option value="올영협력광고">올리브영 협력광고</option>
+            <option value="라이브커머스">라이브커머스</option>
+            <option value="전체">전체</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">유효기간 시작</label>
+            <input class="form-input" type="date" id="couponStartDate" onchange="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">유효기간 종료</label>
+            <input class="form-input" type="date" id="couponEndDate" onchange="updatePreview()">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">발급 수량</label>
+            <input class="form-input" type="number" id="couponQty" value="5" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">담당 세일즈매니저</label>
+            <select class="form-select" id="couponManager" onchange="updatePreview()">
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">영업자 서명 메시지</label>
+          <input class="form-input" type="text" placeholder="예: 최고의 퍼포먼스를 약속합니다!" id="couponSignature" oninput="updatePreview()" value="최고의 퍼포먼스를 약속합니다!">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">쿠폰 디자인 테마</label>
+          <div class="theme-picker" id="themePicker">
+            <div class="theme-swatch sw-blue active" data-theme="blue" onclick="selectTheme('blue')"></div>
+            <div class="theme-swatch sw-purple" data-theme="purple" onclick="selectTheme('purple')"></div>
+            <div class="theme-swatch sw-orange" data-theme="orange" onclick="selectTheme('orange')"></div>
+            <div class="theme-swatch sw-dark" data-theme="dark" onclick="selectTheme('dark')"></div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="showScreen('s2')">취소</button>
+          <button class="btn btn-primary" onclick="alert('쿠폰이 발급되었습니다! (목업)')"><span class="icon icon-18">check</span> 쿠폰 발급</button>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div style="position:sticky;top:calc(100px + var(--huge))">
+        <div id="couponPreviewCard"></div>
+
+        <div class="card" style="margin-top:var(--lg)">
+          <div class="card-label" style="margin-bottom:var(--md)">발급 요약</div>
+          <div style="display:flex;flex-direction:column;gap:var(--sm)">
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">혜택 유형</span>
+              <span style="font-weight:700" id="prevSumType">할인형</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">대상</span>
+              <span style="font-weight:700" id="prevSumTarget">대행사</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">고객사</span>
+              <span style="font-weight:700" id="prevSumClient">주식회사 BAT</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">캠페인 유형</span>
+              <span style="font-weight:700" id="prevSumCampaign">올영협력광고</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">발급 수량</span>
+              <span style="font-weight:700" id="prevSumQty">5건</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px">
+              <span style="color:var(--text-default)">담당 매니저</span>
+              <span style="font-weight:700" id="prevSumManager">Jerry Park</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 4: 마이페이지 - 쿠폰 등록
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">마이페이지</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">쿠폰 등록</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user" onclick="toggleProfileDropdown(event)">
+        <span class="icon icon-18">person</span> advertiser@amorepacific.com
+        <span class="icon icon-16">expand_more</span>
+        <div class="profile-dropdown" id="profileDropdown">
+          <button class="profile-dropdown-item" onclick="showScreen('s4');closeProfileDropdown()"><span class="icon">confirmation_number</span> 쿠폰 등록</button>
+          <button class="profile-dropdown-item" onclick="showScreen('s5');closeProfileDropdown()"><span class="icon">wallet</span> 쿠폰함</button>
+          <div class="profile-dropdown-divider"></div>
+          <button class="profile-dropdown-item"><span class="icon">lock</span> 비밀번호 변경</button>
+          <button class="profile-dropdown-item"><span class="icon">logout</span> 로그아웃</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No sidebar for advertiser -->
+  <main class="main-full" style="padding-top:calc(100px + 60px)">
+    <div class="center-container">
+      <div style="text-align:center;margin-bottom:var(--xl)">
+        <h1 class="page-title" style="margin-bottom:var(--xs)">쿠폰 등록</h1>
+        <p style="font-size:14px;color:var(--text-default)">영업 담당자로부터 받은 쿠폰 코드를 입력하세요</p>
+      </div>
+
+      <div class="card" style="max-width:480px;margin:0 auto">
+        <div class="form-group" style="margin-bottom:var(--md)">
+          <label class="form-label">쿠폰 코드</label>
+          <div style="display:flex;gap:var(--sm)">
+            <input class="form-input" type="text" placeholder="BZV-XXXX-XXXX" id="registerCouponCode" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:16px">
+            <button class="btn btn-primary" onclick="registerCoupon()" style="white-space:nowrap">등록하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coupon reveal area -->
+      <div id="registerResult" style="margin-top:var(--xl);display:none">
+        <div style="text-align:center;margin-bottom:var(--lg)">
+          <div class="success-check" style="display:inline-flex;align-items:center;gap:var(--sm);color:var(--success-fg);font-size:18px;font-weight:700">
+            <span class="icon icon-40" style="color:var(--success-shape)">check_circle</span>
+            쿠폰함에 추가되었습니다!
+          </div>
+        </div>
+        <div style="max-width:380px;margin:0 auto" id="registerCouponCardArea"></div>
+        <div style="text-align:center;margin-top:var(--xl)">
+          <button class="btn btn-primary" onclick="showScreen('s5')"><span class="icon icon-18">wallet</span> 쿠폰함 보기</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 5: 마이페이지 - 쿠폰함
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">마이페이지</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">내 쿠폰함</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user" onclick="toggleProfileDropdown(event)">
+        <span class="icon icon-18">person</span> advertiser@amorepacific.com
+        <span class="icon icon-16">expand_more</span>
+        <div class="profile-dropdown" id="profileDropdown2">
+          <button class="profile-dropdown-item" onclick="showScreen('s4');closeProfileDropdown()"><span class="icon">confirmation_number</span> 쿠폰 등록</button>
+          <button class="profile-dropdown-item" onclick="showScreen('s5');closeProfileDropdown()"><span class="icon">wallet</span> 쿠폰함</button>
+          <div class="profile-dropdown-divider"></div>
+          <button class="profile-dropdown-item"><span class="icon">lock</span> 비밀번호 변경</button>
+          <button class="profile-dropdown-item"><span class="icon">logout</span> 로그아웃</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-full" style="padding-top:calc(100px + 60px)">
+    <div class="page-header">
+      <h1 class="page-title">내 쿠폰함</h1>
+      <button class="btn btn-secondary" onclick="showScreen('s4')"><span class="icon icon-18">add</span> 쿠폰 등록</button>
+    </div>
+
+    <div class="coupon-grid" id="walletGrid"></div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 6: 광고세팅 - 쿠폰 적용
+     ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="topnav">
+    <a class="topnav-logo">
+      <div class="topnav-logo-mark">B</div>
+      <span class="topnav-logo-text">버즈빌 광고센터</span>
+    </a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">캠페인</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">캠페인 세팅</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-user"><span class="icon icon-18">person</span> advertiser@amorepacific.com</div>
+    </div>
+  </div>
+
+  <main class="main-full" style="padding-top:calc(100px + 60px)">
+    <div class="page-header">
+      <h1 class="page-title">새 캠페인 세팅</h1>
+    </div>
+
+    <div class="card" style="max-width:800px">
+      <div class="campaign-field">
+        <div class="campaign-field-label">캠페인명</div>
+        <input class="form-input" type="text" value="올리브영 4월 프로모션 캠페인" id="campaignNameInput">
+      </div>
+
+      <div class="campaign-field">
+        <div class="campaign-field-label">캠페인 유형</div>
+        <select class="form-select" id="campaignTypeSelect" onchange="updateCampaignCoupons()">
+          <option value="올영협력광고">올리브영 협력광고</option>
+          <option value="라이브커머스">라이브커머스</option>
+        </select>
+      </div>
+
+      <div class="campaign-field">
+        <div class="campaign-field-label">예산</div>
+        <input class="form-input" type="text" value="1,000,000" id="campaignBudget" oninput="updateDiscountPreview()">
+        <div class="form-hint">원 단위</div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="campaign-field">
+        <div class="campaign-field-label" style="display:flex;align-items:center;gap:var(--sm)">
+          <span class="icon icon-20" style="color:var(--primary)">confirmation_number</span> 쿠폰 적용
+        </div>
+        <p style="font-size:13px;color:var(--text-default);margin-bottom:var(--lg)">보유한 쿠폰 중 현재 캠페인 유형에 적용 가능한 쿠폰입니다.</p>
+
+        <div class="coupon-select-list" id="campaignCouponList"></div>
+
+        <div id="discountPreviewArea" style="display:none"></div>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-actions">
+        <button class="btn btn-secondary">취소</button>
+        <button class="btn btn-primary" onclick="alert('캠페인이 저장되었습니다! (목업)')"><span class="icon icon-18">check</span> 캠페인 저장</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══ COUPON DETAIL MODAL ═══ -->
+<div class="modal-overlay" id="couponDetailModal" onclick="closeModal('couponDetailModal', event)">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:480px">
+    <div class="modal-title">
+      쿠폰 상세
+      <button class="modal-close" onclick="closeModal('couponDetailModal')">&times;</button>
+    </div>
+    <div id="couponDetailContent"></div>
+  </div>
+</div>
+
+
+<script>
+// ════════════════════════════════════════════
+// SAMPLE DATA
+// ════════════════════════════════════════════
+
+var avatarColors = ['#3b82f6', '#8b5cf6', '#f97316', '#ef4444', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
+
+var salesManagers = [
+  { name: 'Jerry Park', code: 'jerry', email: 'jerry@buzzvil.com', dept: '영업팀', avatar: avatarColors[0], couponsIssued: 15, couponsRegistered: 10, couponsApplied: 6, revenue: 840 },
+  { name: '김소연', code: 'soyeon', email: 'soyeon@buzzvil.com', dept: '영업팀', avatar: avatarColors[1], couponsIssued: 12, couponsRegistered: 8, couponsApplied: 5, revenue: 620 },
+  { name: '이민재', code: 'minjae', email: 'minjae@buzzvil.com', dept: '사업개발팀', avatar: avatarColors[2], couponsIssued: 10, couponsRegistered: 6, couponsApplied: 3, revenue: 480 },
+  { name: '한나영', code: 'hanna', email: 'hanna@buzzvil.com', dept: '영업팀', avatar: avatarColors[3], couponsIssued: 8, couponsRegistered: 5, couponsApplied: 3, revenue: 360 },
+  { name: '최지원', code: 'jiwon', email: 'jiwon@buzzvil.com', dept: '파트너십팀', avatar: avatarColors[4], couponsIssued: 7, couponsRegistered: 4, couponsApplied: 2, revenue: 240 },
+  { name: '박동우', code: 'dongwoo', email: 'dongwoo@buzzvil.com', dept: '영업팀', avatar: avatarColors[5], couponsIssued: 5, couponsRegistered: 3, couponsApplied: 1, revenue: 160 },
+  { name: '정은지', code: 'eunji', email: 'eunji@buzzvil.com', dept: '영업팀', avatar: avatarColors[6], couponsIssued: 3, couponsRegistered: 1, couponsApplied: 1, revenue: 80 },
+  { name: '오상민', code: 'sangmin', email: 'sangmin@buzzvil.com', dept: '사업개발팀', avatar: avatarColors[7], couponsIssued: 2, couponsRegistered: 1, couponsApplied: 0, revenue: 60 }
+];
+
+var advertisers = ['(주) 아모레퍼시픽', '(주) LG생활건강', '(주) 올리브영'];
+var agencies = ['매드업', '주식회사 BAT', '씨제이메조미디어', '미핑기획'];
+var agencyClients = {
+  '매드업': ['(주) 아모레퍼시픽'],
+  '주식회사 BAT': ['(주) 아모레퍼시픽', '(주) 올리브영'],
+  '씨제이메조미디어': ['(주) LG생활건강'],
+  '미핑기획': ['(주) LG생활건강']
+};
+
+var coupons = [
+  { name: 'BAT 전용 올영협력광고 쿠폰', code: 'BZV-2603-A1K9', type: 'discount', value: 20, target: 'agency', clientName: '주식회사 BAT', campaignType: '올영협력광고', startDate: '2026-03-20', endDate: '2026-04-03', issued: 5, registered: 4, applied: 2, manager: 'jerry', status: 'active', theme: 'blue', signature: '최고의 퍼포먼스를 약속합니다!' },
+  { name: '아모레 이니스프리 라이브 할인', code: 'BZV-2603-B2L0', type: 'discount', value: 15, target: 'advertiser', clientName: '(주) 아모레퍼시픽', campaignType: '라이브커머스', startDate: '2026-03-18', endDate: '2026-04-01', issued: 5, registered: 3, applied: 2, manager: 'soyeon', status: 'active', theme: 'purple', signature: '함께 성장하겠습니다!' },
+  { name: 'LG생건 올영 프로모션 크레딧', code: 'BZV-2603-C3M1', type: 'credit', value: 500000, target: 'advertiser', clientName: '(주) LG생활건강', campaignType: '올영협력광고', startDate: '2026-03-15', endDate: '2026-03-29', issued: 5, registered: 3, applied: 1, manager: 'minjae', status: 'active', theme: 'orange', signature: '광고 효율을 극대화해 드립니다!' },
+  { name: '매드업 대행사 전용 할인', code: 'BZV-2603-D4N2', type: 'discount', value: 10, target: 'agency', clientName: '매드업', campaignType: '전체', startDate: '2026-03-22', endDate: '2026-04-05', issued: 5, registered: 2, applied: 1, manager: 'hanna', status: 'active', theme: 'dark', signature: '파트너십을 소중히 여깁니다!' },
+  { name: 'CJ메조 관리고객 크레딧', code: 'BZV-2603-E5O3', type: 'credit', value: 300000, target: 'agency-managed', clientName: '씨제이메조미디어', campaignType: '라이브커머스', startDate: '2026-03-19', endDate: '2026-04-02', issued: 5, registered: 3, applied: 2, manager: 'jerry', status: 'active', theme: 'blue', signature: '최고의 퍼포먼스를 약속합니다!' },
+  { name: '올리브영 봄 프로모션', code: 'BZV-2603-F6P4', type: 'discount', value: 25, target: 'advertiser', clientName: '(주) 올리브영', campaignType: '올영협력광고', startDate: '2026-03-10', endDate: '2026-03-24', issued: 5, registered: 4, applied: 3, manager: 'soyeon', status: 'active', theme: 'purple', signature: '함께 성장하겠습니다!' },
+  { name: 'BAT 라이브커머스 크레딧', code: 'BZV-2603-G7Q5', type: 'credit', value: 1000000, target: 'agency', clientName: '주식회사 BAT', campaignType: '라이브커머스', startDate: '2026-03-15', endDate: '2026-03-29', issued: 5, registered: 4, applied: 2, manager: 'minjae', status: 'active', theme: 'orange', signature: '광고 효율을 극대화해 드립니다!' },
+  { name: '미핑기획 관리고객 할인', code: 'BZV-2603-H8R6', type: 'discount', value: 20, target: 'agency-managed', clientName: '미핑기획', campaignType: '전체', startDate: '2026-03-21', endDate: '2026-04-04', issued: 5, registered: 2, applied: 1, manager: 'jiwon', status: 'active', theme: 'dark', signature: '최적의 광고 전략을 함께 만들어요!' },
+  { name: '2월 아모레 올영 할인', code: 'BZV-2602-I9S7', type: 'discount', value: 30, target: 'advertiser', clientName: '(주) 아모레퍼시픽', campaignType: '올영협력광고', startDate: '2026-02-15', endDate: '2026-02-28', issued: 5, registered: 4, applied: 3, manager: 'dongwoo', status: 'expired', theme: 'blue', signature: '믿고 맡겨주세요!' },
+  { name: '2월 LG 크레딧 프로모션', code: 'BZV-2602-J0T8', type: 'credit', value: 500000, target: 'advertiser', clientName: '(주) LG생활건강', campaignType: '라이브커머스', startDate: '2026-02-10', endDate: '2026-02-24', issued: 5, registered: 3, applied: 2, manager: 'eunji', status: 'expired', theme: 'purple', signature: '광고 성과를 책임집니다!' },
+  { name: '1월 올리브영 신규 할인', code: 'BZV-2601-K1U9', type: 'discount', value: 20, target: 'advertiser', clientName: '(주) 올리브영', campaignType: '전체', startDate: '2026-01-15', endDate: '2026-01-31', issued: 5, registered: 5, applied: 4, manager: 'hanna', status: 'expired', theme: 'orange', signature: '파트너십을 소중히 여깁니다!' },
+  { name: '1월 BAT 전용 크레딧', code: 'BZV-2601-L2V0', type: 'credit', value: 800000, target: 'agency', clientName: '주식회사 BAT', campaignType: '전체', startDate: '2026-01-10', endDate: '2026-01-31', issued: 5, registered: 3, applied: 2, manager: 'sangmin', status: 'expired', theme: 'dark', signature: '최선을 다하겠습니다!' }
+];
+
+// Wallet data (advertiser's registered coupons)
+var walletCoupons = [
+  { couponIdx: 0, status: 'available' },
+  { couponIdx: 1, status: 'available' },
+  { couponIdx: 5, status: 'used' },
+  { couponIdx: 8, status: 'expired' }
+];
+
+// Coupon detail: registered users per coupon code
+var couponRegistrations = {
+  'BZV-2603-A1K9': [
+    { clientName: '주식회사 BAT', userName: '박서준', email: 'sjpark@bat.co.kr', phone: '010-1234-5678', registeredDate: '2026-03-21' },
+    { clientName: '주식회사 BAT', userName: '김유진', email: 'yjkim@bat.co.kr', phone: '010-2345-6789', registeredDate: '2026-03-22' },
+    { clientName: '주식회사 BAT', userName: '이준혁', email: 'jhlee@bat.co.kr', phone: '010-3456-7890', registeredDate: '2026-03-23' },
+    { clientName: '주식회사 BAT', userName: '최은서', email: 'eschoi@bat.co.kr', phone: '010-4567-8901', registeredDate: '2026-03-24' }
+  ],
+  'BZV-2603-B2L0': [
+    { clientName: '(주) 아모레퍼시픽', userName: '정다은', email: 'dejung@amore.com', phone: '010-5678-9012', registeredDate: '2026-03-19' },
+    { clientName: '(주) 아모레퍼시픽', userName: '한지민', email: 'jmhan@amore.com', phone: '010-6789-0123', registeredDate: '2026-03-20' },
+    { clientName: '(주) 아모레퍼시픽', userName: '오세훈', email: 'shoh@amore.com', phone: '010-7890-1234', registeredDate: '2026-03-21' }
+  ],
+  'BZV-2603-C3M1': [
+    { clientName: '(주) LG생활건강', userName: '임수빈', email: 'sblim@lgcare.com', phone: '010-8901-2345', registeredDate: '2026-03-16' },
+    { clientName: '(주) LG생활건강', userName: '강민호', email: 'mhkang@lgcare.com', phone: '010-9012-3456', registeredDate: '2026-03-17' },
+    { clientName: '(주) LG생활건강', userName: '윤서연', email: 'syyun@lgcare.com', phone: '010-0123-4567', registeredDate: '2026-03-18' }
+  ],
+  'BZV-2603-D4N2': [
+    { clientName: '매드업', userName: '송지호', email: 'jhsong@madup.com', phone: '010-1111-2222', registeredDate: '2026-03-23' },
+    { clientName: '매드업', userName: '배수현', email: 'shbae@madup.com', phone: '010-2222-3333', registeredDate: '2026-03-24' }
+  ],
+  'BZV-2603-E5O3': [
+    { clientName: '씨제이메조미디어', userName: '류현진', email: 'hjryu@cjmezo.com', phone: '010-3333-4444', registeredDate: '2026-03-20' },
+    { clientName: '(주) LG생활건강', userName: '남궁민', email: 'mnam@lgcare.com', phone: '010-4444-5555', registeredDate: '2026-03-21' },
+    { clientName: '(주) LG생활건강', userName: '고은비', email: 'ebko@lgcare.com', phone: '010-5555-6666', registeredDate: '2026-03-22' }
+  ],
+  'BZV-2603-F6P4': [
+    { clientName: '(주) 올리브영', userName: '장하늘', email: 'hnjang@oliveyoung.com', phone: '010-6666-7777', registeredDate: '2026-03-11' },
+    { clientName: '(주) 올리브영', userName: '신예은', email: 'yeshin@oliveyoung.com', phone: '010-7777-8888', registeredDate: '2026-03-12' },
+    { clientName: '(주) 올리브영', userName: '문준서', email: 'jsmoon@oliveyoung.com', phone: '010-8888-9999', registeredDate: '2026-03-13' },
+    { clientName: '(주) 올리브영', userName: '조아린', email: 'arjo@oliveyoung.com', phone: '010-9999-0000', registeredDate: '2026-03-14' }
+  ],
+  'BZV-2603-G7Q5': [
+    { clientName: '주식회사 BAT', userName: '박서준', email: 'sjpark@bat.co.kr', phone: '010-1234-5678', registeredDate: '2026-03-16' },
+    { clientName: '주식회사 BAT', userName: '김유진', email: 'yjkim@bat.co.kr', phone: '010-2345-6789', registeredDate: '2026-03-17' },
+    { clientName: '주식회사 BAT', userName: '이준혁', email: 'jhlee@bat.co.kr', phone: '010-3456-7890', registeredDate: '2026-03-18' },
+    { clientName: '주식회사 BAT', userName: '최은서', email: 'eschoi@bat.co.kr', phone: '010-4567-8901', registeredDate: '2026-03-19' }
+  ],
+  'BZV-2603-H8R6': [
+    { clientName: '미핑기획', userName: '권도윤', email: 'dykwon@miping.co.kr', phone: '010-1122-3344', registeredDate: '2026-03-22' },
+    { clientName: '(주) LG생활건강', userName: '양수진', email: 'sjyang@lgcare.com', phone: '010-2233-4455', registeredDate: '2026-03-23' }
+  ],
+  'BZV-2602-I9S7': [
+    { clientName: '(주) 아모레퍼시픽', userName: '정다은', email: 'dejung@amore.com', phone: '010-5678-9012', registeredDate: '2026-02-16' },
+    { clientName: '(주) 아모레퍼시픽', userName: '한지민', email: 'jmhan@amore.com', phone: '010-6789-0123', registeredDate: '2026-02-17' },
+    { clientName: '(주) 아모레퍼시픽', userName: '오세훈', email: 'shoh@amore.com', phone: '010-7890-1234', registeredDate: '2026-02-18' },
+    { clientName: '(주) 아모레퍼시픽', userName: '서지안', email: 'jaseo@amore.com', phone: '010-3344-5566', registeredDate: '2026-02-19' }
+  ],
+  'BZV-2602-J0T8': [
+    { clientName: '(주) LG생활건강', userName: '임수빈', email: 'sblim@lgcare.com', phone: '010-8901-2345', registeredDate: '2026-02-11' },
+    { clientName: '(주) LG생활건강', userName: '강민호', email: 'mhkang@lgcare.com', phone: '010-9012-3456', registeredDate: '2026-02-12' },
+    { clientName: '(주) LG생활건강', userName: '윤서연', email: 'syyun@lgcare.com', phone: '010-0123-4567', registeredDate: '2026-02-13' }
+  ],
+  'BZV-2601-K1U9': [
+    { clientName: '(주) 올리브영', userName: '장하늘', email: 'hnjang@oliveyoung.com', phone: '010-6666-7777', registeredDate: '2026-01-16' },
+    { clientName: '(주) 올리브영', userName: '신예은', email: 'yeshin@oliveyoung.com', phone: '010-7777-8888', registeredDate: '2026-01-17' },
+    { clientName: '(주) 올리브영', userName: '문준서', email: 'jsmoon@oliveyoung.com', phone: '010-8888-9999', registeredDate: '2026-01-18' },
+    { clientName: '(주) 올리브영', userName: '조아린', email: 'arjo@oliveyoung.com', phone: '010-9999-0000', registeredDate: '2026-01-19' },
+    { clientName: '(주) 올리브영', userName: '이도현', email: 'dhlee@oliveyoung.com', phone: '010-4455-6677', registeredDate: '2026-01-20' }
+  ],
+  'BZV-2601-L2V0': [
+    { clientName: '주식회사 BAT', userName: '박서준', email: 'sjpark@bat.co.kr', phone: '010-1234-5678', registeredDate: '2026-01-11' },
+    { clientName: '주식회사 BAT', userName: '김유진', email: 'yjkim@bat.co.kr', phone: '010-2345-6789', registeredDate: '2026-01-12' },
+    { clientName: '주식회사 BAT', userName: '이준혁', email: 'jhlee@bat.co.kr', phone: '010-3456-7890', registeredDate: '2026-01-13' }
+  ]
+};
+
+// Coupon detail: applied campaigns per coupon code
+var couponCampaigns = {
+  'BZV-2603-A1K9': [
+    { campaignName: 'BAT 올리브영 4월 프로모션', campaignId: 'CMP-20260325-001', status: 'active', budget: 1000000 },
+    { campaignName: 'BAT 봄맞이 신상품 런칭', campaignId: 'CMP-20260326-002', status: 'ready', budget: 800000 }
+  ],
+  'BZV-2603-B2L0': [
+    { campaignName: '이니스프리 라이브 방송 캠페인', campaignId: 'CMP-20260320-003', status: 'active', budget: 1200000 },
+    { campaignName: '아모레 제주 한란 프로모', campaignId: 'CMP-20260322-004', status: 'ready', budget: 500000 }
+  ],
+  'BZV-2603-C3M1': [
+    { campaignName: 'LG 후 럭셔리 올영 광고', campaignId: 'CMP-20260318-005', status: 'active', budget: 2000000 }
+  ],
+  'BZV-2603-D4N2': [
+    { campaignName: '매드업 통합 광고 캠페인', campaignId: 'CMP-20260324-006', status: 'active', budget: 600000 }
+  ],
+  'BZV-2603-E5O3': [
+    { campaignName: 'CJ메조 LG관리고객 라이브', campaignId: 'CMP-20260321-007', status: 'active', budget: 900000 },
+    { campaignName: 'CJ메조 봄 시즌 프로모션', campaignId: 'CMP-20260323-008', status: 'paused', budget: 700000 }
+  ],
+  'BZV-2603-F6P4': [
+    { campaignName: '올리브영 봄 세일 메인 배너', campaignId: 'CMP-20260312-009', status: 'active', budget: 1500000 },
+    { campaignName: '올리브영 뷰티 위크 캠페인', campaignId: 'CMP-20260315-010', status: 'completed', budget: 800000 },
+    { campaignName: '올리브영 신규 브랜드 런칭', campaignId: 'CMP-20260318-011', status: 'active', budget: 1000000 }
+  ],
+  'BZV-2603-G7Q5': [
+    { campaignName: 'BAT 라이브 커머스 메인', campaignId: 'CMP-20260317-012', status: 'active', budget: 2500000 },
+    { campaignName: 'BAT 인플루언서 콜라보', campaignId: 'CMP-20260319-013', status: 'ready', budget: 1200000 }
+  ],
+  'BZV-2603-H8R6': [
+    { campaignName: '미핑기획 LG 관리고객 광고', campaignId: 'CMP-20260323-014', status: 'active', budget: 500000 }
+  ],
+  'BZV-2602-I9S7': [
+    { campaignName: '2월 아모레 올영 메인 캠페인', campaignId: 'CMP-20260216-015', status: 'completed', budget: 1800000 },
+    { campaignName: '아모레 설 특선 프로모션', campaignId: 'CMP-20260218-016', status: 'completed', budget: 900000 },
+    { campaignName: '아모레 발렌타인 기프트 광고', campaignId: 'CMP-20260220-017', status: 'completed', budget: 600000 }
+  ],
+  'BZV-2602-J0T8': [
+    { campaignName: 'LG 2월 라이브 커머스 광고', campaignId: 'CMP-20260212-018', status: 'completed', budget: 1400000 },
+    { campaignName: 'LG 설 기획전 캠페인', campaignId: 'CMP-20260214-019', status: 'completed', budget: 1100000 }
+  ],
+  'BZV-2601-K1U9': [
+    { campaignName: '올리브영 신년 할인 프로모션', campaignId: 'CMP-20260116-020', status: 'completed', budget: 2000000 },
+    { campaignName: '올리브영 1월 베스트 광고', campaignId: 'CMP-20260118-021', status: 'completed', budget: 1300000 },
+    { campaignName: '올리브영 겨울 스킨케어 캠페인', campaignId: 'CMP-20260120-022', status: 'completed', budget: 800000 },
+    { campaignName: '올리브영 뷰티 어워드 광고', campaignId: 'CMP-20260122-023', status: 'completed', budget: 700000 }
+  ],
+  'BZV-2601-L2V0': [
+    { campaignName: 'BAT 신년 전용 크레딧 캠페인', campaignId: 'CMP-20260112-024', status: 'completed', budget: 1600000 },
+    { campaignName: 'BAT 1월 리타겟팅 광고', campaignId: 'CMP-20260115-025', status: 'completed', budget: 900000 }
+  ]
+};
+
+// ════════════════════════════════════════════
+// SCREEN NAVIGATION
+// ════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.flow-btn').forEach(function(b) { b.classList.remove('active'); });
+  var flowBtn = document.getElementById('flow-' + id);
+  if (flowBtn) flowBtn.classList.add('active');
+  closeProfileDropdown();
+  window.scrollTo(0, 0);
+  if (id === 's2') backToCouponList();
+  if (id === 's5') renderWallet();
+  if (id === 's6') updateCampaignCoupons();
+}
+
+// ════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id, event) {
+  if (!event || event.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('open');
+  }
+}
+
+// ════════════════════════════════════════════
+// PROFILE DROPDOWN
+// ════════════════════════════════════════════
+
+function toggleProfileDropdown(event) {
+  event.stopPropagation();
+  var dd = event.currentTarget.querySelector('.profile-dropdown');
+  if (dd) dd.classList.toggle('open');
+}
+function closeProfileDropdown() {
+  document.querySelectorAll('.profile-dropdown').forEach(function(d) { d.classList.remove('open'); });
+}
+document.addEventListener('click', function() { closeProfileDropdown(); });
+
+// ════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════
+
+function getManagerByCode(code) {
+  for (var i = 0; i < salesManagers.length; i++) {
+    if (salesManagers[i].code === code) return salesManagers[i];
+  }
+  return null;
+}
+
+function formatNumber(n) {
+  return n.toLocaleString('ko-KR');
+}
+
+function getTargetLabel(target) {
+  var map = { 'advertiser': '광고주', 'agency-managed': '대행사 관리고객', 'agency': '대행사' };
+  return map[target] || target;
+}
+
+function getTargetBadge(target) {
+  var cls = target === 'advertiser' ? 'badge-advertiser' : (target === 'agency' ? 'badge-agency' : 'badge-agency-managed');
+  return '<span class="badge ' + cls + '">' + getTargetLabel(target) + '</span>';
+}
+
+function getBenefitBadge(coupon) {
+  if (coupon.type === 'discount') {
+    return '<span class="badge badge-discount">' + coupon.value + '% 할인</span>';
+  } else {
+    return '<span class="badge badge-credit">' + formatNumber(coupon.value) + '원 크레딧</span>';
+  }
+}
+
+function getBenefitText(coupon) {
+  if (coupon.type === 'discount') return coupon.value + '% 할인';
+  return formatNumber(coupon.value) + '원 크레딧';
+}
+
+function getStatusBadge(status) {
+  var map = {
+    'active': '<span class="badge badge-active">활성</span>',
+    'expired': '<span class="badge badge-expired">만료</span>',
+    'exhausted': '<span class="badge badge-exhausted">소진</span>'
+  };
+  return map[status] || status;
+}
+
+function getInitial(name) {
+  if (/^[a-zA-Z]/.test(name)) return name.charAt(0).toUpperCase();
+  return name.charAt(0);
+}
+
+function getThemeGradient(theme) {
+  var map = {
+    'blue': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    'purple': 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+    'orange': 'linear-gradient(135deg, #f97316, #ea580c)',
+    'dark': 'linear-gradient(135deg, #334155, #0f172a)'
+  };
+  return map[theme] || map['blue'];
+}
+
+// ════════════════════════════════════════════
+// RENDER COUPON CARD HTML
+// ════════════════════════════════════════════
+
+function renderCouponCardHTML(opts) {
+  var theme = opts.theme || 'blue';
+  var benefit = opts.benefit || '';
+  var name = opts.name || '';
+  var clientName = opts.clientName || '';
+  var campaignType = opts.campaignType || '';
+  var validity = opts.validity || '';
+  var code = opts.code || 'BZV-XXXX-XXXX';
+  var managerName = opts.managerName || '';
+  var managerAvatar = opts.managerAvatar || '#3b82f6';
+  var signature = opts.signature || '';
+  var initial = getInitial(managerName || 'B');
+
+  var html = '<div class="coupon-card theme-' + theme + '">';
+  html += '<div class="coupon-card-header">';
+  html += '<div class="coupon-card-logo">BUZZVIL</div>';
+  if (campaignType) html += '<div class="coupon-card-tag">' + campaignType + '</div>';
+  html += '</div>';
+  html += '<div class="coupon-card-benefit">' + benefit + '</div>';
+  html += '<div class="coupon-card-name">' + name + '</div>';
+  if (clientName) html += '<div class="coupon-card-client">' + clientName + '</div>';
+  if (validity) html += '<div class="coupon-card-validity">' + validity + '</div>';
+  html += '<div class="coupon-card-code">' + code + '</div>';
+  html += '<div class="coupon-signature">';
+  html += '<div class="coupon-avatar" style="background:' + managerAvatar + '">' + initial + '</div>';
+  html += '<div class="coupon-sig-info">';
+  html += '<div class="coupon-sig-name">' + managerName + '</div>';
+  if (signature) html += '<div class="coupon-sig-msg">' + signature + '</div>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+// ════════════════════════════════════════════
+// S1: DASHBOARD
+// ════════════════════════════════════════════
+
+function renderManagerTable() {
+  var searchVal = (document.getElementById('managerSearch').value || '').toLowerCase();
+  var html = '';
+
+  salesManagers.forEach(function(m) {
+    if (searchVal && !m.name.toLowerCase().includes(searchVal) && !m.code.toLowerCase().includes(searchVal)) return;
+
+    var regRate = m.couponsIssued > 0 ? ((m.couponsRegistered / m.couponsIssued) * 100).toFixed(1) : '0.0';
+    var appRate = m.couponsRegistered > 0 ? ((m.couponsApplied / m.couponsRegistered) * 100).toFixed(1) : '0.0';
+
+    html += '<tr>';
+    html += '<td><div class="cell-main">' + m.name + '</div><div class="cell-sub">' + m.email + '</div></td>';
+    html += '<td style="text-align:center;font-weight:700">' + m.couponsIssued + '</td>';
+    html += '<td style="text-align:center;font-weight:700;color:var(--warning-fg)">' + m.couponsRegistered + '</td>';
+    html += '<td style="text-align:center;font-weight:700;color:var(--success-fg)">' + m.couponsApplied + '</td>';
+    html += '<td>';
+    html += '<div class="progress-bar">';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + regRate + '%;background:#f59e0b"></div></div>';
+    html += '<span class="progress-label">' + regRate + '%</span>';
+    html += '</div>';
+    html += '</td>';
+    html += '<td>';
+    html += '<div class="progress-bar">';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + appRate + '%;background:var(--success-shape)"></div></div>';
+    html += '<span class="progress-label">' + appRate + '%</span>';
+    html += '</div>';
+    html += '</td>';
+    html += '<td style="text-align:right;font-weight:700">' + formatNumber(m.revenue) + '만원</td>';
+    html += '</tr>';
+  });
+
+  document.getElementById('managerTableBody').innerHTML = html;
+}
+
+function filterManagerTable() { renderManagerTable(); }
+function updateDashboard() { renderManagerTable(); }
+
+// ════════════════════════════════════════════
+// S2: COUPON TABLE
+// ════════════════════════════════════════════
+
+var activeCouponTab = 'all';
+
+function switchCouponTab(tab) {
+  activeCouponTab = tab;
+  var labels = { 'all': '전체', 'active': '활성', 'registered': '등록완료', 'applied': '적용완료', 'expired': '만료' };
+  document.querySelectorAll('#couponTabs .pill-tab').forEach(function(t) {
+    t.classList.toggle('active', t.textContent.trim() === labels[tab]);
+  });
+  filterCouponTable();
+}
+
+function onTargetFilterChange() {
+  var v = document.getElementById('couponTargetFilter').value;
+  document.getElementById('clientFilterGroup').style.display = v ? 'flex' : 'none';
+  filterCouponTable();
+}
+
+function filterCouponTable() { renderCouponTable(); }
+
+function renderCouponTable() {
+  var searchVal = (document.getElementById('couponSearch').value || '').toLowerCase();
+  var typeVal = document.getElementById('couponTypeFilter').value;
+  var targetVal = document.getElementById('couponTargetFilter').value;
+  var managerVal = document.getElementById('couponManagerFilter').value;
+  var clientVal = (document.getElementById('clientNameFilter').value || '').toLowerCase();
+  var html = '';
+  var count = 0;
+
+  coupons.forEach(function(c, idx) {
+    // Tab filter
+    if (activeCouponTab === 'active' && c.status !== 'active') return;
+    if (activeCouponTab === 'expired' && c.status !== 'expired') return;
+    if (activeCouponTab === 'registered' && !(c.registered >= c.issued && c.status === 'active')) return;
+    if (activeCouponTab === 'applied' && !(c.applied > 0)) return;
+
+    // Filters
+    if (searchVal && !c.name.toLowerCase().includes(searchVal)) return;
+    if (typeVal && c.type !== typeVal) return;
+    if (targetVal && c.target !== targetVal) return;
+    if (managerVal && c.manager !== managerVal) return;
+    if (clientVal && !c.clientName.toLowerCase().includes(clientVal)) return;
+
+    count++;
+    var manager = getManagerByCode(c.manager);
+    var regRate = c.issued > 0 ? Math.round((c.registered / c.issued) * 100) : 0;
+    var appRate = c.registered > 0 ? Math.round((c.applied / c.registered) * 100) : 0;
+
+    html += '<tr class="clickable-row" style="cursor:pointer" onclick="showCouponDetailView(' + idx + ')">';
+    html += '<td><div class="cell-main clickable" style="color:var(--primary)">' + c.name + '</div></td>';
+    html += '<td>' + getBenefitBadge(c) + '</td>';
+    html += '<td>' + getTargetBadge(c.target) + ' <span style="font-size:12px;color:var(--text-default)">' + c.clientName + '</span></td>';
+    html += '<td style="font-size:13px">' + (manager ? manager.name : '-') + '</td>';
+    html += '<td><div style="font-size:12px">' + c.startDate + '</div><div style="font-size:12px;color:var(--text-subtle)">~ ' + c.endDate + '</div></td>';
+    html += '<td style="text-align:center;font-weight:700">' + c.issued + '</td>';
+    html += '<td style="text-align:center;font-weight:700;color:var(--warning-fg)">' + c.registered + '</td>';
+    html += '<td style="text-align:center;font-weight:700;color:var(--success-fg)">' + c.applied + '</td>';
+    html += '<td>';
+    html += '<div class="progress-bar">';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + regRate + '%;background:#f59e0b"></div></div>';
+    html += '<span class="progress-label">' + regRate + '%</span>';
+    html += '</div>';
+    html += '</td>';
+    html += '<td>';
+    html += '<div class="progress-bar">';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + appRate + '%;background:var(--success-shape)"></div></div>';
+    html += '<span class="progress-label">' + appRate + '%</span>';
+    html += '</div>';
+    html += '</td>';
+    html += '<td>' + getStatusBadge(c.status) + '</td>';
+    html += '</tr>';
+  });
+
+  document.getElementById('couponTableBody').innerHTML = html;
+  document.getElementById('couponResultsCount').textContent = '쿠폰 ' + count + '건';
+}
+
+// ════════════════════════════════════════════
+// S2: COUPON DETAIL VIEW
+// ════════════════════════════════════════════
+
+function getCampaignStatusBadge(status) {
+  var map = {
+    'active': '<span class="badge badge-active">진행 중</span>',
+    'ready': '<span class="badge" style="background:var(--violet-bg);color:var(--violet-fg);border:1px solid #ddd6fe">준비 중</span>',
+    'completed': '<span class="badge badge-expired">완료</span>',
+    'paused': '<span class="badge" style="background:var(--warning-bg);color:var(--warning-fg);border:1px solid var(--warning-stroke)">일시중지</span>'
+  };
+  return map[status] || status;
+}
+
+function renderCouponDetailMeta(c, manager) {
+  var regRate = c.issued > 0 ? Math.round((c.registered / c.issued) * 100) : 0;
+  var appRate = c.registered > 0 ? Math.round((c.applied / c.registered) * 100) : 0;
+  var html = '';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">쿠폰 코드</span><span class="detail-meta-value" style="font-family:monospace">' + c.code + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">혜택</span><span class="detail-meta-value">' + getBenefitBadge(c) + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">대상</span><span class="detail-meta-value">' + getTargetBadge(c.target) + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">고객사</span><span class="detail-meta-value">' + c.clientName + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">캠페인 유형</span><span class="detail-meta-value">' + c.campaignType + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">유효기간</span><span class="detail-meta-value">' + c.startDate + ' ~ ' + c.endDate + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">담당 매니저</span><span class="detail-meta-value">' + (manager ? manager.name : '-') + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">상태</span><span class="detail-meta-value">' + getStatusBadge(c.status) + '</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">발급 수</span><span class="detail-meta-value" style="font-weight:700">' + c.issued + '건</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">등록 수</span><span class="detail-meta-value" style="font-weight:700;color:var(--warning-fg)">' + c.registered + '건</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">적용 수</span><span class="detail-meta-value" style="font-weight:700;color:var(--success-fg)">' + c.applied + '건</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">등록률</span><span class="detail-meta-value">' + regRate + '%</span></div>';
+  html += '<div class="detail-meta-row"><span class="detail-meta-label">적용률</span><span class="detail-meta-value">' + appRate + '%</span></div>';
+  return html;
+}
+
+function renderCouponDetailRegistrations(code) {
+  var regs = couponRegistrations[code] || [];
+  if (regs.length === 0) {
+    return '<div class="detail-empty"><span class="icon" style="font-size:40px;color:var(--border);display:block;margin-bottom:var(--sm)">person_off</span>등록된 유저가 없습니다</div>';
+  }
+  var html = '<div class="table-wrap" style="overflow-x:auto"><table><thead><tr>';
+  html += '<th>고객사명</th><th>유저 이름</th><th>이메일</th><th>연락처</th><th>등록일</th>';
+  html += '</tr></thead><tbody>';
+  regs.forEach(function(r) {
+    html += '<tr>';
+    html += '<td>' + r.clientName + '</td>';
+    html += '<td style="font-weight:600">' + r.userName + '</td>';
+    html += '<td style="font-size:13px;color:var(--text-default)">' + r.email + '</td>';
+    html += '<td style="font-size:13px">' + r.phone + '</td>';
+    html += '<td style="font-size:13px">' + r.registeredDate + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function renderCouponDetailCampaigns(code) {
+  var camps = couponCampaigns[code] || [];
+  if (camps.length === 0) {
+    return '<div class="detail-empty"><span class="icon" style="font-size:40px;color:var(--border);display:block;margin-bottom:var(--sm)">campaign</span>적용된 캠페인이 없습니다</div>';
+  }
+  var html = '<div class="table-wrap" style="overflow-x:auto"><table><thead><tr>';
+  html += '<th>캠페인명</th><th>캠페인 ID</th><th>상태</th><th style="text-align:right">예산</th>';
+  html += '</tr></thead><tbody>';
+  camps.forEach(function(cp) {
+    html += '<tr class="clickable-row" style="cursor:pointer" onclick="navigateToCampaign(\'' + cp.campaignId + '\')">';
+    html += '<td><div class="cell-main" style="color:var(--primary)">' + cp.campaignName + '</div></td>';
+    html += '<td style="font-size:13px;font-family:monospace;color:var(--text-default)">' + cp.campaignId + '</td>';
+    html += '<td>' + getCampaignStatusBadge(cp.status) + '</td>';
+    html += '<td style="text-align:right;font-weight:600">' + formatNumber(cp.budget) + '원</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function showCouponDetailView(idx) {
+  var c = coupons[idx];
+  if (!c) return;
+  var manager = getManagerByCode(c.manager);
+
+  // Update breadcrumb
+  document.getElementById('s2Breadcrumb').innerHTML =
+    '<span class="crumb-muted">쿠폰 관리</span>' +
+    '<span class="crumb-sep">›</span>' +
+    '<span class="crumb-muted" style="cursor:pointer" onclick="backToCouponList()">쿠폰 현황</span>' +
+    '<span class="crumb-sep">›</span>' +
+    '<span class="crumb-current">쿠폰 상세</span>';
+
+  // Title
+  document.getElementById('s2DetailTitle').textContent = c.name;
+
+  // Coupon card
+  document.getElementById('s2DetailCard').innerHTML = renderCouponCardHTML({
+    theme: c.theme,
+    benefit: getBenefitText(c),
+    name: c.name,
+    clientName: c.clientName,
+    campaignType: c.campaignType,
+    validity: c.startDate + ' ~ ' + c.endDate,
+    code: c.code,
+    managerName: manager ? manager.name : '',
+    managerAvatar: manager ? manager.avatar : '#3b82f6',
+    signature: c.signature
+  });
+
+  // Meta
+  document.getElementById('s2DetailMeta').innerHTML = renderCouponDetailMeta(c, manager);
+
+  // Registrations table
+  document.getElementById('s2DetailRegistrations').innerHTML = renderCouponDetailRegistrations(c.code);
+
+  // Campaigns table
+  document.getElementById('s2DetailCampaigns').innerHTML = renderCouponDetailCampaigns(c.code);
+
+  // Toggle views
+  document.getElementById('s2-list-view').style.display = 'none';
+  document.getElementById('s2-detail-view').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function backToCouponList() {
+  document.getElementById('s2-detail-view').style.display = 'none';
+  document.getElementById('s2-list-view').style.display = 'block';
+
+  // Restore breadcrumb
+  document.getElementById('s2Breadcrumb').innerHTML =
+    '<span class="crumb-muted">쿠폰 관리</span>' +
+    '<span class="crumb-sep">›</span>' +
+    '<span class="crumb-current">쿠폰 현황</span>';
+}
+
+function navigateToCampaign(id) {
+  showScreen('s6');
+}
+
+// ════════════════════════════════════════════
+// S3: COUPON CREATION FORM + LIVE PREVIEW
+// ════════════════════════════════════════════
+
+var selectedTheme = 'blue';
+
+function selectTheme(theme) {
+  selectedTheme = theme;
+  document.querySelectorAll('.theme-swatch').forEach(function(s) {
+    s.classList.toggle('active', s.dataset.theme === theme);
+  });
+  updatePreview();
+}
+
+function onFormTargetChange() {
+  var target = document.getElementById('couponTargetType').value;
+  var clientSelect = document.getElementById('couponClientSelect');
+  var hint = document.getElementById('formClientHint');
+  clientSelect.innerHTML = '';
+
+  if (target === 'advertiser') {
+    advertisers.forEach(function(a) {
+      clientSelect.innerHTML += '<option value="' + a + '">' + a + '</option>';
+    });
+    hint.textContent = '쿠폰을 사용할 광고주를 선택하세요';
+  } else if (target === 'agency') {
+    agencies.forEach(function(a) {
+      clientSelect.innerHTML += '<option value="' + a + '">' + a + '</option>';
+    });
+    hint.textContent = '대행사를 선택하세요';
+  } else if (target === 'agency-managed') {
+    agencies.forEach(function(a) {
+      clientSelect.innerHTML += '<option value="' + a + '">' + a + '</option>';
+    });
+    hint.textContent = '선택한 대행사의 관리 광고주가 사용할 수 있는 쿠폰입니다';
+  }
+
+  document.getElementById('formClientGroup').style.display = 'block';
+  updatePreview();
+}
+
+function updatePreview() {
+  var type = document.getElementById('couponBenefitType').value;
+  var value = document.getElementById('couponBenefitValue').value;
+  var name = document.getElementById('couponName').value;
+  var start = document.getElementById('couponStartDate').value;
+  var end = document.getElementById('couponEndDate').value;
+  var targetType = document.getElementById('couponTargetType').value;
+  var clientName = document.getElementById('couponClientSelect').value;
+  var campaignType = document.getElementById('couponCampaignType').value;
+  var managerCode = document.getElementById('couponManager').value;
+  var signature = document.getElementById('couponSignature').value;
+  var qty = document.getElementById('couponQty').value;
+  var hint = document.getElementById('benefitHint');
+
+  var benefit;
+  if (type === 'discount') {
+    hint.textContent = '할인 퍼센트를 입력하세요 (1~100)';
+    benefit = (value || '0') + '% 할인';
+  } else {
+    hint.textContent = '지급할 크레딧 금액을 입력하세요 (원)';
+    var num = parseInt(value) || 0;
+    benefit = formatNumber(num) + '원 크레딧';
+  }
+
+  var manager = getManagerByCode(managerCode) || salesManagers[0];
+  var validity = (start || '-') + ' ~ ' + (end || '-');
+
+  var cardHTML = renderCouponCardHTML({
+    theme: selectedTheme,
+    benefit: benefit,
+    name: name || '쿠폰명',
+    clientName: clientName,
+    campaignType: campaignType,
+    validity: validity,
+    code: 'BZV-XXXX-XXXX',
+    managerName: manager.name,
+    managerAvatar: manager.avatar,
+    signature: signature
+  });
+
+  document.getElementById('couponPreviewCard').innerHTML = cardHTML;
+
+  // Summary
+  document.getElementById('prevSumType').textContent = type === 'discount' ? '할인형' : '크레딧형';
+  document.getElementById('prevSumTarget').textContent = getTargetLabel(targetType);
+  document.getElementById('prevSumClient').textContent = clientName || '-';
+  document.getElementById('prevSumCampaign').textContent = campaignType;
+  document.getElementById('prevSumQty').textContent = (qty || '0') + '건';
+  document.getElementById('prevSumManager').textContent = manager.name;
+}
+
+// ════════════════════════════════════════════
+// S4: COUPON REGISTRATION
+// ════════════════════════════════════════════
+
+function registerCoupon() {
+  var code = document.getElementById('registerCouponCode').value.trim();
+  if (!code) { alert('쿠폰 코드를 입력해주세요.'); return; }
+
+  // Find coupon by code
+  var coupon = null;
+  for (var i = 0; i < coupons.length; i++) {
+    if (coupons[i].code === code) { coupon = coupons[i]; break; }
+  }
+
+  if (!coupon) {
+    // Default demo coupon
+    coupon = coupons[0];
+  }
+
+  var manager = getManagerByCode(coupon.manager) || salesManagers[0];
+
+  var cardHTML = renderCouponCardHTML({
+    theme: coupon.theme,
+    benefit: getBenefitText(coupon),
+    name: coupon.name,
+    clientName: coupon.clientName,
+    campaignType: coupon.campaignType,
+    validity: coupon.startDate + ' ~ ' + coupon.endDate,
+    code: coupon.code,
+    managerName: manager.name,
+    managerAvatar: manager.avatar,
+    signature: coupon.signature
+  });
+
+  var area = document.getElementById('registerCouponCardArea');
+  area.innerHTML = '<div class="coupon-reveal-anim">' + cardHTML + '</div>';
+
+  var result = document.getElementById('registerResult');
+  result.style.display = 'block';
+}
+
+// ════════════════════════════════════════════
+// S5: WALLET
+// ════════════════════════════════════════════
+
+function renderWallet() {
+  var grid = document.getElementById('walletGrid');
+  var html = '';
+
+  walletCoupons.forEach(function(wc, idx) {
+    var c = coupons[wc.couponIdx];
+    if (!c) return;
+    var manager = getManagerByCode(c.manager) || salesManagers[0];
+    var statusLabel = wc.status === 'available' ? '사용 가능' : (wc.status === 'used' ? '사용 완료' : '만료');
+    var statusClass = wc.status === 'available' ? 'badge-active' : (wc.status === 'used' ? 'badge-used' : 'badge-expired');
+
+    html += '<div class="coupon-grid-item" onclick="showCouponDetail(' + wc.couponIdx + ',\'' + wc.status + '\')">';
+    html += '<div class="status-overlay"><span class="badge ' + statusClass + '">' + statusLabel + '</span></div>';
+    html += renderCouponCardHTML({
+      theme: c.theme,
+      benefit: getBenefitText(c),
+      name: c.name,
+      clientName: c.clientName,
+      campaignType: c.campaignType,
+      validity: c.startDate + ' ~ ' + c.endDate,
+      code: c.code,
+      managerName: manager.name,
+      managerAvatar: manager.avatar,
+      signature: c.signature
+    });
+    if (wc.status === 'available') {
+      html += '<div style="text-align:center;margin-top:var(--sm)"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showScreen(\'s6\')"><span class="icon icon-16">rocket_launch</span> 캠페인에 적용하기</button></div>';
+    }
+    html += '</div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+function showCouponDetail(couponIdx, walletStatus) {
+  var c = coupons[couponIdx];
+  if (!c) return;
+  var manager = getManagerByCode(c.manager) || salesManagers[0];
+  var statusLabel = walletStatus === 'available' ? '사용 가능' : (walletStatus === 'used' ? '사용 완료' : '만료');
+  var statusClass = walletStatus === 'available' ? 'badge-active' : (walletStatus === 'used' ? 'badge-used' : 'badge-expired');
+
+  var html = '';
+  html += renderCouponCardHTML({
+    theme: c.theme,
+    benefit: getBenefitText(c),
+    name: c.name,
+    clientName: c.clientName,
+    campaignType: c.campaignType,
+    validity: c.startDate + ' ~ ' + c.endDate,
+    code: c.code,
+    managerName: manager.name,
+    managerAvatar: manager.avatar,
+    signature: c.signature
+  });
+  html += '<div style="margin-top:var(--lg);display:flex;flex-direction:column;gap:var(--sm)">';
+  html += '<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">상태</span><span>' + '<span class="badge ' + statusClass + '">' + statusLabel + '</span></span></div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">혜택</span><span style="font-weight:700">' + getBenefitText(c) + '</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">적용 가능 캠페인</span><span style="font-weight:700">' + c.campaignType + '</span></div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">유효기간</span><span style="font-weight:700">' + c.startDate + ' ~ ' + c.endDate + '</span></div>';
+  html += '</div>';
+
+  if (walletStatus === 'available') {
+    html += '<div style="margin-top:var(--xl);text-align:center"><button class="btn btn-primary" onclick="closeModal(\'couponDetailModal\');showScreen(\'s6\')"><span class="icon icon-18">rocket_launch</span> 캠페인에 적용하기</button></div>';
+  }
+
+  document.getElementById('couponDetailContent').innerHTML = html;
+  openModal('couponDetailModal');
+}
+
+// ════════════════════════════════════════════
+// S6: CAMPAIGN COUPON APPLICATION
+// ════════════════════════════════════════════
+
+var selectedCampaignCoupon = -1;
+
+function updateCampaignCoupons() {
+  var campType = document.getElementById('campaignTypeSelect').value;
+  var list = document.getElementById('campaignCouponList');
+  var html = '';
+  selectedCampaignCoupon = -1;
+
+  // "No coupon" option
+  html += '<div class="coupon-select-item selected" onclick="selectCampaignCoupon(-1, this)">';
+  html += '<input type="radio" name="campaignCoupon" checked>';
+  html += '<div class="coupon-select-mini">';
+  html += '<div style="font-size:14px;color:var(--text-default)">쿠폰 없이 진행</div>';
+  html += '</div>';
+  html += '</div>';
+
+  walletCoupons.forEach(function(wc) {
+    if (wc.status !== 'available') return;
+    var c = coupons[wc.couponIdx];
+    if (!c) return;
+    if (c.campaignType !== '전체' && c.campaignType !== campType) return;
+
+    var manager = getManagerByCode(c.manager) || salesManagers[0];
+    var miniGrad = getThemeGradient(c.theme);
+
+    html += '<div class="coupon-select-item" onclick="selectCampaignCoupon(' + wc.couponIdx + ', this)">';
+    html += '<input type="radio" name="campaignCoupon">';
+    html += '<div class="coupon-select-mini">';
+    html += '<div class="coupon-select-mini-card" style="background:' + miniGrad + '">' + (c.type === 'discount' ? c.value + '%' : formatNumber(c.value / 10000) + '만') + '</div>';
+    html += '<div class="coupon-select-info">';
+    html += '<div class="cs-benefit">' + getBenefitText(c) + '</div>';
+    html += '<div class="cs-meta">' + manager.name + ' · ' + c.startDate + ' ~ ' + c.endDate + '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+
+  list.innerHTML = html;
+  document.getElementById('discountPreviewArea').style.display = 'none';
+}
+
+function selectCampaignCoupon(couponIdx, el) {
+  selectedCampaignCoupon = couponIdx;
+  document.querySelectorAll('.coupon-select-item').forEach(function(item) {
+    item.classList.remove('selected');
+    var radio = item.querySelector('input[type=radio]');
+    if (radio) radio.checked = false;
+  });
+  el.classList.add('selected');
+  var radio = el.querySelector('input[type=radio]');
+  if (radio) radio.checked = true;
+
+  updateDiscountPreview();
+}
+
+function updateDiscountPreview() {
+  var area = document.getElementById('discountPreviewArea');
+  if (selectedCampaignCoupon < 0) {
+    area.style.display = 'none';
+    return;
+  }
+
+  var c = coupons[selectedCampaignCoupon];
+  if (!c) { area.style.display = 'none'; return; }
+
+  var budgetStr = document.getElementById('campaignBudget').value.replace(/,/g, '');
+  var budget = parseInt(budgetStr) || 1000000;
+
+  var html = '<div class="discount-preview">';
+  html += '<div class="discount-preview-title"><span class="icon icon-16" style="vertical-align:middle">check_circle</span> 할인 적용 미리보기</div>';
+  html += '<div class="discount-preview-row"><span>캠페인 예산</span><span>' + formatNumber(budget) + '원</span></div>';
+
+  if (c.type === 'discount') {
+    var discount = Math.round(budget * c.value / 100);
+    var final = budget - discount;
+    html += '<div class="discount-preview-row"><span>쿠폰 할인 (' + c.value + '%)</span><span style="color:var(--error-fg)">-' + formatNumber(discount) + '원</span></div>';
+    html += '<div class="discount-preview-row total"><span>실 결제 금액</span><span>' + formatNumber(final) + '원</span></div>';
+  } else {
+    var final2 = Math.max(0, budget - c.value);
+    html += '<div class="discount-preview-row"><span>크레딧 적용</span><span style="color:var(--error-fg)">-' + formatNumber(c.value) + '원</span></div>';
+    html += '<div class="discount-preview-row total"><span>실 결제 금액</span><span>' + formatNumber(final2) + '원</span></div>';
+  }
+
+  html += '</div>';
+  area.innerHTML = html;
+  area.style.display = 'block';
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+
+function init() {
+  // Set default dates
+  var today = new Date();
+  var end = new Date(today); end.setDate(end.getDate() + 14);
+  var fmt = function(d) { return d.toISOString().split('T')[0]; };
+  document.getElementById('couponStartDate').value = fmt(today);
+  document.getElementById('couponEndDate').value = fmt(end);
+
+  // Populate manager selects
+  var managerSelect = document.getElementById('couponManager');
+  var managerFilter = document.getElementById('couponManagerFilter');
+  salesManagers.forEach(function(m) {
+    managerSelect.innerHTML += '<option value="' + m.code + '">' + m.name + '</option>';
+    managerFilter.innerHTML += '<option value="' + m.code + '">' + m.name + '</option>';
+  });
+
+  // Initialize form target
+  onFormTargetChange();
+
+  // Render tables
+  renderManagerTable();
+  renderCouponTable();
+  updatePreview();
+  renderWallet();
+}
+
+init();
+</script>
+</body>
+</html>

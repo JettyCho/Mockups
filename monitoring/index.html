@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 모니터링 목업</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #e8eaed; }
+
+/* ── FLOW NAV ── */
+.flow-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: #1c2033; height: 48px;
+  display: flex; align-items: center; gap: 0;
+  font-size: 12px; overflow-x: auto; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.flow-nav-brand {
+  padding: 0 20px; font-weight: 800; font-size: 13px;
+  color: #ff6b5b; border-right: 1px solid #2e3350;
+  height: 100%; display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+.flow-btn {
+  padding: 0 16px; height: 100%; border: none; background: none;
+  color: #8892a4; cursor: pointer; font-size: 12px;
+  border-right: 1px solid #2e3350; transition: all .15s;
+  font-family: inherit; flex-shrink: 0;
+}
+.flow-btn:hover { background: #252b42; color: #fff; }
+.flow-btn.active { background: #2563eb; color: #fff; font-weight: 700; }
+
+/* ── SCREEN ── */
+.screen { display: none; padding-top: 48px; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── APP SHELL ── */
+.app { display: flex; flex-direction: column; min-height: calc(100vh - 48px); max-width: 1584px; margin: 0 auto; background: #fff; box-shadow: 0 0 60px rgba(0,0,0,.15); width: 100%; }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 48px; z-index: 100;
+  background: #fff; border-bottom: 1px solid #e5e7eb;
+  height: 52px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; width: 100%;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 17px; color: #111; text-decoration: none; }
+.logo-mark { width: 26px; height: 26px; background: #E8352A; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 13px; font-style: italic; }
+.topbar-right { display: flex; align-items: center; gap: 20px; font-size: 13px; color: #555; }
+
+/* ── MAIN ── */
+.main { flex: 1; padding: 32px 36px; background: #fff; min-width: 0; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.page-title { font-size: 22px; font-weight: 700; color: #111; }
+
+/* ── SEARCH & FILTERS ── */
+.search-filter-bar {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end;
+}
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
+.filter-group.flex-1 { flex: 1; min-width: 260px; }
+.filter-label { font-size: 11px; font-weight: 600; color: #6b7280; }
+.search-input {
+  flex: 1; min-width: 260px; padding: 9px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 13px; color: #111; outline: none; font-family: inherit; transition: border-color .15s;
+}
+.search-input:focus { border-color: #2563eb; }
+.filter-select {
+  padding: 9px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 13px; color: #374151; outline: none; font-family: inherit;
+  background: #fff; cursor: pointer; min-width: 140px;
+}
+.filter-select:focus { border-color: #2563eb; }
+.filter-text {
+  padding: 9px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 13px; color: #111; outline: none; font-family: inherit;
+  background: #fff; min-width: 140px; transition: border-color .15s;
+}
+.filter-text:focus { border-color: #2563eb; }
+
+/* ── TABLE ── */
+.table-wrap { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: #f9fafb; }
+th { padding: 11px 16px; text-align: left; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+td { padding: 12px 16px; color: #374151; border-bottom: 1px solid #f3f4f6; }
+tr:last-child td { border-bottom: none; }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; white-space: nowrap; }
+.badge-advertiser { background: #eff6ff; color: #2563eb; }
+.badge-agency { background: #f5f3ff; color: #7c3aed; }
+.badge-not-target { background: #f3f4f6; color: #6b7280; }
+.badge-before-confirm { background: #fffbeb; color: #d97706; }
+.badge-confirmed { background: #f0fdf4; color: #16a34a; }
+.badge-created { background: #f3f4f6; color: #6b7280; }
+.badge-reviewing { background: #fffbeb; color: #d97706; }
+.badge-scheduled { background: #eff6ff; color: #2563eb; }
+.badge-running { background: #f0fdf4; color: #16a34a; }
+.badge-completed { background: #e5e7eb; color: #374151; }
+.badge-coop { background: #f3f4f6; color: #4b5563; }
+.badge-live { background: #f3f4f6; color: #4b5563; }
+
+/* ── EXPANDABLE ROWS ── */
+.expandable-row { cursor: pointer; transition: background .12s; }
+.expandable-row:hover { background: #f8fafc; }
+.expand-icon { display: inline-block; transition: transform .2s; margin-right: 6px; font-size: 10px; color: #9ca3af; }
+.expand-icon.open { transform: rotate(90deg); }
+.sub-table-wrap { display: none; background: #f9fafb; }
+.sub-table-wrap.open { display: table-row; }
+.sub-table-wrap td { padding: 0; }
+.sub-content { padding: 0 16px 16px 40px; }
+.sub-content table { font-size: 12px; }
+.sub-content thead tr { background: #f0f1f3; }
+.sub-content th { padding: 8px 12px; font-size: 11px; }
+.sub-content td { padding: 10px 12px; font-size: 12px; }
+
+/* Nested sub content */
+.nested-sub-content { padding: 0 12px 12px 28px; }
+.nested-sub-content table { font-size: 12px; }
+.nested-sub-content thead tr { background: #eef0f2; }
+.nested-sub-content th { padding: 7px 10px; font-size: 11px; }
+.nested-sub-content td { padding: 8px 10px; font-size: 12px; }
+
+/* ── CLICKABLE ── */
+.clickable { color: #2563eb; cursor: pointer; font-weight: 600; }
+.clickable:hover { text-decoration: underline; }
+
+/* ── CLICKABLE CHIP ── */
+.clickable-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 6px;
+  background: #eff6ff; color: #2563eb;
+  cursor: pointer; font-weight: 600; font-size: 12px;
+  white-space: nowrap; transition: background .12s;
+}
+.clickable-chip:hover { background: #dbeafe; }
+.clickable-chip svg { width: 14px; height: 14px; }
+
+/* ── LINK ICON ── */
+.ext-link { color: #9ca3af; font-size: 11px; margin-left: 4px; text-decoration: none; }
+.ext-link:hover { color: #2563eb; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { display: flex; align-items: center; gap: 8px; }
+.progress-track { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; min-width: 60px; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-label { font-size: 11px; color: #6b7280; white-space: nowrap; }
+
+/* ── CATALOG TAGS ── */
+.catalog-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.catalog-tag { background: #f3f4f6; color: #4b5563; font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+
+/* ── HIGHLIGHT (cross biz group) ── */
+.cross-biz { color: #d97706; font-weight: 600; }
+
+/* ── VIEW DETAIL LINK ── */
+.view-detail { color: #2563eb; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.view-detail:hover { text-decoration: underline; }
+
+/* ── RESULTS COUNT ── */
+.results-count { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
+
+/* ── SEARCHABLE DROPDOWN ── */
+.searchable-dropdown { position: relative; min-width: 140px; }
+.searchable-dropdown input {
+  width: 100%; padding: 9px 30px 9px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 13px; color: #374151; outline: none; font-family: inherit;
+  background: #fff; cursor: pointer; transition: border-color .15s;
+}
+.searchable-dropdown input:focus { border-color: #2563eb; }
+.searchable-dropdown .dd-arrow {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 10px; color: #9ca3af; pointer-events: none;
+}
+.searchable-dropdown .dd-clear {
+  position: absolute; right: 26px; top: 50%; transform: translateY(-50%);
+  font-size: 14px; color: #9ca3af; cursor: pointer; display: none;
+  background: none; border: none; padding: 0 4px; font-family: inherit; line-height: 1;
+}
+.searchable-dropdown .dd-clear:hover { color: #374151; }
+.searchable-dropdown .dd-list {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff; border: 1.5px solid #d1d5db; border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.12); z-index: 200; max-height: 220px;
+  overflow-y: auto; padding: 4px 0;
+}
+.searchable-dropdown .dd-list.open { display: block; }
+.searchable-dropdown .dd-item {
+  padding: 8px 14px; font-size: 13px; color: #374151; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.searchable-dropdown .dd-item:hover { background: #eff6ff; color: #2563eb; }
+.searchable-dropdown .dd-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.45); z-index: 10000;
+  justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  width: 640px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+  padding: 28px 32px;
+}
+.modal-title { font-size: 17px; font-weight: 700; color: #111; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+.modal-close { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; padding: 4px 8px; }
+.modal-close:hover { color: #374151; }
+
+/* ── HYPERLINK ── */
+.hyperlink { color: #2563eb; text-decoration: underline; cursor: pointer; }
+.hyperlink:hover { color: #1d4ed8; }
+
+/* ── BIZ GROUP ROW ── */
+.biz-group-row { background: #f8fafc; }
+.biz-group-row:hover { background: #f1f5f9; }
+.op-group-row td:first-child { padding-left: 40px; }
+
+/* ── CAMPAIGN SUB-TABS ── */
+.campaign-sub-tabs {
+  display: flex; gap: 8px; margin-bottom: 20px;
+}
+.campaign-sub-tab {
+  padding: 7px 18px; border-radius: 20px;
+  border: 1.5px solid #d1d5db; background: #fff;
+  font-size: 13px; font-weight: 600; color: #6b7280;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.campaign-sub-tab:hover { border-color: #2563eb; color: #2563eb; }
+.campaign-sub-tab.active {
+  background: #2563eb; color: #fff; border-color: #2563eb;
+}
+
+</style>
+</head>
+<body>
+
+<!-- FLOW NAV -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand">📊 모니터링 목업</div>
+  <button class="flow-btn active" onclick="showTab('tab1')" id="flow-tab1">① 그룹-멤버 조회</button>
+  <button class="flow-btn" onclick="showTab('tab2')" id="flow-tab2">② 캠페인별 조회</button>
+</nav>
+
+<!-- ═══════════════════════ TAB 1: 그룹-멤버 조회 ═══════════════════════ -->
+<div class="screen active" id="tab1">
+  <div class="app">
+    <div class="topbar">
+      <a class="logo"><div class="logo-mark">B</div> 버즈빌 광고센터 — 내부 모니터링</a>
+      <div class="topbar-right">
+        <span>admin@buzzvil.com</span>
+      </div>
+    </div>
+    <main class="main">
+      <div class="page-header">
+        <h1 class="page-title">그룹-멤버 조회</h1>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="search-filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">정산 상태</span>
+          <select class="filter-select" id="settlementFilter" onchange="filterGroupTable()">
+            <option value="">전체</option>
+            <option value="대상 아님">대상 아님</option>
+            <option value="확정 전">확정 전</option>
+            <option value="확정됨">확정됨</option>
+          </select>
+        </div>
+        <div class="filter-group flex-1">
+          <span class="filter-label">비즈그룹 / 운영그룹</span>
+          <input class="search-input" type="text" id="groupSearch" placeholder="이름으로 검색" oninput="filterGroupTable()">
+        </div>
+      </div>
+
+      <div class="results-count" id="groupResultsCount">비즈니스 그룹 7개</div>
+
+      <!-- Biz Group Table -->
+      <div class="table-wrap">
+        <table id="groupTable">
+          <thead>
+            <tr>
+              <th>비즈그룹 / 운영그룹명</th>
+              <th>사업자등록번호</th>
+              <th>유형</th>
+              <th>카탈로그</th>
+              <th>이번 달 정산 상태</th>
+              <th>멤버 수</th>
+              <th>캠페인 수</th>
+            </tr>
+          </thead>
+          <tbody id="groupTableBody">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TAB 2: 캠페인별 조회 ═══════════════════════ -->
+<div class="screen" id="tab2">
+  <div class="app">
+    <div class="topbar">
+      <a class="logo"><div class="logo-mark">B</div> 버즈빌 광고센터 — 내부 모니터링</a>
+      <div class="topbar-right">
+        <span>admin@buzzvil.com</span>
+      </div>
+    </div>
+    <main class="main">
+      <div class="page-header">
+        <h1 class="page-title">캠페인별 조회</h1>
+      </div>
+
+      <div class="campaign-sub-tabs" id="campaignSubTabs">
+        <button class="campaign-sub-tab active" data-type="라이브커머스"
+                onclick="switchCampaignSubTab('라이브커머스')">라이브커머스</button>
+        <button class="campaign-sub-tab" data-type="협력광고"
+                onclick="switchCampaignSubTab('협력광고')">협력광고</button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="search-filter-bar">
+        <div class="filter-group" id="statusFilterGroup">
+          <span class="filter-label">상태</span>
+          <select class="filter-select" id="campaignStatusFilter" onchange="filterCampaignTable()">
+            <option value="">전체</option>
+            <option value="생성됨">생성됨</option>
+            <option value="심사중">심사중</option>
+            <option value="집행예정">집행예정</option>
+            <option value="집행중">집행중</option>
+            <option value="집행완료">집행완료</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">비즈그룹</span>
+          <div class="searchable-dropdown" id="bizGroupDropdown">
+            <input type="text" id="bizGroupFilter" placeholder="전체" autocomplete="off">
+            <button class="dd-clear" onclick="clearDropdown('bizGroupDropdown')">&times;</button>
+            <span class="dd-arrow">▼</span>
+            <div class="dd-list"></div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">운영그룹</span>
+          <div class="searchable-dropdown" id="opGroupDropdown">
+            <input type="text" id="opGroupFilter" placeholder="전체" autocomplete="off">
+            <button class="dd-clear" onclick="clearDropdown('opGroupDropdown')">&times;</button>
+            <span class="dd-arrow">▼</span>
+            <div class="dd-list"></div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">대행사</span>
+          <div class="searchable-dropdown" id="agencyDropdown">
+            <input type="text" id="agencyFilter" placeholder="전체" autocomplete="off">
+            <button class="dd-clear" onclick="clearDropdown('agencyDropdown')">&times;</button>
+            <span class="dd-arrow">▼</span>
+            <div class="dd-list"></div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">생성자 이메일</span>
+          <input class="filter-text" type="text" id="creatorFilter" placeholder="검색" oninput="filterCampaignTable()">
+        </div>
+      </div>
+      <div class="search-filter-bar" style="margin-top:-8px">
+        <div class="filter-group flex-1">
+          <span class="filter-label">캠페인명/ID</span>
+          <input class="search-input" type="text" id="campaignSearch" placeholder="캠페인명 또는 ID로 검색" oninput="filterCampaignTable()">
+        </div>
+      </div>
+
+      <div class="results-count" id="campaignResultsCount">캠페인 10개</div>
+
+      <!-- Campaign Table -->
+      <div class="table-wrap" style="overflow-x:auto">
+        <table id="campaignTable">
+          <thead>
+            <tr>
+              <th id="campaignStatusTh">상태</th>
+              <th>캠페인/ID</th>
+              <th>기간</th>
+              <th>예산/소진</th>
+              <th id="campaignKpiTh">유니크클릭</th>
+              <th>비즈그룹</th>
+              <th>운영그룹</th>
+              <th>대행사</th>
+              <th>생성자</th>
+              <th>애드그룹</th>
+              <th>SF 기회</th>
+            </tr>
+          </thead>
+          <tbody id="campaignTableBody">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MEMBER MODAL -->
+<div class="modal-overlay" id="memberModal" onclick="closeMemberModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      <span id="memberModalTitle">멤버</span>
+      <button class="modal-close" onclick="closeMemberModal()">&times;</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead id="memberModalThead"></thead>
+        <tbody id="memberModalTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// SAMPLE DATA
+// ════════════════════════════════════════════
+
+const bizGroups = [
+  {
+    name: '(주) 아모레퍼시픽',
+    regNo: '101-81-12345',
+    type: '광고주',
+    members: [
+      { name: '김민수', email: 'minsu.kim@amorepacific.com', phone: '010-1234-5678' },
+      { name: '이지은', email: 'jieun.lee@amorepacific.com', phone: '010-2345-6789' },
+    ],
+    opGroups: [
+      {
+        name: '이니스프리',
+        catalogs: ['이니스프리'],
+        memberCount: 4,
+        settlement: '확정됨',
+        members: [
+          { name: '김민수', email: 'minsu.kim@amorepacific.com', phone: '010-1234-5678', bizGroup: '(주) 아모레퍼시픽' },
+          { name: '이지은', email: 'jieun.lee@amorepacific.com', phone: '010-2345-6789', bizGroup: '(주) 아모레퍼시픽' },
+          { name: '박서연', email: 'seoyeon.park@madup.com', phone: '010-5555-1234', bizGroup: '매드업' },
+          { name: '정하늘', email: 'haneul.jung@madup.com', phone: '010-6666-5678', bizGroup: '매드업' },
+        ],
+        campaigns: [
+          { name: '이니스프리 봄 신상 라이브', type: '라이브커머스' },
+          { name: '이니스프리 그린티 협력광고', type: '협력광고' },
+          { name: '이니스프리 여름 세일 라이브', type: '라이브커머스' },
+        ]
+      },
+      {
+        name: '라네즈',
+        catalogs: ['라네즈'],
+        memberCount: 3,
+        settlement: '확정 전',
+        members: [
+          { name: '김민수', email: 'minsu.kim@amorepacific.com', phone: '010-1234-5678', bizGroup: '(주) 아모레퍼시픽' },
+          { name: '최영호', email: 'youngho.choi@amorepacific.com', phone: '010-3456-7890', bizGroup: '(주) 아모레퍼시픽' },
+          { name: '임정우', email: 'jungwoo.lim@batcrew.co.kr', phone: '010-3333-1234', bizGroup: '주식회사 BAT' },
+        ],
+        campaigns: [
+          { name: '라네즈 수분크림 여름 프로모션', type: '협력광고' },
+        ]
+      },
+      {
+        name: '설화수',
+        catalogs: ['설화수'],
+        memberCount: 2,
+        settlement: '확정 전',
+        members: [
+          { name: '김민수', email: 'minsu.kim@amorepacific.com', phone: '010-1234-5678', bizGroup: '(주) 아모레퍼시픽' },
+          { name: '박서연', email: 'seoyeon.park@madup.com', phone: '010-5555-1234', bizGroup: '매드업' },
+        ],
+        campaigns: [
+          { name: '설화수 안티에이징 라이브', type: '라이브커머스' },
+        ]
+      }
+    ]
+  },
+  {
+    name: '매드업',
+    regNo: '220-88-67890',
+    type: '대행사',
+    members: [
+      { name: '박서연', email: 'seoyeon.park@madup.com', phone: '010-5555-1234' },
+      { name: '정하늘', email: 'haneul.jung@madup.com', phone: '010-6666-5678' },
+      { name: '오태환', email: 'taehwan.oh@madup.com', phone: '010-7777-9012' },
+    ],
+    opGroups: [
+      {
+        name: '매드업 광고운영',
+        catalogs: [],
+        memberCount: 3,
+        settlement: '대상 아님',
+        members: [
+          { name: '박서연', email: 'seoyeon.park@madup.com', phone: '010-5555-1234', bizGroup: '매드업' },
+          { name: '정하늘', email: 'haneul.jung@madup.com', phone: '010-6666-5678', bizGroup: '매드업' },
+          { name: '오태환', email: 'taehwan.oh@madup.com', phone: '010-7777-9012', bizGroup: '매드업' },
+        ],
+        campaigns: []
+      }
+    ]
+  },
+  {
+    name: '(주) LG생활건강',
+    regNo: '110-81-24680',
+    type: '광고주',
+    members: [
+      { name: '한소희', email: 'sohee.han@lgcare.com', phone: '010-8888-3456' },
+      { name: '윤재석', email: 'jaeseok.yoon@lgcare.com', phone: '010-9999-4567' },
+    ],
+    opGroups: [
+      {
+        name: '더페이스샵',
+        catalogs: ['더페이스샵'],
+        memberCount: 3,
+        settlement: '대상 아님',
+        members: [
+          { name: '한소희', email: 'sohee.han@lgcare.com', phone: '010-8888-3456', bizGroup: '(주) LG생활건강' },
+          { name: '윤재석', email: 'jaeseok.yoon@lgcare.com', phone: '010-9999-4567', bizGroup: '(주) LG생활건강' },
+          { name: '조현석', email: 'hyunseok.cho@cj.net', phone: '010-2222-3456', bizGroup: '씨제이메조미디어' },
+        ],
+        campaigns: [
+          { name: '더페이스샵 여름 선케어 캠페인', type: '협력광고' },
+        ]
+      },
+      {
+        name: 'CNP',
+        catalogs: ['CNP'],
+        memberCount: 3,
+        settlement: '확정 전',
+        members: [
+          { name: '한소희', email: 'sohee.han@lgcare.com', phone: '010-8888-3456', bizGroup: '(주) LG생활건강' },
+          { name: '김예진', email: 'yejin.kim@cj.net', phone: '010-2222-4567', bizGroup: '씨제이메조미디어' },
+          { name: '황민재', email: 'minjae.hwang@miping.co.kr', phone: '010-1111-6789', bizGroup: '미핑기획' },
+        ],
+        campaigns: [
+          { name: 'CNP 프로폴리스 라이브쇼', type: '라이브커머스' },
+          { name: 'CNP 가을 협력광고', type: '협력광고' },
+        ]
+      }
+    ]
+  },
+  {
+    name: '(주) 올리브영',
+    regNo: '104-86-13579',
+    type: '광고주',
+    members: [
+      { name: '강다현', email: 'dahyun.kang@oliveyoung.com', phone: '010-1111-2222' },
+    ],
+    opGroups: [
+      {
+        name: '올리브영 브랜드관',
+        catalogs: ['올리브영'],
+        memberCount: 2,
+        settlement: '확정됨',
+        members: [
+          { name: '강다현', email: 'dahyun.kang@oliveyoung.com', phone: '010-1111-2222', bizGroup: '(주) 올리브영' },
+          { name: '서지민', email: 'jimin.seo@batcrew.co.kr', phone: '010-4444-5678', bizGroup: '주식회사 BAT' },
+        ],
+        campaigns: [
+          { name: '올리브영 브랜드위크 협력광고', type: '협력광고' },
+          { name: '올리브영 라이브 뷰티쇼', type: '라이브커머스' },
+        ]
+      }
+    ]
+  },
+  {
+    name: '주식회사 BAT',
+    regNo: '214-87-55123',
+    type: '대행사',
+    members: [
+      { name: '임정우', email: 'jungwoo.lim@batcrew.co.kr', phone: '010-3333-1234' },
+      { name: '서지민', email: 'jimin.seo@batcrew.co.kr', phone: '010-4444-5678' },
+    ],
+    opGroups: [
+      {
+        name: 'BAT 광고운영',
+        catalogs: [],
+        memberCount: 2,
+        settlement: '대상 아님',
+        members: [
+          { name: '임정우', email: 'jungwoo.lim@batcrew.co.kr', phone: '010-3333-1234', bizGroup: '주식회사 BAT' },
+          { name: '서지민', email: 'jimin.seo@batcrew.co.kr', phone: '010-4444-5678', bizGroup: '주식회사 BAT' },
+        ],
+        campaigns: []
+      }
+    ]
+  },
+  {
+    name: '씨제이메조미디어',
+    regNo: '104-81-77890',
+    type: '대행사',
+    members: [
+      { name: '조현석', email: 'hyunseok.cho@cj.net', phone: '010-2222-3456' },
+      { name: '김예진', email: 'yejin.kim@cj.net', phone: '010-2222-4567' },
+      { name: '이도현', email: 'dohyun.lee@cj.net', phone: '010-2222-5678' },
+    ],
+    opGroups: [
+      {
+        name: 'CJ메조 광고운영',
+        catalogs: [],
+        memberCount: 3,
+        settlement: '대상 아님',
+        members: [
+          { name: '조현석', email: 'hyunseok.cho@cj.net', phone: '010-2222-3456', bizGroup: '씨제이메조미디어' },
+          { name: '김예진', email: 'yejin.kim@cj.net', phone: '010-2222-4567', bizGroup: '씨제이메조미디어' },
+          { name: '이도현', email: 'dohyun.lee@cj.net', phone: '010-2222-5678', bizGroup: '씨제이메조미디어' },
+        ],
+        campaigns: []
+      }
+    ]
+  },
+  {
+    name: '미핑기획',
+    regNo: '119-86-33456',
+    type: '대행사',
+    members: [
+      { name: '황민재', email: 'minjae.hwang@miping.co.kr', phone: '010-1111-6789' },
+      { name: '나은서', email: 'eunseo.na@miping.co.kr', phone: '010-1111-7890' },
+    ],
+    opGroups: [
+      {
+        name: '미핑기획 광고운영',
+        catalogs: [],
+        memberCount: 2,
+        settlement: '대상 아님',
+        members: [
+          { name: '황민재', email: 'minjae.hwang@miping.co.kr', phone: '010-1111-6789', bizGroup: '미핑기획' },
+          { name: '나은서', email: 'eunseo.na@miping.co.kr', phone: '010-1111-7890', bizGroup: '미핑기획' },
+        ],
+        campaigns: []
+      }
+    ]
+  }
+];
+
+const campaigns = [
+  {
+    name: '이니스프리 봄 신상 라이브',
+    id: '201',
+    type: '라이브커머스',
+    status: '집행중',
+    adGroup: '48201',
+    sfOpp: '006TJ00000A1bCd',
+    startDate: '2026-03-10',
+    endDate: '2026-03-17',
+    budget: 1000000,
+    spent: 620000,
+    opGroup: '이니스프리',
+    creator: '박서연',
+    creatorEmail: 'seoyeon.park@madup.com',
+    bizGroup: '(주) 아모레퍼시픽'
+  },
+  {
+    name: '이니스프리 그린티 협력광고',
+    id: '202',
+    type: '협력광고',
+    status: '집행완료',
+    adGroup: '48202',
+    sfOpp: '006TJ00000B2cDe',
+    startDate: '2026-02-01',
+    endDate: '2026-02-28',
+    budget: 5000000,
+    spent: 4850000,
+    kpi: 540,
+    opGroup: '이니스프리',
+    creator: '이지은',
+    creatorEmail: 'jieun.lee@amorepacific.com',
+    bizGroup: '(주) 아모레퍼시픽'
+  },
+  {
+    name: '라네즈 수분크림 여름 프로모션',
+    id: '203',
+    type: '협력광고',
+    status: '심사중',
+    adGroup: '48203',
+    sfOpp: '006TJ00000C3dEf',
+    startDate: '2026-04-01',
+    endDate: '2026-04-30',
+    budget: 3000000,
+    spent: 0,
+    kpi: null,
+    opGroup: '라네즈',
+    creator: '임정우',
+    creatorEmail: 'jungwoo.lim@batcrew.co.kr',
+    bizGroup: '(주) 아모레퍼시픽'
+  },
+  {
+    name: '설화수 안티에이징 라이브',
+    id: '204',
+    type: '라이브커머스',
+    status: '집행예정',
+    adGroup: '48204',
+    sfOpp: '006TJ00000D4eFg',
+    startDate: '2026-03-20',
+    endDate: '2026-04-20',
+    budget: 1000000,
+    spent: 0,
+    opGroup: '설화수',
+    creator: '박서연',
+    creatorEmail: 'seoyeon.park@madup.com',
+    bizGroup: '(주) 아모레퍼시픽'
+  },
+  {
+    name: '이니스프리 여름 세일 라이브',
+    id: '205',
+    type: '라이브커머스',
+    status: '생성됨',
+    adGroup: '48205',
+    sfOpp: '006TJ00000E5fGh',
+    startDate: '2026-06-01',
+    endDate: '2026-06-15',
+    budget: 800000,
+    spent: 0,
+    opGroup: '이니스프리',
+    creator: '정하늘',
+    creatorEmail: 'haneul.jung@madup.com',
+    bizGroup: '(주) 아모레퍼시픽'
+  },
+  {
+    name: '더페이스샵 여름 선케어 캠페인',
+    id: '206',
+    type: '협력광고',
+    status: '집행중',
+    adGroup: '48206',
+    sfOpp: '006TJ00000F6gHi',
+    startDate: '2026-03-01',
+    endDate: '2026-03-31',
+    budget: 4000000,
+    spent: 2100000,
+    kpi: 320,
+    opGroup: '더페이스샵',
+    creator: '조현석',
+    creatorEmail: 'hyunseok.cho@cj.net',
+    bizGroup: '(주) LG생활건강'
+  },
+  {
+    name: 'CNP 프로폴리스 라이브쇼',
+    id: '207',
+    type: '라이브커머스',
+    status: '집행완료',
+    adGroup: '48207',
+    sfOpp: '006TJ00000G7hIj',
+    startDate: '2026-02-15',
+    endDate: '2026-02-15',
+    budget: 800000,
+    spent: 820000,
+    opGroup: 'CNP',
+    creator: '김예진',
+    creatorEmail: 'yejin.kim@cj.net',
+    bizGroup: '(주) LG생활건강'
+  },
+  {
+    name: 'CNP 가을 협력광고',
+    id: '208',
+    type: '협력광고',
+    status: '생성됨',
+    adGroup: '48208',
+    sfOpp: '006TJ00000H8iJk',
+    startDate: '2026-09-01',
+    endDate: '2026-09-30',
+    budget: 6000000,
+    spent: 0,
+    kpi: null,
+    opGroup: 'CNP',
+    creator: '황민재',
+    creatorEmail: 'minjae.hwang@miping.co.kr',
+    bizGroup: '(주) LG생활건강'
+  },
+  {
+    name: '올리브영 브랜드위크 협력광고',
+    id: '209',
+    type: '협력광고',
+    status: '집행중',
+    adGroup: '48209',
+    sfOpp: '006TJ00000I9jKl',
+    startDate: '2026-03-10',
+    endDate: '2026-03-24',
+    budget: 10000000,
+    spent: 5200000,
+    kpi: 480,
+    opGroup: '올리브영 브랜드관',
+    creator: '강다현',
+    creatorEmail: 'dahyun.kang@oliveyoung.com',
+    bizGroup: '(주) 올리브영'
+  },
+  {
+    name: '올리브영 라이브 뷰티쇼',
+    id: '210',
+    type: '라이브커머스',
+    status: '집행예정',
+    adGroup: '48210',
+    sfOpp: '006TJ00000J0kLm',
+    startDate: '2026-04-05',
+    endDate: '2026-04-05',
+    budget: 1000000,
+    spent: 0,
+    opGroup: '올리브영 브랜드관',
+    creator: '서지민',
+    creatorEmail: 'jimin.seo@batcrew.co.kr',
+    bizGroup: '(주) 올리브영'
+  }
+];
+
+// ════════════════════════════════════════════
+// CAMPAIGN SUB-TAB
+// ════════════════════════════════════════════
+
+var activeCampaignSubTab = '라이브커머스';
+
+function switchCampaignSubTab(type) {
+  activeCampaignSubTab = type;
+  document.querySelectorAll('.campaign-sub-tab').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-type') === type);
+  });
+  // 협력광고 전환 시 상태 필터 초기화 + 숨김
+  var statusGroup = document.getElementById('statusFilterGroup');
+  var statusSelect = document.getElementById('campaignStatusFilter');
+  if (type === '협력광고') {
+    statusGroup.style.display = 'none';
+    statusSelect.value = '';
+  } else {
+    statusGroup.style.display = '';
+  }
+  updateCampaignTableHeader();
+  filterCampaignTable();
+}
+
+function updateCampaignTableHeader() {
+  var statusTh = document.getElementById('campaignStatusTh');
+  var kpiTh = document.getElementById('campaignKpiTh');
+  if (activeCampaignSubTab === '협력광고') {
+    statusTh.style.display = 'none';
+    kpiTh.textContent = 'ROAS';
+  } else {
+    statusTh.style.display = '';
+    kpiTh.textContent = '유니크클릭';
+  }
+}
+
+// ════════════════════════════════════════════
+// TAB NAVIGATION
+// ════════════════════════════════════════════
+
+function showTab(tabId, opGroupFilter, subTabType) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('flow-' + tabId).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (tabId === 'tab2') {
+    if (subTabType) {
+      switchCampaignSubTab(subTabType);
+    }
+    if (opGroupFilter) {
+      setDropdownValue('opGroupDropdown', opGroupFilter);
+      document.getElementById('campaignSearch').value = '';
+      document.getElementById('campaignStatusFilter').value = '';
+      document.getElementById('creatorFilter').value = '';
+      setDropdownValue('bizGroupDropdown', '');
+      setDropdownValue('agencyDropdown', '');
+      filterCampaignTable();
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+// BADGE & FORMAT HELPERS
+// ════════════════════════════════════════════
+
+function getSettlementBadge(status) {
+  const map = {
+    '대상 아님': 'badge-not-target',
+    '확정 전': 'badge-before-confirm',
+    '확정됨': 'badge-confirmed'
+  };
+  return '<span class="badge ' + (map[status] || '') + '">' + status + '</span>';
+}
+
+function getTypeBadge(type) {
+  if (type === '광고주') return '<span class="badge badge-advertiser">광고주</span>';
+  if (type === '대행사') return '<span class="badge badge-agency">대행사</span>';
+  return type;
+}
+
+function getCampaignTypeBadge(type) {
+  if (type === '협력광고') return '<span class="badge badge-coop">협력광고</span>';
+  if (type === '라이브커머스') return '<span class="badge badge-live">라이브커머스</span>';
+  return type;
+}
+
+function getCampaignStatusBadge(status) {
+  const map = {
+    '생성됨': 'badge-created',
+    '심사중': 'badge-reviewing',
+    '집행예정': 'badge-scheduled',
+    '집행중': 'badge-running',
+    '집행완료': 'badge-completed'
+  };
+  return '<span class="badge ' + (map[status] || '') + '">' + status + '</span>';
+}
+
+function formatMoney(n) {
+  return n.toLocaleString('ko-KR') + '원';
+}
+
+// ════════════════════════════════════════════
+// TAB 1: GROUP TABLE — FLAT ACCORDION
+// ════════════════════════════════════════════
+
+const expandedBizGroups = new Set();
+
+function renderGroupTable() {
+  const searchVal = (document.getElementById('groupSearch').value || '').toLowerCase();
+  const settlementVal = document.getElementById('settlementFilter').value;
+
+  const tbody = document.getElementById('groupTableBody');
+  let html = '';
+  let visibleCount = 0;
+
+  bizGroups.forEach(function(biz, bIdx) {
+    // Check if any op group matches settlement filter
+    let hasMatchingOpGroup = !settlementVal;
+    if (settlementVal) {
+      hasMatchingOpGroup = biz.opGroups.some(function(og) { return og.settlement === settlementVal; });
+    }
+
+    // Check search match — only biz group / op group names
+    let matchesSearch = !searchVal;
+    if (searchVal) {
+      if (biz.name.toLowerCase().includes(searchVal)) matchesSearch = true;
+      biz.opGroups.forEach(function(og) {
+        if (og.name.toLowerCase().includes(searchVal)) matchesSearch = true;
+      });
+    }
+
+    if (!hasMatchingOpGroup || !matchesSearch) return;
+
+    visibleCount++;
+    const isExpanded = expandedBizGroups.has(bIdx);
+    const totalMembers = biz.members.length;
+
+    // ── Biz Group Row ──
+    html += '<tr class="expandable-row biz-group-row" onclick="toggleBizGroup(' + bIdx + ')">';
+    html += '<td style="font-weight:600"><span class="expand-icon ' + (isExpanded ? 'open' : '') + '">▶</span> ' + biz.name + '</td>';
+    html += '<td>' + biz.regNo + '</td>';
+    html += '<td>' + getTypeBadge(biz.type) + '</td>';
+    html += '<td>—</td>';
+    html += '<td>—</td>';
+    html += '<td><span class="clickable-chip" onclick="event.stopPropagation();openBizMemberModal(' + bIdx + ')"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>' + totalMembers + '</span></td>';
+    html += '<td>—</td>';
+    html += '</tr>';
+
+    // ── Op Group Rows (when expanded) ──
+    if (isExpanded) {
+      biz.opGroups.forEach(function(og, oIdx) {
+        if (settlementVal && og.settlement !== settlementVal) return;
+
+        html += '<tr class="op-group-row">';
+        html += '<td>└ ' + og.name + '</td>';
+        html += '<td>—</td>';
+        html += '<td>—</td>';
+        html += '<td><div class="catalog-tags">';
+        og.catalogs.forEach(function(c) {
+          html += '<span class="catalog-tag">' + c + '</span>';
+        });
+        html += '</div></td>';
+        html += '<td>' + getSettlementBadge(og.settlement) + '</td>';
+        html += '<td><span class="clickable-chip" onclick="openOpMemberModal(' + bIdx + ',' + oIdx + ')"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>' + og.memberCount + '</span></td>';
+        var liveCount = og.campaigns.filter(function(cp) { return cp.type === '라이브커머스'; }).length;
+        var coopCount = og.campaigns.filter(function(cp) { return cp.type === '협력광고'; }).length;
+        html += '<td>';
+        html += '<span class="clickable-chip" onclick="event.stopPropagation();showTab(\'tab2\',\'' + og.name + '\',\'라이브커머스\')">라이브커머스 ' + liveCount + '</span>';
+        html += ' <span style="color:#9ca3af;font-size:12px">/</span> ';
+        html += '<span class="clickable-chip" onclick="event.stopPropagation();showTab(\'tab2\',\'' + og.name + '\',\'협력광고\')">협력광고 ' + coopCount + '</span>';
+        html += '</td>';
+        html += '</tr>';
+      });
+    }
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById('groupResultsCount').textContent = '비즈니스 그룹 ' + visibleCount + '개';
+}
+
+function toggleBizGroup(idx) {
+  if (expandedBizGroups.has(idx)) {
+    expandedBizGroups.delete(idx);
+  } else {
+    expandedBizGroups.add(idx);
+  }
+  renderGroupTable();
+}
+
+function filterGroupTable() {
+  renderGroupTable();
+}
+
+// ════════════════════════════════════════════
+// MEMBER MODAL
+// ════════════════════════════════════════════
+
+function openBizMemberModal(bIdx) {
+  var biz = bizGroups[bIdx];
+  openMemberModal(biz.name + ' 멤버', biz.members, false);
+}
+
+function openOpMemberModal(bIdx, oIdx) {
+  var og = bizGroups[bIdx].opGroups[oIdx];
+  openMemberModal(og.name + ' 멤버', og.members, true);
+}
+
+function openMemberModal(title, members, showBizGroup) {
+  document.getElementById('memberModalTitle').textContent = title;
+
+  let thead = '<tr><th>이름</th><th>이메일</th><th>연락처</th>';
+  if (showBizGroup) thead += '<th>소속 비즈그룹</th>';
+  thead += '</tr>';
+  document.getElementById('memberModalThead').innerHTML = thead;
+
+  let tbody = '';
+  members.forEach(function(m) {
+    const isCross = showBizGroup && m.bizGroup && bizGroups.some(function(bg) {
+      return bg.members.some(function(bm) { return bm.email === m.email; }) && bg.name !== m.bizGroup;
+    });
+    tbody += '<tr>';
+    tbody += '<td>' + m.name + '</td>';
+    tbody += '<td>' + m.email + '</td>';
+    tbody += '<td>' + m.phone + '</td>';
+    if (showBizGroup) {
+      tbody += '<td>' + (m.bizGroup || '') + '</td>';
+    }
+    tbody += '</tr>';
+  });
+  document.getElementById('memberModalTbody').innerHTML = tbody;
+
+  document.getElementById('memberModal').classList.add('open');
+}
+
+function findParentBizGroupForOpMember(member) {
+  // Find which biz group's op group contains this member
+  for (var i = 0; i < bizGroups.length; i++) {
+    for (var j = 0; j < bizGroups[i].opGroups.length; j++) {
+      var og = bizGroups[i].opGroups[j];
+      for (var k = 0; k < og.members.length; k++) {
+        if (og.members[k].email === member.email) {
+          return bizGroups[i].name;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function closeMemberModal(event) {
+  if (!event || event.target === document.getElementById('memberModal')) {
+    document.getElementById('memberModal').classList.remove('open');
+  }
+}
+
+// ════════════════════════════════════════════
+// SEARCHABLE DROPDOWN
+// ════════════════════════════════════════════
+
+function getDropdownOptions() {
+  var bizSet = new Set();
+  var opSet = new Set();
+  var agencySet = new Set();
+  campaigns.forEach(function(c) {
+    bizSet.add(c.bizGroup);
+    opSet.add(c.opGroup);
+    var bg = getCreatorBizGroup(c.creatorEmail);
+    if (bg && bg.type === '대행사') agencySet.add(bg.name);
+  });
+  return {
+    bizGroupDropdown: Array.from(bizSet).sort(),
+    opGroupDropdown: Array.from(opSet).sort(),
+    agencyDropdown: Array.from(agencySet).sort()
+  };
+}
+
+// 비즈그룹 ↔ 운영그룹 매핑
+var bizToOpMap = {};
+var opToBizMap = {};
+campaigns.forEach(function(c) {
+  if (!bizToOpMap[c.bizGroup]) bizToOpMap[c.bizGroup] = new Set();
+  bizToOpMap[c.bizGroup].add(c.opGroup);
+  opToBizMap[c.opGroup] = c.bizGroup;
+});
+
+function initDropdown(containerId, options) {
+  var container = document.getElementById(containerId);
+  var input = container.querySelector('input');
+  var list = container.querySelector('.dd-list');
+  var clearBtn = container.querySelector('.dd-clear');
+  container._selectedValue = '';
+  container._options = options;
+  container._allOptions = options;
+
+  container._renderList = function(filter) {
+    var html = '';
+    var f = (filter || '').toLowerCase();
+    var opts = container._options;
+    opts.forEach(function(opt) {
+      var label = (typeof opt === 'object') ? opt.label : opt;
+      var sub = (typeof opt === 'object') ? opt.sub : null;
+      var val = (typeof opt === 'object') ? opt.value : opt;
+      if (f && !label.toLowerCase().includes(f) && !(sub && sub.toLowerCase().includes(f))) return;
+      var cls = (val === container._selectedValue) ? 'dd-item active' : 'dd-item';
+      html += '<div class="' + cls + '" data-value="' + val + '">';
+      html += '<div>' + label + '</div>';
+      if (sub) html += '<div style="font-size:10px;color:#9ca3af;margin-top:1px">' + sub + '</div>';
+      html += '</div>';
+    });
+    if (!html) html = '<div style="padding:8px 14px;font-size:12px;color:#9ca3af">결과 없음</div>';
+    list.innerHTML = html;
+    list.querySelectorAll('.dd-item').forEach(function(item) {
+      item.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        selectDropdown(containerId, item.getAttribute('data-value'));
+      });
+    });
+  };
+
+  input.addEventListener('focus', function() {
+    if (container._selectedValue) {
+      input.value = '';
+      container._renderList('');
+    } else {
+      container._renderList(input.value);
+    }
+    list.classList.add('open');
+  });
+  input.addEventListener('input', function() {
+    container._selectedValue = '';
+    clearBtn.style.display = 'none';
+    container._renderList(input.value);
+    list.classList.add('open');
+    filterCampaignTable();
+  });
+  input.addEventListener('blur', function() {
+    list.classList.remove('open');
+    if (container._selectedValue) {
+      input.value = container._selectedValue;
+    } else {
+      input.value = '';
+    }
+  });
+
+  container._renderList('');
+}
+
+function selectDropdown(containerId, value) {
+  var container = document.getElementById(containerId);
+  var input = container.querySelector('input');
+  var list = container.querySelector('.dd-list');
+  var clearBtn = container.querySelector('.dd-clear');
+  container._selectedValue = value;
+  input.value = value;
+  clearBtn.style.display = 'block';
+  list.classList.remove('open');
+
+  // 비즈그룹 선택 → 운영그룹 옵션 필터링
+  if (containerId === 'bizGroupDropdown') {
+    updateOpGroupOptions(value);
+  }
+  // 운영그룹 선택 → 비즈그룹 자동 채움
+  if (containerId === 'opGroupDropdown' && value && opToBizMap[value]) {
+    setDropdownValue('bizGroupDropdown', opToBizMap[value]);
+    updateOpGroupOptions(opToBizMap[value]);
+  }
+
+  filterCampaignTable();
+}
+
+function clearDropdown(containerId) {
+  var container = document.getElementById(containerId);
+  var input = container.querySelector('input');
+  var clearBtn = container.querySelector('.dd-clear');
+  container._selectedValue = '';
+  input.value = '';
+  clearBtn.style.display = 'none';
+
+  // 비즈그룹 해제 → 운영그룹 전체 옵션 복원
+  if (containerId === 'bizGroupDropdown') {
+    updateOpGroupOptions('');
+  }
+
+  filterCampaignTable();
+}
+
+function updateOpGroupOptions(bizGroupName) {
+  var opContainer = document.getElementById('opGroupDropdown');
+  if (!opContainer) return;
+  if (bizGroupName && bizToOpMap[bizGroupName]) {
+    var filtered = Array.from(bizToOpMap[bizGroupName]).sort();
+    opContainer._options = filtered.map(function(op) {
+      return { label: op, value: op, sub: bizGroupName };
+    });
+  } else {
+    opContainer._options = opContainer._allOptions;
+  }
+  // 선택된 운영그룹이 새 옵션에 없으면 해제
+  if (opContainer._selectedValue) {
+    var vals = opContainer._options.map(function(o) { return (typeof o === 'object') ? o.value : o; });
+    if (vals.indexOf(opContainer._selectedValue) === -1) {
+      opContainer._selectedValue = '';
+      opContainer.querySelector('input').value = '';
+      opContainer.querySelector('.dd-clear').style.display = 'none';
+    }
+  }
+  opContainer._renderList('');
+}
+
+function setDropdownValue(containerId, value) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var input = container.querySelector('input');
+  var clearBtn = container.querySelector('.dd-clear');
+  if (value) {
+    container._selectedValue = value;
+    input.value = value;
+    clearBtn.style.display = 'block';
+  } else {
+    container._selectedValue = '';
+    input.value = '';
+    clearBtn.style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════════
+// TAB 2: CAMPAIGN TABLE RENDERING
+// ════════════════════════════════════════════
+
+function getCreatorBizGroup(email) {
+  for (var i = 0; i < bizGroups.length; i++) {
+    for (var j = 0; j < bizGroups[i].members.length; j++) {
+      if (bizGroups[i].members[j].email === email) {
+        return { name: bizGroups[i].name, type: bizGroups[i].type };
+      }
+    }
+  }
+  return null;
+}
+
+function renderCampaignTable() {
+  const searchVal = (document.getElementById('campaignSearch').value || '').toLowerCase();
+  const typeVal = activeCampaignSubTab;
+  const statusVal = document.getElementById('campaignStatusFilter').value;
+  const creatorVal = (document.getElementById('creatorFilter').value || '').toLowerCase();
+  const bizVal = (document.getElementById('bizGroupDropdown')._selectedValue || '');
+  const opVal = (document.getElementById('opGroupDropdown')._selectedValue || '');
+  const agencyVal = (document.getElementById('agencyDropdown')._selectedValue || '');
+  const isCoop = (typeVal === '협력광고');
+
+  const tbody = document.getElementById('campaignTableBody');
+  let html = '';
+  let visibleCount = 0;
+
+  // 캠페인 ID 내림차순 정렬
+  const sorted = campaigns.slice().sort(function(a, b) { return Number(b.id) - Number(a.id); });
+
+  sorted.forEach(function(c) {
+    if (searchVal && !c.name.toLowerCase().includes(searchVal) && !c.id.includes(searchVal)) return;
+    if (c.type !== typeVal) return;
+    if (statusVal && c.status !== statusVal) return;
+    if (creatorVal && !c.creatorEmail.toLowerCase().includes(creatorVal)) return;
+    if (bizVal && c.bizGroup !== bizVal) return;
+    if (opVal && c.opGroup !== opVal) return;
+
+    // 대행사 필터
+    var creatorBg = getCreatorBizGroup(c.creatorEmail);
+    var agencyName = (creatorBg && creatorBg.type === '대행사') ? creatorBg.name : '';
+    if (agencyVal && agencyName !== agencyVal) return;
+
+    visibleCount++;
+
+    const spentRate = c.budget > 0 ? Math.round((c.spent / c.budget) * 100) : 0;
+    const progressColor = '#60a5fa';
+
+    html += '<tr>';
+    // 상태 (협력광고 시 숨김)
+    html += '<td' + (isCoop ? ' style="display:none"' : '') + '>' + getCampaignStatusBadge(c.status) + '</td>';
+    // 캠페인 (캠페인명 + ID 병합)
+    html += '<td style="min-width:240px"><div style="font-weight:700;font-size:13px">' + c.name + '</div><div style="color:#6b7280;font-size:11px">' + c.id + '</div></td>';
+    // 기간
+    html += '<td style="font-size:12px;white-space:nowrap;text-align:center"><div>' + c.startDate + '</div><div>~ ' + c.endDate + '</div></td>';
+    // 예산/소진 (예산 + 소진액 + 프로그레스바 병합)
+    html += '<td style="min-width:180px">';
+    html += '<div style="font-size:12px">' + formatMoney(c.budget) + '</div>';
+    html += '<div style="font-size:12px;margin:2px 0 4px">' + formatMoney(c.spent) + '</div>';
+    html += '<div class="progress-bar">';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + spentRate + '%;background:' + progressColor + '"></div></div>';
+    html += '<span class="progress-label">' + spentRate + '%</span>';
+    html += '</div>';
+    html += '</td>';
+    // KPI (서브라벨 제거, 값만 표시)
+    if (isCoop) {
+      if (c.kpi == null) {
+        html += '<td style="color:#9ca3af;text-align:center">—</td>';
+      } else {
+        html += '<td style="white-space:nowrap;font-size:13px">' + c.kpi.toLocaleString('ko-KR') + '%</td>';
+      }
+    } else {
+      var uniqueClicks = c.spent > 0 ? Math.ceil(c.spent / 6.7) : 0;
+      if (uniqueClicks === 0) {
+        html += '<td style="color:#9ca3af;text-align:center">—</td>';
+      } else {
+        html += '<td style="white-space:nowrap;font-size:13px">' + uniqueClicks.toLocaleString('ko-KR') + '</td>';
+      }
+    }
+    // 비즈그룹
+    html += '<td>' + c.bizGroup + '</td>';
+    // 운영그룹
+    html += '<td>' + c.opGroup + '</td>';
+    // 대행사
+    html += '<td>' + (agencyName || '—') + '</td>';
+    // 생성자 (이름 + 이메일)
+    html += '<td><div style="font-size:12px">' + c.creator + '</div><div style="font-size:10px;color:#9ca3af">' + c.creatorEmail + '</div></td>';
+    // 애드그룹 (하이퍼링크 스타일)
+    html += '<td style="font-size:12px"><span class="hyperlink">' + c.adGroup + '</span></td>';
+    // SF 기회 (하이퍼링크 스타일)
+    html += '<td style="font-size:11px;font-family:monospace"><span class="hyperlink">' + c.sfOpp + '</span></td>';
+    html += '</tr>';
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById('campaignResultsCount').textContent = '캠페인 ' + visibleCount + '개';
+  updateCampaignTableHeader();
+}
+
+function filterCampaignTable() {
+  renderCampaignTable();
+}
+
+// ════════════════════════════════════════════
+// INIT — default expand all biz groups
+// ════════════════════════════════════════════
+
+bizGroups.forEach(function(_, idx) {
+  expandedBizGroups.add(idx);
+});
+
+renderGroupTable();
+
+// Init searchable dropdowns
+var ddOpts = getDropdownOptions();
+initDropdown('bizGroupDropdown', ddOpts.bizGroupDropdown);
+// 운영그룹은 비즈그룹 서브타이틀과 함께 표시
+var opGroupOptionsWithSub = ddOpts.opGroupDropdown.map(function(op) {
+  return { label: op, value: op, sub: opToBizMap[op] || '' };
+});
+initDropdown('opGroupDropdown', opGroupOptionsWithSub);
+initDropdown('agencyDropdown', ddOpts.agencyDropdown);
+
+// Close dropdowns on outside click
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.searchable-dropdown .dd-list').forEach(function(list) {
+    if (!list.parentElement.contains(e.target)) list.classList.remove('open');
+  });
+});
+
+renderCampaignTable();
+
+</script>
+</body>
+</html>
