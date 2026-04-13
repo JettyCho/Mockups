@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuzzFinder — 제휴지면 탐색기</title>
+<link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090b;
+  --surface: #18181b;
+  --elevated: #27272a;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.14);
+  --text-1: #f4f4f5;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --accent: #EF4444;
+  --accent-hover: #dc2626;
+  --ss-h: 420px;
+  --ss-w: 195px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --ss-w: 130px;
+    --ss-h: 280px;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── STICKY TOP BLOCK ─── */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(9,9,11,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── HEADER ─── */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 20px 12px;
+  gap: 12px;
+}
+
+.logo-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+.logo-mark { width: 24px; height: auto; flex-shrink: 0; }
+.logo-name {
+  font-size: 17px; font-weight: 800; color: var(--text-1); letter-spacing: -.3px;
+  font-family: 'Inter', sans-serif;
+}
+.logo-name span { color: var(--accent); }
+.logo-kicker {
+  font-size: 9.5px; color: var(--text-3);
+  font-family: 'Anonymous Pro', monospace;
+  text-transform: uppercase; letter-spacing: .14em;
+  padding: 2px 7px; border: 1px solid var(--border-strong); border-radius: 4px;
+  margin-left: 2px;
+}
+
+.search-wrap {
+  width: 90%; max-width: 640px;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: 10px; padding: 0 14px; height: 40px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.search-wrap:focus-within {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239,68,68,.12);
+}
+.search-wrap svg { color: var(--text-3); flex-shrink: 0; }
+#search-input {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-size: 14px; color: var(--text-1); font-family: inherit;
+}
+#search-input::placeholder { color: var(--text-3); }
+#search-clear {
+  border: none; background: none; cursor: pointer; color: var(--text-3);
+  padding: 2px; border-radius: 50%; display: flex; align-items: center;
+  transition: color .1s;
+}
+#search-clear:hover { color: var(--text-1); }
+
+/* ─── CATEGORY CLOUD ─── */
+.cat-bar-outer {
+  border-top: 1px solid var(--border);
+}
+.cat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+.cat-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--border-strong); background: transparent; cursor: pointer;
+  padding: 5px 12px; border-radius: 20px; white-space: nowrap;
+  font-size: 12.5px; font-weight: 500; color: var(--text-3);
+  transition: color .12s, border-color .12s, background .12s;
+  font-family: inherit; flex-shrink: 0;
+}
+.cat-btn:hover { color: var(--text-2); border-color: var(--text-3); }
+.cat-btn.active {
+  background: var(--accent); border-color: var(--accent);
+  color: #fff; font-weight: 600;
+}
+.cat-cnt {
+  background: rgba(255,255,255,.12); color: inherit;
+  font-size: 10px; font-weight: 700; padding: 0px 5px;
+  border-radius: 20px; min-width: 18px; text-align: center;
+  font-family: 'Anonymous Pro', monospace;
+}
+.cat-btn:not(.active) .cat-cnt { background: var(--elevated); color: var(--text-3); }
+
+.cat-featured { }
+.cat-featured .featured-star { color: #f59e0b; font-size: 11px; }
+.cat-featured.active { background: #f59e0b; border-color: #f59e0b; color: #1c1000; }
+.cat-featured.active .featured-star { color: #1c1000; }
+.cat-featured.active .cat-cnt { background: rgba(0,0,0,.18); color: #1c1000; }
+
+/* ─── MAIN ─── */
+.main { padding: 28px 20px 60px; }
+
+.app-list-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── APP CARD ─── */
+.app-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeInCard .22s ease both;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.app-icon {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: rgba(255,255,255,.9);
+  letter-spacing: -1px;
+}
+.app-name-wrap { flex: 1; min-width: 0; }
+.app-name {
+  font-size: 15px; font-weight: 700; color: var(--text-1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.cat-badge {
+  display: inline-block; margin-top: 4px;
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 20px;
+}
+
+/* category badge — dark theme */
+.cat-금융        { background: rgba(37,99,235,.18);  color: #93c5fd; }
+.cat-쇼핑        { background: rgba(194,65,12,.2);   color: #fdba74; }
+.cat-라이프스타일 { background: rgba(21,128,61,.18);  color: #86efac; }
+.cat-육아        { background: rgba(162,28,175,.18);  color: #e879f9; }
+.cat-엔터테인먼트 { background: rgba(190,18,60,.18);  color: #fda4af; }
+.cat-뉴스미디어  { background: rgba(3,105,161,.18);   color: #7dd3fc; }
+.cat-게임        { background: rgba(161,98,7,.2);     color: #fde047; }
+.cat-음식배달    { background: rgba(234,88,12,.18);   color: #fb923c; }
+.cat-여행        { background: rgba(15,118,110,.18);  color: #5eead4; }
+.cat-건강피트니스 { background: rgba(5,150,105,.18);  color: #6ee7b7; }
+.cat-교육        { background: rgba(124,58,237,.18);  color: #c4b5fd; }
+.cat-소셜커뮤니티 { background: rgba(37,99,235,.18);  color: #93c5fd; }
+.cat-오픈마켓    { background: rgba(161,98,7,.2);     color: #fde047; }
+.cat-부동산      { background: rgba(219,39,119,.18);  color: #f9a8d4; }
+.cat-교통모빌리티 { background: rgba(2,132,199,.18);  color: #7dd3fc; }
+.cat-음악오디오  { background: rgba(124,58,237,.18);  color: #c4b5fd; }
+.cat-스포츠      { background: rgba(180,83,9,.18);    color: #fdba74; }
+.cat-만화웹툰    { background: rgba(220,38,38,.18);   color: #fca5a5; }
+.cat-날씨        { background: rgba(3,105,161,.18);   color: #7dd3fc; }
+.cat-기타        { background: rgba(55,65,81,.3);     color: #9ca3af; }
+
+.card-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.meta-row {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.meta-label {
+  font-size: 9.5px; font-weight: 400; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: .12em;
+  font-family: 'Anonymous Pro', monospace;
+}
+.meta-val {
+  font-size: 13px; color: var(--text-2); line-height: 1.4;
+  word-break: keep-all;
+}
+.meta-val.empty { color: var(--text-3); font-style: italic; }
+.meta-val.manager { font-weight: 600; color: var(--text-1); }
+
+/* ─── SCREENSHOTS AREA inside card ─── */
+.ss-area {
+  overflow-x: auto; overflow-y: visible;
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 4px 20px 10px;
+  margin: 0 -20px;
+  scrollbar-width: thin; scrollbar-color: var(--elevated) transparent;
+  scroll-behavior: smooth;
+}
+.ss-area::-webkit-scrollbar { height: 4px; }
+.ss-area::-webkit-scrollbar-track { background: transparent; }
+.ss-area::-webkit-scrollbar-thumb { background: var(--elevated); border-radius: 2px; }
+
+/* ─── SCREENSHOT ITEM ─── */
+.ss-item {
+  position: relative; flex-shrink: 0;
+  width: var(--ss-w); height: var(--ss-h);
+  border-radius: 18px; overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,.5);
+  border: 2px solid transparent;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, border-color .15s;
+  animation: fadeInImg .35s ease forwards;
+  animation-delay: var(--ss-delay, 0ms);
+  opacity: 0;
+}
+.ss-item:hover {
+  transform: scale(1.04) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.65);
+  z-index: 5;
+}
+.ss-item.selected {
+  border-color: rgba(255,255,255,.65);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.1);
+}
+.ss-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+/* CHECKBOX OVERLAY */
+.ss-check-wrap {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  opacity: 0; transition: opacity .15s;
+}
+.ss-item:hover .ss-check-wrap,
+.ss-item.selected .ss-check-wrap { opacity: 1; }
+.ss-checkbox { display: none; }
+.ss-check-box {
+  width: 22px; height: 22px;
+  background: rgba(0,0,0,.55);
+  border: 2px solid rgba(255,255,255,.45);
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .12s, border-color .12s;
+  backdrop-filter: blur(4px);
+}
+.ss-item.selected .ss-check-box {
+  background: var(--text-1); border-color: var(--text-1);
+}
+.ss-check-icon {
+  display: none; color: var(--bg);
+  width: 12px; height: 12px;
+}
+.ss-item.selected .ss-check-icon { display: block; }
+
+/* PLACEHOLDER SCREEN */
+.ss-placeholder-inner {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; padding: 18px 12px 12px;
+  gap: 8px;
+}
+.ph-bar {
+  height: 7px; border-radius: 4px;
+  background: rgba(255,255,255,.18); flex-shrink: 0;
+}
+.ph-bar.w80 { width: 80%; }
+.ph-bar.w60 { width: 60%; }
+.ph-bar.w45 { width: 45%; }
+.ph-bar.w70 { width: 70%; }
+.ph-block {
+  border-radius: 8px;
+  background: rgba(255,255,255,.1); flex-shrink: 0;
+  width: 100%;
+}
+.ph-block.h48 { height: 48px; }
+.ph-block.h32 { height: 32px; }
+.ph-notch {
+  width: 36px; height: 5px; border-radius: 3px;
+  background: rgba(0,0,0,.25); margin-bottom: 6px; flex-shrink: 0;
+}
+.ph-home {
+  width: 32px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,.3); margin-top: auto; flex-shrink: 0;
+}
+.ss-badge-preparing {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.65); color: var(--text-3);
+  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap; backdrop-filter: blur(4px);
+  font-family: 'Anonymous Pro', monospace; letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ─── CARD FOOTER ─── */
+.card-footer {
+  display: flex;
+  gap: 8px;
+  padding-top: 2px;
+}
+.sel-all-btn {
+  flex: 1; height: 32px;
+  border: 1px solid var(--border-strong); background: transparent;
+  border-radius: 7px; font-size: 12px; font-weight: 600; color: var(--text-3);
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.sel-all-btn:hover { border-color: var(--text-2); color: var(--text-1); }
+.sel-all-btn.all-selected { background: rgba(255,255,255,.08); color: var(--text-1); border-color: var(--border-strong); }
+.app-dl-btn {
+  flex: 1; height: 32px;
+  background: transparent; border: 1px solid var(--border); color: var(--text-3);
+  border-radius: 7px; font-size: 12px; font-weight: 600; cursor: not-allowed;
+  font-family: inherit; transition: all .12s;
+}
+.app-dl-btn.has-sel {
+  background: var(--text-1); border-color: var(--text-1); color: var(--bg);
+  cursor: pointer;
+}
+.app-dl-btn.has-sel:hover { background: #e4e4e7; border-color: #e4e4e7; }
+
+/* ─── SELECTION PILL (fixed top-right) ─── */
+.sel-pill-fixed {
+  position: fixed;
+  top: 14px;
+  right: 20px;
+  z-index: 500;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px; padding: 7px 14px;
+  font-size: 13px; color: var(--text-2);
+  box-shadow: 0 4px 24px rgba(0,0,0,.5);
+  backdrop-filter: blur(12px);
+}
+#sel-count {
+  font-weight: 700; color: var(--text-1);
+  font-family: 'Anonymous Pro', monospace;
+}
+.dl-btn {
+  background: var(--text-1); color: var(--bg);
+  border: none; border-radius: 8px; padding: 5px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background .15s, transform .1s;
+  font-family: inherit;
+  display: flex; align-items: center; gap: 6px;
+}
+.dl-btn:hover { background: #e4e4e7; transform: translateY(-1px); }
+.dl-btn:active { transform: translateY(0); }
+.clear-sel {
+  border: none; background: none; color: var(--text-3); cursor: pointer;
+  font-size: 12px; padding: 4px 6px; border-radius: 6px;
+  font-family: inherit; transition: background .1s;
+}
+.clear-sel:hover { background: var(--elevated); color: var(--text-1); }
+
+/* ─── LIGHTBOX ─── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.lb-bg {
+  position: absolute; inset: 0;
+  background: rgba(5, 7, 15, .92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+}
+.lb-inner {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 20px;
+}
+.lb-img-wrap {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.8);
+  background: var(--surface);
+  max-height: 72vh;
+  max-width: 60vw;
+  display: flex; align-items: center; justify-content: center;
+}
+#lb-img {
+  display: block;
+  max-height: 72vh;
+  max-width: 60vw;
+  width: auto; height: auto;
+  object-fit: contain;
+  border-radius: 18px;
+  transition: opacity .2s;
+}
+.lb-nav {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: 1px solid var(--border-strong); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s;
+  backdrop-filter: blur(8px); flex-shrink: 0;
+}
+.lb-nav:hover { background: rgba(255,255,255,.15); transform: scale(1.08); }
+.lb-nav svg { color: var(--text-1); }
+.lb-nav:disabled { opacity: .2; cursor: not-allowed; transform: none; }
+.lb-footer {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 28px;
+}
+.lb-meta { display: flex; flex-direction: column; gap: 3px; }
+.lb-app-name { font-size: 16px; font-weight: 700; color: var(--text-1); }
+.lb-counter {
+  font-size: 11.5px; color: var(--text-3);
+  font-family: 'Anonymous Pro', monospace; letter-spacing: .04em;
+}
+.lb-dl {
+  background: var(--text-1); color: var(--bg);
+  border: none; border-radius: 9px; padding: 8px 18px;
+  font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 7px;
+  transition: background .12s, transform .1s;
+}
+.lb-dl:hover { background: #e4e4e7; transform: translateY(-1px); }
+.lb-close {
+  position: absolute; top: 18px; right: 20px; z-index: 3;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: 1px solid var(--border-strong); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-2);
+  transition: background .12s, transform .1s, color .12s;
+}
+.lb-close:hover { background: rgba(255,255,255,.15); transform: scale(1.1); color: var(--text-1); }
+
+.lb-strip {
+  position: absolute; bottom: 72px; left: 0; right: 0; z-index: 2;
+  display: flex; justify-content: center; gap: 6px; padding: 8px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 100%);
+}
+.lb-thumb {
+  width: 38px; height: 54px; border-radius: 6px;
+  overflow: hidden; cursor: pointer; opacity: .4;
+  border: 2px solid transparent;
+  transition: opacity .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.lb-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.lb-thumb.active { opacity: 1; border-color: rgba(255,255,255,.6); }
+.lb-thumb:hover { opacity: .75; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  padding: 80px 24px; text-align: center;
+  max-width: 1200px; margin: 0 auto;
+}
+.empty-icon { font-size: 40px; margin-bottom: 16px; opacity: .4; }
+.empty-title { font-size: 16px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--text-3); }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInImg {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 640px) {
+  .header { padding: 14px 16px 10px; gap: 10px; }
+  .logo-kicker { display: none; }
+  .search-wrap { width: 100%; max-width: 100%; height: 38px; }
+  .cat-bar { gap: 5px; padding: 8px 12px; }
+  .cat-btn { font-size: 11.5px; padding: 4px 10px; }
+  .main { padding: 16px 12px 40px; }
+  .app-card { padding: 16px; gap: 12px; }
+  .ss-area { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .card-meta { gap: 10px; }
+  .meta-row { min-width: 100px; }
+  .sel-pill-fixed { top: 10px; right: 10px; padding: 6px 10px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SELECTION PILL (fixed) ═══ -->
+<div id="sel-pill-fixed" class="sel-pill-fixed" hidden>
+  <span id="sel-count">0</span>장 선택됨
+  <button id="global-dl" class="dl-btn">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    다운로드
+  </button>
+  <button id="clear-sel" class="clear-sel">전체 해제</button>
+</div>
+
+<!-- ═══ STICKY TOP ═══ -->
+<div class="sticky-top">
+  <header class="header">
+    <div class="logo-block">
+      <svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1395 887" fill="none" width="24" height="16">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M41.8181 230.081L-7.62572e-05 377.903L295.324 346.128L215.926 619.116C174.403 761.879 290.773 901.214 438.649 885.796L1171.68 809.366C1256.57 800.516 1327.58 741.026 1351.17 659.009L1394.38 508.743L1100.92 538.649L1178.46 266.811C1219.16 124.147 1102.65 -14.409 955.116 1.20647L221.222 78.8856C136.144 87.8907 65.1067 147.758 41.8181 230.081ZM887.842 282.577L588.779 314.352L506.537 604.069L803.731 572.294L887.842 282.577Z" fill="white"/>
+      </svg>
+      <div class="logo-name">Buzz<span>Finder</span></div>
+      <div class="logo-kicker">제휴지면 탐색기</div>
+    </div>
+
+    <div class="search-wrap">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="앱 이름으로 검색..." autocomplete="off">
+      <button id="search-clear" hidden aria-label="지우기">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ CATEGORY CLOUD ═══ -->
+  <div class="cat-bar-outer">
+    <div class="cat-bar" id="cat-bar"></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+  <div class="app-list-wrap" id="app-list"></div>
+  <div id="empty-state" class="empty-state" hidden>
+    <div class="empty-icon">🔍</div>
+    <p class="empty-title">검색 결과가 없습니다</p>
+    <p class="empty-sub">다른 검색어나 카테고리를 시도해보세요.</p>
+  </div>
+</main>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div id="lightbox" class="lightbox" hidden>
+  <div class="lb-bg" id="lb-bg"></div>
+  <button class="lb-close" id="lb-close">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <div class="lb-inner">
+    <button class="lb-nav" id="lb-prev">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <div class="lb-img-wrap">
+      <img id="lb-img" src="" alt="">
+    </div>
+    <button class="lb-nav" id="lb-next">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+  <div class="lb-strip" id="lb-strip"></div>
+  <div class="lb-footer">
+    <div class="lb-meta">
+      <div class="lb-app-name" id="lb-app-name"></div>
+      <div class="lb-counter" id="lb-counter"></div>
+    </div>
+    <button class="lb-dl" id="lb-dl">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      이미지 저장
+    </button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════
+
+const CATEGORIES = [
+  '금융','쇼핑','라이프스타일','육아','엔터테인먼트',
+  '뉴스·미디어','게임','음식·배달','여행','건강·피트니스',
+  '교육','소셜·커뮤니티','오픈마켓','부동산','교통·모빌리티',
+  '음악·오디오','스포츠','만화·웹툰','날씨','기타'
+];
+
+const FEATURED_IDS = new Set([1, 2, 3, 4, 7, 18, 62, 69, 95, 105]);
+
+const PALETTE = [
+  '#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FECA57',
+  '#C44569','#48CAE4','#F9844A','#8338EC','#3A86FF',
+  '#06D6A0','#E76F51','#264653','#6A4C93','#1982C4',
+  '#8AC926','#FF595E','#FFCA3A','#6A994E','#BC6C25'
+];
+
+const REAL_APPS = [
+  {
+    id: 1, name: '당근', category: '라이프스타일',
+    entryPath: '-', manager: 'Van',
+    screenshots: [
+      'screenshots_sample/당근_IMG_1916.jpg',
+      'screenshots_sample/당근_IMG_1917.jpg',
+      'screenshots_sample/당근_IMG_1918.png',
+      'screenshots_sample/당근_IMG_1998.png',
+    ]
+  },
+  {
+    id: 2, name: '페이코', category: '금융',
+    entryPath: '포인트 > 포인트모으기', manager: 'Silva',
+    screenshots: [
+      'screenshots_sample/페이코_Screenshot_20260320_140655_PAYCO.jpg',
+      'screenshots_sample/페이코_Screenshot_20260320_140717_PAYCO.jpg',
+    ]
+  },
+  {
+    id: 3, name: '땡겨요', category: '라이프스타일',
+    entryPath: '상단 포인트 아이콘 클릭', manager: 'Van, Lowen',
+    screenshots: [
+      'screenshots_sample/땡겨요_Screenshot_20260209_194347.jpg',
+      'screenshots_sample/땡겨요_Screenshot_20260209_194351.jpg',
+      'screenshots_sample/땡겨요_Screenshot_20260209_194357.jpg',
+      'screenshots_sample/땡겨요_Screenshot_20260209_194400.jpg',
+    ]
+  },
+];
+
+const DUMMY_RAW = [
+  ['토스',         '금융', '혜택 > 포인트 받기',          'Silva'],
+  ['KB국민은행',   '금융', 'KB Pay > 리워드',             'Van'],
+  ['신한은행',     '금융', '신한SOL > 머니버스',           'Lowen'],
+  ['카카오뱅크',   '금융', '혜택관 > 포인트 충전',         'Silva'],
+  ['네이버페이',   '금융', '포인트 > 미션',                'David'],
+  ['하나은행',     '금융', '하나머니 > 적립',              'Frank'],
+  ['우리은행',     '금융', '우리WON > 혜택',              'Elle'],
+  ['케이뱅크',     '금융', '포인트 > 받기',               'Van'],
+  ['삼성페이',     '금융', '혜택 > 포인트리워드',          'Lowen'],
+  ['IBK기업은행',  '금융', 'i-ONE > 포인트',              'Silva'],
+  ['미래에셋증권', '금융', '이벤트 > 포인트 적립',         'David'],
+  ['키움증권',     '금융', '마이 > 포인트',                'Frank'],
+  ['교보증권',     '금융', '이벤트 > 리워드',             'Elle'],
+  ['NH농협',       '금융', '스마트뱅킹 > 포인트',          'Van'],
+  ['쿠팡',         '쇼핑', '로켓그로스 > 포인트',         'Van'],
+  ['11번가',       '쇼핑', '쇼킹딜 > SK페이 리워드',      'Lowen'],
+  ['G마켓',        '쇼핑', '스마일포인트 > 적립',          'Silva'],
+  ['옥션',         '쇼핑', '스마일포인트 > 미션',          'David'],
+  ['위메프',       '쇼핑', '슈퍼딜 > 포인트',             'Frank'],
+  ['티몬',         '쇼핑', '타임딜 > 리워드',             'Elle'],
+  ['무신사',       '쇼핑', '무신사포인트 > 적립',          'Van'],
+  ['지그재그',     '쇼핑', '포인트 > 모으기',             'Lowen'],
+  ['에이블리',     '쇼핑', '포인트 > 출석체크',           'Silva'],
+  ['브랜디',       '쇼핑', '적립 > 미션',                 'David'],
+  ['SSG닷컴',      '쇼핑', 'SSG머니 > 포인트',            'Frank'],
+  ['카카오선물',   '쇼핑', '쇼핑 > 카카오페이 리워드',    'Elle'],
+  ['오늘의집',     '라이프스타일', '포인트 > 출석체크',   'Van'],
+  ['번개장터',     '라이프스타일', '번개pay > 포인트',    'Lowen'],
+  ['중고나라',     '라이프스타일', '나나 > 미션',          'Silva'],
+  ['클래스101',    '라이프스타일', '수강 > 포인트 적립',  'David'],
+  ['탈잉',         '라이프스타일', '마이 > 포인트 받기',   'Frank'],
+  ['프립',         '라이프스타일', '포인트샵 > 적립미션', 'Elle'],
+  ['아이돌봄',     '육아', '혜택 > 포인트 받기',         'Van'],
+  ['키즈노트',     '육아', '알림장 > 적립',               'Lowen'],
+  ['베베폼',       '육아', '포인트 > 출석체크',           'Silva'],
+  ['아이챙김',     '육아', '맘커뮤니티 > 포인트',        'David'],
+  ['맘편한세상',   '육아', '혜택 > 적립 미션',            'Frank'],
+  ['아가드',       '육아', '포인트몰 > 받기',             'Elle'],
+  ['멜론',         '엔터테인먼트', '포인트 > 미션',        'Van'],
+  ['지니뮤직',     '엔터테인먼트', '지니포인트 > 받기',   'Lowen'],
+  ['VIBE',         '엔터테인먼트', '네이버포인트 > 적립', 'Silva'],
+  ['왓챠',         '엔터테인먼트', '포인트 > 출석',        'David'],
+  ['웨이브',       '엔터테인먼트', '혜택 > 포인트 모으기', 'Frank'],
+  ['티빙',         '엔터테인먼트', '마이 > 포인트',        'Elle'],
+  ['시즌',         '엔터테인먼트', 'T포인트 > 받기',       'Van'],
+  ['카카오TV',     '엔터테인먼트', '포인트 > 미션 적립',  'Lowen'],
+  ['네이버뉴스',   '뉴스·미디어', '뉴스읽기 > 포인트',   'Silva'],
+  ['MBC',          '뉴스·미디어', '미디어 > 포인트',      'David'],
+  ['KBS',          '뉴스·미디어', 'myK > 포인트 받기',    'Frank'],
+  ['조선일보',     '뉴스·미디어', '조선포인트 > 적립',    'Elle'],
+  ['한겨레',       '뉴스·미디어', '포인트 > 출석 미션',   'Van'],
+  ['머니투데이',   '뉴스·미디어', '포인트몰 > 미션',      'Lowen'],
+  ['중앙일보',     '뉴스·미디어', '구독 > 포인트 받기',   'Silva'],
+  ['넥슨모바일',   '게임', '포인트 > 캐시 전환',          'David'],
+  ['넷마블',       '게임', '홈 > 넷마블포인트',           'Frank'],
+  ['카카오게임즈', '게임', '포인트 > 받기',               'Elle'],
+  ['NC소프트',     '게임', '파워링크 > 포인트',           'Van'],
+  ['크래프톤',     '게임', '마이 > 포인트 받기',          'Lowen'],
+  ['배달의민족',   '음식·배달', '혜택 > 포인트 모으기',   'Silva'],
+  ['요기요',       '음식·배달', '요기포인트 > 적립',      'David'],
+  ['쿠팡이츠',     '음식·배달', '쿠팡 캐시 > 받기',       'Frank'],
+  ['카카오주문',   '음식·배달', '카카오포인트 > 미션',    'Elle'],
+  ['네이버주문',   '음식·배달', '네이버페이 > 포인트',    'Van'],
+  ['식신',         '음식·배달', '포인트 > 출석체크',      'Lowen'],
+  ['망고플레이트', '음식·배달', '리워드 > 포인트',        'Silva'],
+  ['야놀자',       '여행', '야놀자머니 > 적립',           'David'],
+  ['여기어때',     '여행', '포인트 > 출석미션',           'Frank'],
+  ['마이리얼트립', '여행', '포인트 > 여행미션',           'Elle'],
+  ['트리플',       '여행', '트리플머니 > 적립',           'Van'],
+  ['인터파크투어', '여행', '슈퍼포인트 > 받기',           'Lowen'],
+  ['삼성헬스',     '건강·피트니스', '활동 > 포인트 적립', 'Silva'],
+  ['캐시워크',     '건강·피트니스', '걷기 > 캐시 받기',   'David'],
+  ['만보기',       '건강·피트니스', '포인트 > 출석미션',  'Frank'],
+  ['눔',           '건강·피트니스', '다이어트 > 포인트',  'Elle'],
+  ['굿닥',         '건강·피트니스', '혜택 > 포인트 모으기','Van'],
+  ['클래스유',     '교육', '포인트 > 출석체크',           'Lowen'],
+  ['산타토익',     '교육', '미션 > 포인트 받기',          'Silva'],
+  ['해커스',       '교육', '포인트 > 출석미션',           'David'],
+  ['밀리의서재',   '교육', '독서 > 포인트 적립',          'Frank'],
+  ['리디',         '교육', '리디포인트 > 받기',           'Elle'],
+  ['네이버밴드',   '소셜·커뮤니티', '밴드포인트 > 받기',  'Van'],
+  ['에브리타임',   '소셜·커뮤니티', '포인트 > 미션',       'Lowen'],
+  ['블라인드',     '소셜·커뮤니티', '혜택 > 포인트 받기',  'Silva'],
+  ['카페토크',     '소셜·커뮤니티', '포인트 > 적립',       'David'],
+  ['네이버쇼핑',   '오픈마켓', '네이버페이 > 포인트',     'Frank'],
+  ['카카오쇼핑',   '오픈마켓', '카카오포인트 > 받기',     'Elle'],
+  ['인터파크',     '오픈마켓', '슈퍼포인트 > 미션',       'Van'],
+  ['직방',         '부동산', '포인트 > 출석체크',         'Lowen'],
+  ['다방',         '부동산', '다방포인트 > 받기',         'Silva'],
+  ['호갱노노',     '부동산', '혜택 > 포인트 적립',        'David'],
+  ['카카오T',      '교통·모빌리티', '카카오포인트 > 미션','Frank'],
+  ['T맵',          '교통·모빌리티', 'T포인트 > 받기',     'Elle'],
+  ['타다',         '교통·모빌리티', '포인트 > 출석미션',  'Van'],
+  ['쏘카',         '교통·모빌리티', '쏘카페이 > 포인트',  'Lowen'],
+  ['플로',         '음악·오디오', 'FLO포인트 > 받기',     'Silva'],
+  ['스포티파이',   '음악·오디오', '혜택 > 포인트 적립',   'David'],
+  ['오디오클립',   '음악·오디오', '포인트 > 청취 미션',   'Frank'],
+  ['스포티비나우', '스포츠', '포인트 > 시청 적립',        'Elle'],
+  ['풋볼리스트',   '스포츠', '마이 > 포인트',             'Van'],
+  ['KBO',          '스포츠', '혜택 > 포인트 받기',        'Lowen'],
+  ['네이버웹툰',   '만화·웹툰', '포인트 > 미션',          'Silva'],
+  ['카카오웹툰',   '만화·웹툰', '카카오포인트 > 적립',    'David'],
+  ['레진코믹스',   '만화·웹툰', '포인트 > 출석체크',      'Frank'],
+  ['케이웨더',     '날씨', '혜택 > 포인트 받기',          'Elle'],
+  ['에어비주얼',   '날씨', '포인트 > 미션',               'Van'],
+  ['원스토어',     '기타', 'ONE포인트 > 받기',            'Lowen'],
+  ['갤럭시스토어', '기타', '삼성리워드 > 포인트',         'Silva'],
+  ['시럽월렛',     '기타', '포인트 > 미션 적립',          'David'],
+];
+
+const DUMMY_APPS = DUMMY_RAW.map(([name, category, entryPath, manager], i) => ({
+  id: i + 4,
+  name, category, entryPath, manager,
+  screenshots: null
+}));
+
+const ALL_APPS = [...REAL_APPS, ...DUMMY_APPS];
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+
+let currentCat = '전체';
+let searchQuery = '';
+const selected = new Map();
+let lb = { appId: null, idx: 0, screens: [] };
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+
+function getColor(id) {
+  return PALETTE[id % PALETTE.length];
+}
+
+function catClass(cat) {
+  return 'cat-' + cat.replace(/[·\s\/]/g, '');
+}
+
+function filteredApps() {
+  return ALL_APPS.filter(app => {
+    const catOk = currentCat === '전체'
+      || currentCat === '주요 매체' && FEATURED_IDS.has(app.id)
+      || app.category === currentCat;
+    const q = searchQuery.trim().toLowerCase();
+    const qOk = !q || app.name.toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+}
+
+function catCount(cat) {
+  if (cat === '전체') return ALL_APPS.length;
+  if (cat === '주요 매체') return FEATURED_IDS.size;
+  return ALL_APPS.filter(a => a.category === cat).length;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════
+
+function renderCatBar() {
+  const bar = document.getElementById('cat-bar');
+  bar.innerHTML = ['주요 매체', '전체', ...CATEGORIES].map(cat => {
+    const active = cat === currentCat ? 'active' : '';
+    const cnt = catCount(cat);
+    if (cnt === 0) return '';
+    const isFeatured = cat === '주요 매체';
+    return `<button class="cat-btn ${active} ${isFeatured ? 'cat-featured' : ''}" data-cat="${cat}">
+      ${isFeatured ? '<span class="featured-star">★</span>' : ''}${cat} <span class="cat-cnt">${cnt}</span>
+    </button>`;
+  }).join('');
+  bar.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCat = btn.dataset.cat;
+      renderAll();
+    });
+  });
+}
+
+function renderApps(apps) {
+  const list = document.getElementById('app-list');
+  const empty = document.getElementById('empty-state');
+  if (apps.length === 0) {
+    list.innerHTML = '';
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+  list.innerHTML = apps.map((app, i) => renderCard(app, i)).join('');
+  bindRowEvents();
+  bindImgFadeIn();
+}
+
+function renderCard(app, delay) {
+  const clr = getColor(app.id);
+  const hasScreens = app.screenshots && app.screenshots.length > 0;
+  const initial = app.name[0];
+  const selKey = (idx) => `${app.id}-${idx}`;
+
+  const screensHtml = hasScreens
+    ? app.screenshots.map((src, i) => {
+        const key = selKey(i);
+        const isSel = selected.has(key);
+        return `
+        <div class="ss-item ${isSel ? 'selected' : ''}"
+             data-key="${key}" data-app="${app.id}" data-idx="${i}" data-src="${src}"
+             style="--ss-delay:${i * 50}ms">
+          <img src="${src}" alt="${app.name} 스크린샷 ${i+1}" loading="lazy">
+          <div class="ss-check-wrap">
+            <div class="ss-check-box" data-key="${key}">
+              <svg class="ss-check-icon" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>`;
+      }).join('')
+    : genPlaceholders(app);
+
+  const appSelCnt = hasScreens
+    ? app.screenshots.filter((_, i) => selected.has(selKey(i))).length : 0;
+  const allSel = hasScreens && appSelCnt === app.screenshots.length;
+
+  return `
+  <div class="app-card" data-app-id="${app.id}" style="animation-delay:${delay * 25}ms">
+    <div class="card-header">
+      <div class="app-icon" style="background:${clr}">${initial}</div>
+      <div class="app-name-wrap">
+        <div class="app-name">${app.name}</div>
+        <span class="cat-badge ${catClass(app.category)}">${app.category}</span>
+      </div>
+    </div>
+    <div class="card-meta">
+      <div class="meta-row">
+        <span class="meta-label">진입경로</span>
+        <span class="meta-val ${(!app.entryPath || app.entryPath === '-') ? 'empty' : ''}">${app.entryPath || '-'}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">담당자</span>
+        <span class="meta-val manager">${app.manager}</span>
+      </div>
+    </div>
+    <div class="ss-area">${screensHtml}</div>
+    <div class="card-footer">
+      ${hasScreens ? `
+        <button class="sel-all-btn ${allSel ? 'all-selected' : ''}" data-app-id="${app.id}">
+          ${allSel ? '전체해제' : '전체선택'}
+        </button>
+        <button class="app-dl-btn ${appSelCnt > 0 ? 'has-sel' : ''}" data-app-id="${app.id}" ${appSelCnt === 0 ? 'disabled' : ''}>
+          ${appSelCnt > 0 ? appSelCnt + '장 저장' : '저장'}
+        </button>
+      ` : `
+        <button class="sel-all-btn" disabled style="opacity:.3;cursor:not-allowed">스크린샷 준비중</button>
+      `}
+    </div>
+  </div>`;
+}
+
+function genPlaceholders(app) {
+  const clr = getColor(app.id);
+  const lighter = clr + 'cc';
+  return [0,1,2,3].map((_, i) => `
+    <div class="ss-item" style="cursor:default;--ss-delay:${i * 50}ms">
+      <div class="ss-placeholder-inner" style="background:linear-gradient(160deg,${clr},${lighter})">
+        <div class="ph-notch"></div>
+        <div class="ph-bar w80"></div>
+        <div class="ph-bar w60"></div>
+        <div class="ph-block h48"></div>
+        <div class="ph-bar w70"></div>
+        <div class="ph-block h32"></div>
+        <div class="ph-bar w45"></div>
+        <div class="ph-home"></div>
+      </div>
+      <div class="ss-badge-preparing">준비중</div>
+    </div>`).join('');
+}
+
+function renderAll() {
+  const apps = filteredApps();
+  renderCatBar();
+  renderApps(apps);
+  updateGlobalSel();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  IMG FADE-IN
+// ═══════════════════════════════════════════════════════════
+
+function bindImgFadeIn() {
+  document.querySelectorAll('.ss-item img').forEach(img => {
+    if (img.complete && img.naturalWidth > 0) {
+      img.style.opacity = '1';
+    } else {
+      img.addEventListener('load', () => {
+        img.style.transition = 'opacity 0.35s ease';
+        img.style.opacity = '1';
+      });
+      img.addEventListener('error', () => {
+        img.style.opacity = '0.3';
+      });
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EVENTS — SCREENSHOT SELECTION
+// ═══════════════════════════════════════════════════════════
+
+function bindRowEvents() {
+  document.querySelectorAll('.ss-item[data-src]').forEach(item => {
+    const src = item.dataset.src;
+    const key = item.dataset.key;
+    const appId = parseInt(item.dataset.app);
+    const idx = parseInt(item.dataset.idx);
+
+    const checkBox = item.querySelector('.ss-check-box');
+    if (checkBox) {
+      checkBox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSelect(key, appId, idx, src, item);
+      });
+    }
+
+    item.addEventListener('click', (e) => {
+      if (e.target.closest('.ss-check-wrap')) return;
+      openLightbox(appId, idx);
+    });
+  });
+
+  document.querySelectorAll('.sel-all-btn[data-app-id]').forEach(btn => {
+    btn.addEventListener('click', () => toggleSelectAll(parseInt(btn.dataset.appId)));
+  });
+
+  document.querySelectorAll('.app-dl-btn.has-sel').forEach(btn => {
+    btn.addEventListener('click', () => downloadApp(parseInt(btn.dataset.appId)));
+  });
+}
+
+function toggleSelect(key, appId, idx, src, itemEl) {
+  const app = ALL_APPS.find(a => a.id === appId);
+  if (selected.has(key)) {
+    selected.delete(key);
+    itemEl.classList.remove('selected');
+  } else {
+    selected.set(key, { appId, idx, src, name: app ? app.name : '' });
+    itemEl.classList.add('selected');
+  }
+  refreshRow(appId);
+  updateGlobalSel();
+}
+
+function toggleSelectAll(appId) {
+  const app = ALL_APPS.find(a => a.id === appId);
+  if (!app || !app.screenshots) return;
+
+  const keys = app.screenshots.map((_, i) => `${appId}-${i}`);
+  const allSelected = keys.every(k => selected.has(k));
+
+  if (allSelected) {
+    keys.forEach(k => selected.delete(k));
+  } else {
+    app.screenshots.forEach((src, i) => {
+      selected.set(`${appId}-${i}`, { appId, idx: i, src, name: app.name });
+    });
+  }
+  refreshRow(appId);
+  updateGlobalSel();
+}
+
+function refreshRow(appId) {
+  const app = ALL_APPS.find(a => a.id === appId);
+  if (!app || !app.screenshots) return;
+
+  const appSelCnt = app.screenshots.filter((_, i) => selected.has(`${appId}-${i}`)).length;
+  const allSel = appSelCnt === app.screenshots.length;
+
+  app.screenshots.forEach((_, i) => {
+    const key = `${appId}-${i}`;
+    const el = document.querySelector(`.ss-item[data-key="${key}"]`);
+    if (el) el.classList.toggle('selected', selected.has(key));
+  });
+
+  const card = document.querySelector(`.app-card[data-app-id="${appId}"]`);
+  if (!card) return;
+  const selBtn = card.querySelector('.sel-all-btn');
+  const dlBtn = card.querySelector('.app-dl-btn');
+  if (selBtn) {
+    selBtn.textContent = allSel ? '전체해제' : '전체선택';
+    selBtn.classList.toggle('all-selected', allSel);
+  }
+  if (dlBtn) {
+    dlBtn.textContent = appSelCnt > 0 ? `${appSelCnt}장 저장` : '저장';
+    dlBtn.classList.toggle('has-sel', appSelCnt > 0);
+    dlBtn.disabled = appSelCnt === 0;
+    if (appSelCnt > 0) {
+      dlBtn.onclick = () => downloadApp(appId);
+    }
+  }
+}
+
+function updateGlobalSel() {
+  const pill = document.getElementById('sel-pill-fixed');
+  const cnt = document.getElementById('sel-count');
+  if (selected.size > 0) {
+    pill.hidden = false;
+    cnt.textContent = selected.size;
+  } else {
+    pill.hidden = true;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DOWNLOAD
+// ═══════════════════════════════════════════════════════════
+
+function downloadFiles(items) {
+  items.forEach(({ src }, i) => {
+    if (!src) return;
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = src.split('/').pop();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }, i * 150);
+  });
+}
+
+function downloadApp(appId) {
+  const items = [...selected.values()].filter(v => v.appId === appId);
+  downloadFiles(items);
+}
+
+document.getElementById('global-dl').addEventListener('click', () => {
+  downloadFiles([...selected.values()]);
+});
+
+document.getElementById('clear-sel').addEventListener('click', () => {
+  const affectedApps = new Set([...selected.values()].map(v => v.appId));
+  selected.clear();
+  affectedApps.forEach(id => refreshRow(id));
+  updateGlobalSel();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  LIGHTBOX
+// ═══════════════════════════════════════════════════════════
+
+function openLightbox(appId, startIdx) {
+  const app = ALL_APPS.find(a => a.id === appId);
+  if (!app || !app.screenshots) return;
+  lb = { appId, idx: startIdx, screens: app.screenshots };
+  document.getElementById('lightbox').hidden = false;
+  document.body.style.overflow = 'hidden';
+  renderLightbox();
+}
+
+function renderLightbox() {
+  const app = ALL_APPS.find(a => a.id === lb.appId);
+  const src = lb.screens[lb.idx];
+
+  const img = document.getElementById('lb-img');
+  img.style.opacity = '0';
+  img.src = src;
+  img.onload = () => { img.style.opacity = '1'; };
+  img.alt = `${app.name} 스크린샷 ${lb.idx + 1}`;
+
+  document.getElementById('lb-app-name').textContent = app.name;
+  document.getElementById('lb-counter').textContent = `${lb.idx + 1} / ${lb.screens.length}`;
+
+  document.getElementById('lb-prev').disabled = lb.idx === 0;
+  document.getElementById('lb-next').disabled = lb.idx === lb.screens.length - 1;
+
+  const strip = document.getElementById('lb-strip');
+  strip.innerHTML = lb.screens.map((s, i) => `
+    <div class="lb-thumb ${i === lb.idx ? 'active' : ''}" data-idx="${i}">
+      <img src="${s}" alt="">
+    </div>`).join('');
+  strip.querySelectorAll('.lb-thumb').forEach(t => {
+    t.addEventListener('click', () => { lb.idx = parseInt(t.dataset.idx); renderLightbox(); });
+  });
+
+  document.getElementById('lb-dl').onclick = () => {
+    downloadFiles([{ src, appId: lb.appId }]);
+  };
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').hidden = true;
+  document.body.style.overflow = '';
+  lb = { appId: null, idx: 0, screens: [] };
+}
+
+document.getElementById('lb-prev').addEventListener('click', () => {
+  if (lb.idx > 0) { lb.idx--; renderLightbox(); }
+});
+document.getElementById('lb-next').addEventListener('click', () => {
+  if (lb.idx < lb.screens.length - 1) { lb.idx++; renderLightbox(); }
+});
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-bg').addEventListener('click', closeLightbox);
+
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('lightbox').hidden) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft' && lb.idx > 0) { lb.idx--; renderLightbox(); }
+  if (e.key === 'ArrowRight' && lb.idx < lb.screens.length - 1) { lb.idx++; renderLightbox(); }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  SEARCH
+// ═══════════════════════════════════════════════════════════
+
+const searchInput = document.getElementById('search-input');
+const searchClear = document.getElementById('search-clear');
+
+searchInput.addEventListener('input', () => {
+  searchQuery = searchInput.value;
+  searchClear.hidden = !searchQuery;
+  renderAll();
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchQuery = '';
+  searchClear.hidden = true;
+  searchInput.focus();
+  renderAll();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+
+renderAll();
+</script>
+</body>
+</html>

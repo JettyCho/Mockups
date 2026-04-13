@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 쿠폰 시스템 목업 v3</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#3b82f6;--primary-hover:#1d4ed8;--primary-subtle:#eff6ff;--primary-subtle-em:#dbeafe;
+  --bg-page:#f1f5f9;--bg-white:#ffffff;--bg-subtle:#e2e8f0;--bg-emphasis:#1e293b;
+  --border:#CBD5E1;--text-high:#0f172a;--text-em:#334155;--text-default:#64748b;--text-subtle:#94a3b8;
+  --success-bg:#f0fdf4;--success-fg:#15803d;--success-stroke:#bbf7d0;--success-shape:#22c55e;
+  --warning-bg:#fffbeb;--warning-fg:#92400e;--warning-stroke:#fde68a;--warning-shape:#f59e0b;
+  --error-bg:#fef2f2;--error-fg:#dc2626;--error-stroke:#fecaca;
+  --violet-bg:#f5f3ff;--violet-fg:#7c3aed;--orange-bg:#fff7ed;--orange-fg:#ea580c;
+  --danger:#ef4444;--danger-hover:#b91c1c;
+  --xs:4px;--sm:8px;--md:12px;--lg:16px;--xl:24px;--huge:32px;
+  --r-sm:4px;--r-md:8px;--r-lg:16px;--r-pill:999px;
+  --shadow-modal:0 20px 60px rgba(0,0,0,.15);--shadow-card:0 1px 4px rgba(0,0,0,.06);
+}
+body{font-family:'Pretendard Variable',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-page);color:var(--text-em);-webkit-font-smoothing:antialiased}
+.icon{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;user-select:none;vertical-align:middle}
+.icon-40{font-size:40px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 40}
+.icon-20{font-size:20px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20}
+.icon-18{font-size:18px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20}
+.icon-16{font-size:16px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20}
+/* FLOW NAV */
+.flow-nav{position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--bg-emphasis);height:44px;display:flex;align-items:center;font-size:12px;overflow-x:auto;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.flow-nav-brand{padding:0 20px;font-weight:800;font-size:13px;color:#f87171;border-right:1px solid #334155;height:100%;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.flow-btn{padding:0 16px;height:100%;border:none;background:none;color:var(--text-subtle);cursor:pointer;font-size:12px;border-right:1px solid #334155;transition:all .15s;font-family:inherit;flex-shrink:0}
+.flow-btn:hover{background:#334155;color:#fff}
+.flow-btn.active{background:var(--primary);color:#fff;font-weight:700}
+/* SCREEN */
+.screen{display:none;padding-top:44px;min-height:100vh}
+.screen.active{display:block}
+/* TOPNAV */
+.topnav{height:56px;background:var(--bg-white);box-shadow:inset 0 -1px 0 0 var(--border);position:fixed;top:44px;left:0;right:0;z-index:100;display:flex;align-items:center;padding:0 var(--lg)}
+.topnav-logo{display:flex;align-items:center;gap:var(--sm);text-decoration:none}
+.topnav-logo-mark{width:28px;height:28px;background:var(--primary);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;font-style:italic}
+.topnav-logo-text{font-size:14px;font-weight:700;color:var(--text-high)}
+.topnav-divider{width:1px;height:20px;background:var(--border);margin:0 var(--sm)}
+.topnav-breadcrumb{display:flex;align-items:center;gap:var(--xs);font-size:14px}
+.crumb-muted{color:var(--text-subtle)}.crumb-sep{color:var(--text-subtle);margin:0 var(--xs)}.crumb-current{font-weight:700;color:var(--text-high)}
+.topnav-right{margin-left:auto;display:flex;align-items:center;gap:var(--md)}
+.topnav-user{height:32px;padding:0 var(--md);display:flex;align-items:center;gap:var(--xs);border-radius:var(--r-md);background:var(--bg-page);font-size:14px;color:var(--text-em);cursor:pointer}
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--bg-white);box-shadow:inset -1px 0 0 0 var(--border);position:fixed;top:100px;left:0;bottom:0;padding:var(--xl) 6px;overflow-y:auto}
+.nav-section-label{font-size:10px;color:var(--text-subtle);font-weight:700;padding:var(--md) var(--md) var(--xs);letter-spacing:.5px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:var(--sm);padding:var(--sm) var(--md);font-size:14px;color:var(--text-default);cursor:pointer;border-radius:var(--r-md);transition:all .12s;border:1px solid transparent;font-weight:400}
+.nav-item:hover{background:var(--bg-page);color:var(--text-em)}
+.nav-item.active{background:var(--primary-subtle);color:var(--primary);font-weight:600;border-color:var(--primary-subtle-em)}
+.nav-item .icon{font-size:18px}
+/* MAIN */
+.main{margin-left:240px;padding:var(--huge);padding-top:calc(100px + var(--huge));min-height:100vh}
+.main-full{padding:var(--huge);padding-top:calc(100px + var(--huge));min-height:100vh;max-width:1100px;margin:0 auto}
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--xl)}
+.page-title{font-size:24px;font-weight:700;color:var(--text-high);line-height:36px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:var(--sm) var(--md);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s;font-family:inherit;line-height:20px}
+.btn .icon{font-size:18px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-secondary{background:var(--bg-white);color:var(--text-default);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg-page)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-subtle)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-lg{padding:13px 28px;font-size:15px;width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* CARD */
+.card{background:var(--bg-white);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--xl)}
+/* PILL TABS */
+.pill-tabs{display:flex;gap:var(--xs);background:var(--bg-page);padding:var(--xs);border-radius:var(--r-md);margin-bottom:var(--xl)}
+.pill-tab{padding:var(--xs) var(--md);border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--text-default);cursor:pointer;border:none;background:transparent;transition:all .15s;font-family:inherit}
+.pill-tab:hover{color:var(--text-em)}
+.pill-tab.active{background:var(--bg-white);color:var(--text-high);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* TABLE */
+.table-wrap{border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead tr{background:var(--bg-page);box-shadow:inset 0 1px 0 0 var(--border),inset 0 -2px 0 0 var(--border)}
+th{padding:var(--md);text-align:left;color:var(--text-default);font-weight:700;font-size:12px}
+td{padding:var(--md);color:var(--text-em)}
+tbody tr{background:var(--bg-white);box-shadow:inset 0 -1px 0 0 rgba(97,117,134,.2)}
+tbody tr:last-child{box-shadow:none}
+tr.row-click{cursor:pointer}
+tr.row-click:hover td{background:var(--primary-subtle)}
+tr.row-open td{background:var(--primary-subtle)}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:var(--r-sm);white-space:nowrap}
+.badge-active{background:var(--success-bg);color:var(--success-fg)}
+.badge-used{background:var(--primary-subtle);color:var(--primary)}
+.badge-expired{background:#f3f4f6;color:var(--text-default)}
+.badge-unit{background:var(--orange-bg);color:var(--orange-fg)}
+.badge-fixed{background:var(--violet-bg);color:var(--violet-fg)}
+.badge-running{background:var(--success-bg);color:var(--success-fg)}
+.badge-paused{background:var(--warning-bg);color:var(--warning-fg)}
+.badge-ready{background:var(--primary-subtle);color:var(--primary)}
+/* FILTER BAR */
+.filter-bar{display:flex;gap:var(--md);margin-bottom:var(--lg);flex-wrap:wrap;align-items:flex-end}
+.filter-group{display:flex;flex-direction:column;gap:var(--xs)}
+.filter-group.flex-1{flex:1;min-width:200px}
+.filter-label{font-size:11px;font-weight:600;color:var(--text-default)}
+.filter-select{padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:13px;color:var(--text-em);outline:none;font-family:inherit;background:var(--bg-white);cursor:pointer;min-width:140px}
+.filter-select:focus{border-color:var(--primary)}
+.search-input{padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:13px;color:var(--text-high);outline:none;font-family:inherit;transition:border-color .15s;min-width:200px}
+.search-input:focus{border-color:var(--primary)}
+.results-count{font-size:12px;color:var(--text-subtle);margin-bottom:var(--md)}
+/* TABLE HELPERS */
+.cell-main{font-size:13px;font-weight:600;color:var(--text-high)}
+.cell-sub{font-size:11px;color:var(--text-subtle);margin-top:1px}
+.cell-code{font-family:'Courier New',monospace;font-size:12px;color:var(--text-default);letter-spacing:.5px}
+/* FORM */
+.form-group{margin-bottom:var(--lg)}
+.form-label{font-size:13px;font-weight:700;color:var(--text-high);margin-bottom:var(--sm);display:flex;align-items:center;gap:4px}
+.form-label .req{color:var(--danger)}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;color:var(--text-high);outline:none;font-family:inherit;transition:border-color .15s}
+.form-input:focus{border-color:var(--primary)}
+.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;color:var(--text-em);outline:none;font-family:inherit;background:var(--bg-white);cursor:pointer}
+.form-select:focus{border-color:var(--primary)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--lg)}
+.form-hint{font-size:11px;color:var(--text-subtle);margin-top:var(--xs)}
+.form-hint.warn{color:var(--warning-fg)}
+.form-actions{display:flex;gap:var(--sm);justify-content:flex-end;margin-top:var(--xl)}
+.form-divider{height:1px;background:var(--border);margin:var(--xl) 0}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:10000;justify-content:center;align-items:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg-white);border-radius:var(--r-lg);box-shadow:var(--shadow-modal);width:480px;max-width:90vw;max-height:85vh;overflow-y:auto;padding:var(--xl) var(--huge)}
+.modal-title{font-size:18px;font-weight:700;color:var(--text-high);margin-bottom:var(--xl);display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:20px;color:var(--text-subtle);cursor:pointer;padding:4px 8px}
+.modal-close:hover{color:var(--text-em)}
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px var(--xl);color:var(--text-subtle)}
+.empty-state .icon{font-size:48px;color:var(--border);margin-bottom:var(--md);display:block}
+.empty-state p{font-size:14px}
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:var(--xs);font-size:13px;color:var(--text-default);cursor:pointer;background:none;border:none;font-family:inherit;padding:0;margin-bottom:var(--lg)}
+.back-btn:hover{color:var(--primary)}
+/* META ROWS */
+.meta-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bg-page);font-size:14px}
+.meta-row:last-child{border-bottom:none}
+.meta-label{color:var(--text-default);min-width:120px}
+.meta-value{font-weight:600;color:var(--text-high);text-align:right}
+
+/* ── S1: COUPON ISSUE ── */
+.discount-type-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--md);margin-bottom:var(--lg)}
+.dt-card{border:2px solid var(--border);border-radius:var(--r-md);padding:var(--lg);cursor:pointer;transition:all .15s;position:relative}
+.dt-card:hover{border-color:var(--primary);background:var(--primary-subtle)}
+.dt-card.sel{border-color:var(--primary);background:var(--primary-subtle)}
+.dt-card.sel::after{content:'✓';position:absolute;top:8px;right:10px;font-size:12px;font-weight:800;color:var(--primary)}
+.dt-title{font-size:14px;font-weight:700;color:var(--text-high);margin-bottom:4px}
+.dt-desc{font-size:12px;color:var(--text-default);line-height:1.5}
+.validity-row{display:flex;align-items:center;gap:var(--md);flex-wrap:wrap}
+.validity-num{width:72px;padding:10px 0;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:18px;font-weight:800;color:var(--text-high);outline:none;font-family:inherit;text-align:center}
+.validity-num:focus{border-color:var(--primary)}
+.validity-unit{font-size:14px;color:var(--text-default);font-weight:600}
+.preset-btns{display:flex;gap:var(--xs)}
+.preset-btn{padding:6px 12px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:12px;font-weight:600;color:var(--text-default);cursor:pointer;background:var(--bg-white);transition:all .12s;font-family:inherit}
+.preset-btn:hover{border-color:var(--primary);color:var(--primary)}
+.preset-btn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.code-preview-box{background:var(--bg-page);border:1.5px dashed var(--border);border-radius:var(--r-md);padding:var(--lg);display:flex;align-items:center;justify-content:space-between}
+.code-val{font-family:'Courier New',monospace;font-size:20px;font-weight:700;color:var(--text-high);letter-spacing:2px}
+/* Coupon preview card v3 */
+.cpv3{background:var(--bg-white);border:2px solid var(--border);border-radius:var(--r-lg);padding:var(--xl);position:relative;overflow:hidden}
+.cpv3::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--primary)}
+.cpv3-brand{font-size:10px;font-weight:800;color:var(--primary);letter-spacing:1.5px;margin-bottom:var(--md);text-transform:uppercase}
+.cpv3-benefit{font-size:28px;font-weight:900;color:var(--text-high);margin-bottom:4px}
+.cpv3-cond{font-size:12px;color:var(--text-default);margin-bottom:var(--md)}
+.cpv3-divider{height:1px;background:var(--border);border-top:1px dashed var(--border);margin:var(--md) 0}
+.cpv3-target{font-size:13px;font-weight:600;color:var(--text-em);margin-bottom:4px}
+.cpv3-code{font-family:'Courier New',monospace;font-size:13px;font-weight:700;letter-spacing:1.5px;color:var(--text-default)}
+.cpv3-validity{font-size:11px;color:var(--text-subtle);margin-top:4px}
+
+/* ── S2: COUPON LIST ── */
+.inline-drawer{display:none}
+.inline-drawer.open{display:table-row-group}
+.drawer-inner{background:var(--primary-subtle);border-top:2px solid var(--primary-subtle-em);padding:var(--xl)}
+.drawer-grid{display:grid;grid-template-columns:240px 1fr 1fr;gap:var(--xl)}
+.drawer-section-title{font-size:12px;font-weight:700;color:var(--text-default);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--sm)}
+.applied-adset-item{font-size:13px;color:var(--text-em);padding:6px 0;border-bottom:1px solid var(--primary-subtle-em);display:flex;align-items:center;gap:var(--xs)}
+.applied-adset-item:last-child{border-bottom:none}
+
+/* ── S4: WALLET ── */
+.wallet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:var(--lg)}
+.wc{background:var(--bg-white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:var(--xl);position:relative;overflow:hidden;transition:box-shadow .15s}
+.wc:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.wc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px}
+.wc.s-active::before{background:var(--primary)}
+.wc.s-used::before{background:var(--success-shape)}
+.wc.s-expired::before{background:var(--border)}
+.wc.s-used,.wc.s-expired{opacity:.6}
+.wc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--md)}
+.wc-name{font-size:14px;font-weight:700;color:var(--text-high)}
+.wc-benefit{font-size:26px;font-weight:900;color:var(--primary);margin-bottom:2px}
+.wc-cond{font-size:12px;color:var(--text-default);margin-bottom:var(--md)}
+.wc-sep{border:none;border-top:1px dashed var(--border);margin:var(--md) 0}
+.wc-code{font-family:'Courier New',monospace;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--text-default)}
+.wc-validity{font-size:11px;color:var(--text-subtle);margin-top:4px}
+
+/* ── S5: AD SET ── */
+.adset-outer{display:grid;grid-template-columns:1fr 320px;gap:var(--xl);align-items:start}
+.creative-list{display:flex;flex-direction:column;gap:var(--sm)}
+.ct-item{display:flex;align-items:flex-start;gap:var(--md);padding:var(--md) var(--lg);border:2px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .15s;background:var(--bg-white)}
+.ct-item:hover{border-color:var(--primary);background:var(--primary-subtle)}
+.ct-item.on{border-color:var(--primary);background:var(--primary-subtle)}
+.ct-chk{width:20px;height:20px;border-radius:var(--r-sm);border:2px solid var(--border);background:var(--bg-white);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .12s}
+.ct-item.on .ct-chk{background:var(--primary);border-color:var(--primary);color:#fff}
+.ct-chk .icon{font-size:14px}
+.ct-name{font-size:14px;font-weight:700;color:var(--text-high);margin-bottom:2px}
+.ct-desc{font-size:12px;color:var(--text-default);line-height:1.5}
+.preview-panel{background:var(--bg-white);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--lg);position:sticky;top:calc(100px + var(--huge))}
+.preview-panel-title{font-size:13px;font-weight:700;color:var(--text-high);margin-bottom:var(--md)}
+.ptabs{display:flex;gap:var(--xs);margin-bottom:var(--md);flex-wrap:wrap}
+.ptab{padding:4px 10px;border-radius:var(--r-pill);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg-white);color:var(--text-default);transition:all .12s;font-family:inherit}
+.ptab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.preview-mock{background:var(--bg-page);border-radius:var(--r-md);padding:var(--lg);min-height:200px;display:flex;flex-direction:column;gap:var(--sm);align-items:center;justify-content:center}
+.pm-empty{color:var(--text-subtle);font-size:13px;text-align:center}
+/* form field label row */
+.field-label-row{display:flex;align-items:center;gap:6px;margin-bottom:var(--sm)}
+.field-label{font-size:13px;font-weight:700;color:var(--text-high)}
+.field-req{color:var(--danger);font-size:13px}
+.field-hint{font-size:11px;color:var(--text-subtle)}
+.field-hint.with-icon{display:flex;align-items:center;gap:4px;margin-top:var(--xs)}
+/* budget row */
+.budget-row{display:grid;grid-template-columns:1fr auto;gap:var(--md);align-items:end}
+.daily-limit-row{display:flex;align-items:center;justify-content:space-between;padding:var(--md) var(--lg);background:var(--bg-page);border-radius:var(--r-md);margin-top:var(--xs)}
+.daily-limit-label{font-size:13px;color:var(--text-default);display:flex;align-items:center;gap:var(--xs)}
+/* coupon apply section */
+.coupon-section{border:1.5px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-top:var(--lg)}
+.coupon-section-hd{display:flex;align-items:center;justify-content:space-between;padding:var(--md) var(--lg);background:var(--bg-page);cursor:pointer;user-select:none}
+.coupon-section-hd-left{display:flex;align-items:center;gap:var(--sm)}
+.coupon-section-title{font-size:14px;font-weight:700;color:var(--text-high)}
+.coupon-section-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:var(--r-pill);background:var(--primary-subtle);color:var(--primary)}
+.coupon-section-body{padding:var(--lg);border-top:1px solid var(--border)}
+.coupon-radio-list{display:flex;flex-direction:column;gap:var(--sm)}
+.crl-item{display:flex;align-items:center;gap:var(--md);padding:var(--md) var(--lg);border:2px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .15s;background:var(--bg-white)}
+.crl-item:hover{border-color:var(--primary)}
+.crl-item.on{border-color:var(--primary);background:var(--primary-subtle)}
+.crl-item input[type=radio]{accent-color:var(--primary);width:16px;height:16px;flex-shrink:0}
+.crl-name{font-size:14px;font-weight:700;color:var(--text-high)}
+.crl-meta{font-size:12px;color:var(--text-default);margin-top:2px}
+.crl-code{font-family:'Courier New',monospace;font-size:11px;color:var(--text-subtle);margin-top:1px}
+.discount-calc{background:var(--success-bg);border:1px solid var(--success-stroke);border-radius:var(--r-md);padding:var(--lg);margin-top:var(--md)}
+.dc-row{display:flex;justify-content:space-between;font-size:14px;padding:3px 0}
+.dc-row.total{font-weight:800;font-size:16px;color:var(--success-fg);border-top:1px solid var(--success-stroke);padding-top:var(--sm);margin-top:var(--sm)}
+.transfer-warn{display:flex;align-items:flex-start;gap:var(--sm);background:var(--warning-bg);border:1px solid var(--warning-stroke);border-radius:var(--r-md);padding:var(--md) var(--lg);margin-top:var(--md);font-size:13px;color:var(--warning-fg);line-height:1.5}
+.transfer-warn .icon{color:var(--warning-shape);flex-shrink:0;margin-top:1px}
+.condition-check{display:flex;align-items:center;gap:var(--xs);font-size:12px;border-radius:var(--r-sm);padding:4px 10px;margin-top:var(--xs)}
+.condition-check.ok{background:var(--success-bg);color:var(--success-fg);border:1px solid var(--success-stroke)}
+.condition-check.fail{background:var(--error-bg);color:var(--error-fg);border:1px solid var(--error-stroke)}
+
+/* ── S4 wallet: cpv3 status variants ── */
+.cpv3.s-used::before{background:var(--success-shape)}
+.cpv3.s-expired::before{background:var(--border)}
+
+/* ── S6: CAMPAIGN DETAIL ── */
+.camp-header{background:var(--bg-white);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--xl);margin-bottom:var(--xl)}
+.camp-header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--lg)}
+.camp-name{font-size:22px;font-weight:800;color:var(--text-high);margin-bottom:4px}
+.camp-meta{font-size:13px;color:var(--text-default)}
+.camp-stats{display:flex;gap:var(--xl)}
+.cs-item{text-align:center}
+.cs-val{font-size:22px;font-weight:800;color:var(--text-high)}
+.cs-label{font-size:11px;color:var(--text-subtle);margin-top:2px}
+.adset-coupon-cell{display:flex;align-items:center;gap:var(--xs)}
+.adset-drawer{background:var(--primary-subtle);border-top:2px solid var(--primary-subtle-em);padding:var(--xl)}
+.adset-drawer-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--xl)}
+.adset-section-title{font-size:13px;font-weight:700;color:var(--text-default);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--md)}
+.applied-coupon-box{background:var(--bg-white);border:1.5px solid var(--primary-subtle-em);border-radius:var(--r-md);padding:var(--lg)}
+.acb-name{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:var(--xs)}
+.acb-meta{font-size:12px;color:var(--text-default);margin-bottom:4px}
+.acb-code{font-family:'Courier New',monospace;font-size:12px;color:var(--text-subtle)}
+.no-coupon-box{background:var(--bg-page);border:1px dashed var(--border);border-radius:var(--r-md);padding:var(--lg);text-align:center;font-size:13px;color:var(--text-subtle)}
+
+/* SUCCESS STATE */
+@keyframes popIn{0%{transform:scale(.3) rotate(-10deg);opacity:0}60%{transform:scale(1.08) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.pop-in{animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards}
+
+/* ── REGISTER COUPON ANIMATION ── */
+@keyframes couponReveal{
+  0%{transform:scale(0.3) rotate(-10deg);opacity:0}
+  50%{transform:scale(1.1) rotate(2deg);opacity:1}
+  70%{transform:scale(0.95) rotate(-1deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+.coupon-reveal-anim{animation:couponReveal .6s cubic-bezier(.34,1.56,.64,1) forwards}
+</style>
+</head>
+<body>
+
+<!-- ═══ FLOW NAV ═══ -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand">COUPON v3</div>
+  <button class="flow-btn active" onclick="showScreen('s1')" id="flow-s1">① 쿠폰 발급 <small style="opacity:.6">(Dash)</small></button>
+  <button class="flow-btn" onclick="showScreen('s2')" id="flow-s2">② 쿠폰 목록 <small style="opacity:.6">(Dash)</small></button>
+  <button class="flow-btn" onclick="showScreen('s3')" id="flow-s3">③ 쿠폰 등록 <small style="opacity:.6">(광고센터)</small></button>
+  <button class="flow-btn" onclick="showScreen('s4')" id="flow-s4">④ 내 쿠폰함 <small style="opacity:.6">(광고센터)</small></button>
+  <button class="flow-btn" onclick="showScreen('s5')" id="flow-s5">⑤ 광고세트 세팅 <small style="opacity:.6">(광고센터)</small></button>
+  <button class="flow-btn" onclick="showScreen('s6')" id="flow-s6">⑥ 캠페인 디테일 <small style="opacity:.6">(광고센터)</small></button>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     S1: 쿠폰 발급 (Dash - 세일즈매니저)
+     ═══════════════════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 Dash</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb"><span class="crumb-muted">쿠폰 관리</span><span class="crumb-sep">›</span><span class="crumb-current">쿠폰 발급</span></div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> jerry@buzzvil.com</div></div>
+  </div>
+  <div class="sidebar">
+    <div class="nav-section-label">쿠폰 관리</div>
+    <div class="nav-item active" onclick="showScreen('s1')"><span class="icon icon-18">add_circle</span> 쿠폰 발급</div>
+    <div class="nav-item" onclick="showScreen('s2')"><span class="icon icon-18">confirmation_number</span> 쿠폰 목록</div>
+  </div>
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">새 쿠폰 발급</h1>
+    </div>
+
+    <!-- success state -->
+    <div id="s1-success" style="display:none;max-width:480px;margin:0 auto;text-align:center">
+      <div class="pop-in" style="margin-bottom:var(--xl)">
+        <span class="icon icon-40" style="color:var(--success-shape)">check_circle</span>
+        <div style="font-size:20px;font-weight:800;color:var(--text-high);margin-top:var(--sm)">쿠폰이 발급되었습니다!</div>
+        <div style="font-size:14px;color:var(--text-default);margin-top:var(--xs)">아래 코드를 고객에게 전달하세요.</div>
+      </div>
+      <div id="s1-success-card" style="margin-bottom:var(--xl)"></div>
+      <button class="btn btn-outline" onclick="resetS1()"><span class="icon icon-18">add</span> 새 쿠폰 발급</button>
+    </div>
+
+    <!-- form -->
+    <div id="s1-form" style="display:grid;grid-template-columns:1fr 360px;gap:var(--xl);align-items:start">
+      <div class="card">
+
+        <div class="form-group">
+          <label class="form-label">발급 대상 <span class="req">*</span></label>
+          <input class="form-input" type="text" id="s1-target" placeholder="예: 주식회사 BAT 김유진 대리" oninput="updateS1Preview()" value="주식회사 BAT 김유진 대리">
+          <div class="form-hint">계정 여부와 무관하게 자유롭게 입력하세요.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">할인 유형 <span class="req">*</span></label>
+          <div class="discount-type-row">
+            <div class="dt-card sel" id="dt-unit" onclick="selectDiscountType('unit')">
+              <div class="dt-title">단가 할인</div>
+              <div class="dt-desc">CPC / CPM 단가에 할인율을 적용합니다.</div>
+            </div>
+            <div class="dt-card" id="dt-fixed" onclick="selectDiscountType('fixed')">
+              <div class="dt-title">정액 할인</div>
+              <div class="dt-desc">집행 금액에서 일정 금액을 차감합니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 단가 할인 필드 -->
+        <div id="fields-unit">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">할인율 <span class="req">*</span></label>
+              <div style="display:flex;align-items:center;gap:var(--sm)">
+                <input class="form-input" type="number" id="s1-rate" min="1" max="99" value="20" oninput="updateS1Preview()" style="flex:1">
+                <span style="font-size:16px;font-weight:700;color:var(--text-default)">%</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">최대 할인 금액 <span class="req">*</span></label>
+              <div style="display:flex;align-items:center;gap:var(--sm)">
+                <input class="form-input" type="text" id="s1-max-discount" value="200,000" oninput="updateS1Preview()" style="flex:1">
+                <span style="font-size:14px;font-weight:600;color:var(--text-default)">원</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 정액 할인 필드 -->
+        <div id="fields-fixed" style="display:none">
+          <div class="form-group">
+            <label class="form-label">할인 금액 <span class="req">*</span></label>
+            <div style="display:flex;align-items:center;gap:var(--sm)">
+              <input class="form-input" type="text" id="s1-fixed-amount" value="300,000" oninput="updateS1Preview()" style="flex:1">
+              <span style="font-size:14px;font-weight:600;color:var(--text-default)">원</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">최소 집행 금액 <span class="req">*</span></label>
+              <div style="display:flex;align-items:center;gap:var(--sm)">
+                <input class="form-input" type="text" id="s1-min-spend" value="1,000,000" oninput="updateS1Preview()" style="flex:1">
+                <span style="font-size:14px;font-weight:600;color:var(--text-default)">원</span>
+              </div>
+              <div class="form-hint">이 금액 이상 집행 시에만 할인이 적용됩니다.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">최대 할인 금액 <span class="req">*</span></label>
+              <div style="display:flex;align-items:center;gap:var(--sm)">
+                <input class="form-input" type="text" id="s1-fixed-max" value="300,000" oninput="updateS1Preview()" style="flex:1">
+                <span style="font-size:14px;font-weight:600;color:var(--text-default)">원</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">유효기간 <span class="req">*</span></label>
+          <div class="validity-row">
+            <span style="font-size:14px;color:var(--text-default)">발급일로부터</span>
+            <input class="validity-num" type="number" id="s1-days" min="1" max="30" value="7" oninput="updateS1Preview();syncPresets()">
+            <span class="validity-unit">일</span>
+            <div class="preset-btns">
+              <button class="preset-btn on" onclick="setDays(7)" id="preset-7">7일</button>
+              <button class="preset-btn" onclick="setDays(14)" id="preset-14">14일</button>
+              <button class="preset-btn" onclick="setDays(30)" id="preset-30">30일</button>
+            </div>
+          </div>
+          <div class="form-hint" style="margin-top:var(--sm)">최대 30일까지 설정할 수 있습니다.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">자동 생성 쿠폰 번호</label>
+          <div class="code-preview-box">
+            <div>
+              <div class="code-val" id="s1-code-display">BZV-2604-A1K9</div>
+              <div class="form-hint" style="margin-top:4px">발급 시 확정됩니다.</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="regenCode()"><span class="icon icon-16">refresh</span> 재생성</button>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="showScreen('s2')">취소</button>
+          <button class="btn btn-primary" onclick="issueS1()"><span class="icon icon-18">confirmation_number</span> 쿠폰 발급</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+      <div style="position:sticky;top:calc(100px + var(--huge))">
+        <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:var(--sm);text-transform:uppercase;letter-spacing:.5px">쿠폰 미리보기</div>
+        <div id="s1-preview-card" class="cpv3">
+          <div class="cpv3-brand">BUZZVIL COUPON</div>
+          <div class="cpv3-benefit" id="pv-benefit">단가 할인 20%</div>
+          <div class="cpv3-cond" id="pv-cond">최대 200,000원 할인</div>
+          <div class="cpv3-divider"></div>
+          <div class="cpv3-target" id="pv-target">주식회사 BAT 김유진 대리</div>
+          <div class="cpv3-code" id="pv-code">BZV-2604-A1K9</div>
+          <div class="cpv3-validity" id="pv-validity">발급일로부터 7일 유효</div>
+        </div>
+        <div class="card" style="margin-top:var(--lg);padding:var(--lg)">
+          <div style="font-size:12px;font-weight:700;color:var(--text-default);margin-bottom:var(--md)">발급 요약</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">할인 유형</span><span id="pv-sum-type" style="font-weight:700">단가 할인</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">발급 대상</span><span id="pv-sum-target" style="font-weight:700">주식회사 BAT 김유진 대리</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">유효기간</span><span id="pv-sum-days" style="font-weight:700">7일</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-default)">담당 매니저</span><span style="font-weight:700">Jerry Park</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S2: 쿠폰 목록 (Dash - 세일즈매니저)
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 Dash</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb"><span class="crumb-muted">쿠폰 관리</span><span class="crumb-sep">›</span><span class="crumb-current">쿠폰 목록</span></div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> jerry@buzzvil.com</div></div>
+  </div>
+  <div class="sidebar">
+    <div class="nav-section-label">쿠폰 관리</div>
+    <div class="nav-item" onclick="showScreen('s1')"><span class="icon icon-18">add_circle</span> 쿠폰 발급</div>
+    <div class="nav-item active" onclick="showScreen('s2')"><span class="icon icon-18">confirmation_number</span> 쿠폰 목록</div>
+  </div>
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">쿠폰 목록</h1>
+      <button class="btn btn-primary" onclick="showScreen('s1')"><span class="icon icon-18">add</span> 새 쿠폰 발급</button>
+    </div>
+
+    <div style="background:var(--primary-subtle);border:1px solid var(--primary-subtle-em);border-radius:var(--r-md);padding:var(--md) var(--lg);margin-bottom:var(--xl);display:flex;align-items:flex-start;gap:var(--sm)">
+      <span class="icon icon-18" style="color:var(--primary);flex-shrink:0;margin-top:1px">terminal</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:4px">CLI + Claude Skill로 제공 예정</div>
+        <div style="font-size:12px;color:var(--text-default);line-height:1.6">쿠폰 발급/사용 현황 조회는 별도 대시보드 UI 대신 <strong>CLI 커맨드</strong>와 <strong>Claude Skill</strong>을 통해 제공됩니다. 아래 목록은 프로토타입 참고용입니다.</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">담당 매니저</span>
+        <select class="filter-select" id="s2-manager-filter" onchange="renderS2()">
+          <option value="">전체 매니저</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">할인 유형</span>
+        <select class="filter-select" id="s2-type-filter" onchange="renderS2()">
+          <option value="">전체</option>
+          <option value="unit">단가 할인</option>
+          <option value="fixed">정액 할인</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">상태</span>
+        <select class="filter-select" id="s2-status-filter" onchange="renderS2()">
+          <option value="">전체</option>
+          <option value="active">활성</option>
+          <option value="expired">만료</option>
+        </select>
+      </div>
+      <div class="filter-group flex-1">
+        <span class="filter-label">검색</span>
+        <input class="search-input" type="text" id="s2-search" placeholder="쿠폰명 / 코드 / 발급 대상 검색" oninput="renderS2()" style="width:100%">
+      </div>
+    </div>
+
+    <div class="results-count" id="s2-count">쿠폰 0건</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>쿠폰명</th>
+            <th>코드</th>
+            <th>할인 유형</th>
+            <th>혜택 내용</th>
+            <th>발급 대상</th>
+            <th>담당 매니저</th>
+            <th>유효기간</th>
+            <th>상태</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="s2-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S3: 쿠폰 등록 (광고센터 - 유저)
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 광고센터</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb"><span class="crumb-muted">마이페이지</span><span class="crumb-sep">›</span><span class="crumb-current">쿠폰 등록</span></div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> user@oliveyoung.com<span class="icon icon-16">expand_more</span></div></div>
+  </div>
+  <main class="main-full" style="padding-top:calc(100px + var(--huge))">
+    <div style="max-width:480px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:var(--xl)">
+        <h1 class="page-title" style="margin-bottom:var(--xs)">쿠폰 등록</h1>
+        <p style="font-size:14px;color:var(--text-default)">영업 담당자로부터 받은 쿠폰 코드를 입력하세요.</p>
+      </div>
+      <div class="card">
+        <div class="form-group" style="margin-bottom:var(--md)">
+          <label class="form-label">쿠폰 코드</label>
+          <div style="display:flex;gap:var(--sm)">
+            <input class="form-input" type="text" id="s3-code-input" placeholder="BZV-XXXX-XXXX" style="font-family:'Courier New',monospace;letter-spacing:1px;font-size:16px;flex:1">
+            <button class="btn btn-primary" onclick="s3Register()">등록하기</button>
+          </div>
+          <div id="s3-error" style="display:none;margin-top:var(--xs);font-size:12px;color:var(--error-fg)"></div>
+        </div>
+      </div>
+      <div id="s3-result" style="display:none;margin-top:var(--xl)">
+        <div style="text-align:center;margin-bottom:var(--lg)">
+          <span class="icon icon-40" style="color:var(--success-shape)">check_circle</span>
+          <div style="font-size:18px;font-weight:800;color:var(--text-high);margin-top:var(--sm)">쿠폰함에 추가되었습니다!</div>
+        </div>
+        <div id="s3-result-card" class="coupon-reveal-anim"></div>
+        <div style="text-align:center;margin-top:var(--xl)">
+          <button class="btn btn-primary" onclick="showScreen('s4')"><span class="icon icon-18">wallet</span> 쿠폰함 보기</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S4: 내 쿠폰함 (광고센터 - 유저)
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 광고센터</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb"><span class="crumb-muted">마이페이지</span><span class="crumb-sep">›</span><span class="crumb-current">내 쿠폰함</span></div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> user@oliveyoung.com<span class="icon icon-16">expand_more</span></div></div>
+  </div>
+  <main class="main-full" style="padding-top:calc(100px + var(--huge))">
+    <div class="page-header">
+      <h1 class="page-title">내 쿠폰함</h1>
+      <button class="btn btn-secondary" onclick="showScreen('s3')"><span class="icon icon-18">add</span> 쿠폰 등록</button>
+    </div>
+    <div class="pill-tabs" id="s4-tabs">
+      <button class="pill-tab active" onclick="s4Switch('active')">사용전</button>
+      <button class="pill-tab" onclick="s4Switch('used')">사용됨</button>
+      <button class="pill-tab" onclick="s4Switch('expired')">만료됨</button>
+    </div>
+    <div class="wallet-grid" id="s4-grid"></div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S5: 광고세트 세팅 (광고센터 - 유저)
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 광고센터</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">캠페인</span><span class="crumb-sep">›</span>
+      <span class="crumb-muted">올리브영 4월 봄 시즌</span><span class="crumb-sep">›</span>
+      <span class="crumb-current">광고세트 세팅</span>
+    </div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> user@oliveyoung.com</div></div>
+  </div>
+  <main class="main-full" style="padding-top:calc(100px + var(--huge))">
+    <div class="page-header">
+      <h1 class="page-title">새 광고세트</h1>
+    </div>
+
+    <div class="adset-outer">
+      <!-- LEFT: FORM -->
+      <div class="card">
+        <!-- 소재 유형 -->
+        <div class="form-group">
+          <div class="field-label-row">
+            <span class="field-label">소재 유형</span><span class="field-req">*</span>
+          </div>
+          <p style="font-size:13px;color:var(--text-default);margin-bottom:var(--md)">광고 소재로 대상자가 선택하거나 참여할 것을 선택해 콘텐츠를 생성합니다.</p>
+          <div class="creative-list" id="s5-creative-list">
+            <div class="ct-item on" onclick="toggleCreative('리뷰')" id="ct-리뷰">
+              <div class="ct-chk"><span class="icon">check</span></div>
+              <div><div class="ct-name">리뷰</div><div class="ct-desc">AI가 약정한 실제 리뷰를 통해 신뢰감 있는 후기로 광고 참여율을 높여요.</div></div>
+            </div>
+            <div class="ct-item on" onclick="toggleCreative('숏츠')" id="ct-숏츠">
+              <div class="ct-chk"><span class="icon">check</span></div>
+              <div><div class="ct-name">숏츠</div><div class="ct-desc">짧은 숏츠 영상으로 시선을 끌고, 브랜드 인지도를 높여요.</div></div>
+            </div>
+            <div class="ct-item" onclick="toggleCreative('해피알림')" id="ct-해피알림">
+              <div class="ct-chk"><span class="icon">check</span></div>
+              <div><div class="ct-name">해피알림</div><div class="ct-desc">브랜드 맞춤 혜택을 노출하여 고객 전환율을 높여요.</div></div>
+            </div>
+            <div class="ct-item" onclick="toggleCreative('OX퀴즈')" id="ct-OX퀴즈">
+              <div class="ct-chk"><span class="icon">check</span></div>
+              <div><div class="ct-name">OX퀴즈</div><div class="ct-desc">브랜드에 대한 기버의 OX 퀴즈로 인지도를 높여요.</div></div>
+            </div>
+            <div class="ct-item" onclick="toggleCreative('추천상품배너')" id="ct-추천상품배너">
+              <div class="ct-chk"><span class="icon">check</span></div>
+              <div><div class="ct-name">추천상품배너</div><div class="ct-desc">유저에게 구매 확률이 높은 상품을 노출하여 고객 전환율을 높여요.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- 광고세트 이름 -->
+        <div class="form-group">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sm)">
+            <div class="field-label-row" style="margin-bottom:0"><span class="field-label">광고세트 이름</span><span class="field-req">*</span></div>
+            <span style="font-size:11px;color:var(--text-subtle)" id="s5-name-count">0/40</span>
+          </div>
+          <input class="form-input" type="text" id="s5-name" maxlength="40" placeholder="광고 관리용 이름을 입력해 주세요." oninput="document.getElementById('s5-name-count').textContent=this.value.length+'/40'">
+        </div>
+
+        <!-- 예산 + 일 예산 한도 -->
+        <div class="form-group">
+          <div class="field-label-row" style="margin-bottom:var(--sm)">
+            <span class="field-label">예산</span><span class="field-req">*</span>
+            <span class="icon icon-16" style="color:var(--text-subtle);cursor:help" title="광고세트 전체 집행 예산입니다.">info</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--sm)">
+            <input class="form-input" type="text" id="s5-budget" placeholder="광고세트의 예산을 입력해 주세요." oninput="updateCouponCalc()" style="flex:1">
+            <span style="font-size:14px;font-weight:600;color:var(--text-default);flex-shrink:0">원</span>
+          </div>
+          <div class="form-hint">최소 100,000원부터 가능</div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--md) var(--lg);background:var(--bg-page);border-radius:var(--r-md);margin-bottom:var(--lg)">
+          <div style="font-size:13px;color:var(--text-default);display:flex;align-items:center;gap:var(--xs)">
+            <span class="icon icon-16" style="color:var(--text-subtle)">info</span>
+            <span>일 예산 한도</span>
+            <span style="font-size:11px;color:var(--text-subtle)">광고세트의 하루 최대 예산 소진 조건</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="s5-daily-btn" onclick="toggleDailyLimit()"><span class="icon icon-16">add</span> 한도 설정하기</button>
+        </div>
+        <div id="s5-daily-limit-field" style="display:none;margin-bottom:var(--lg)">
+          <div style="display:flex;align-items:center;gap:var(--sm)">
+            <input class="form-input" type="text" placeholder="일 예산 한도를 입력해 주세요." style="flex:1">
+            <span style="font-size:14px;font-weight:600;color:var(--text-default)">원</span>
+            <button class="btn btn-secondary btn-sm" onclick="toggleDailyLimit()"><span class="icon icon-16">close</span></button>
+          </div>
+        </div>
+
+        <!-- 집행 기간 -->
+        <div class="form-group">
+          <div class="field-label-row"><span class="field-label">집행 기간</span><span class="field-req">*</span></div>
+          <input class="form-input" type="text" placeholder="YYYY.MM.DD ~ YYYY.MM.DD" id="s5-period">
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- 쿠폰 안내 -->
+        <div style="background:var(--primary-subtle);border:1px solid var(--primary-subtle-em);border-radius:var(--r-md);padding:var(--md) var(--lg);display:flex;align-items:flex-start;gap:var(--sm);margin-bottom:var(--lg)">
+          <span class="icon icon-18" style="color:var(--primary);flex-shrink:0;margin-top:1px">confirmation_number</span>
+          <div style="font-size:12px;color:var(--text-default);line-height:1.6">쿠폰은 <strong>광고세트</strong>가 아닌 <strong>캠페인 단위</strong>로 적용됩니다. 캠페인 디테일 화면에서 쿠폰을 조회하세요.</div>
+        </div>
+
+        <div class="form-actions" style="margin-top:var(--xl)">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary" onclick="alert('광고세트가 저장되었습니다! (목업)')"><span class="icon icon-18">check</span> 광고세트 저장</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+      <div class="preview-panel" id="s5-preview-panel">
+        <div class="preview-panel-title">소재 유형 미리보기</div>
+        <div class="ptabs" id="s5-ptabs"></div>
+        <div class="preview-mock" id="s5-preview-mock">
+          <span class="icon" style="font-size:36px;color:var(--border)">image</span>
+          <p class="pm-empty">소재 유형을 선택하면<br>미리보기가 표시됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S6: 캠페인 디테일 (광고센터 - 유저)
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="topnav">
+    <a class="topnav-logo"><div class="topnav-logo-mark">B</div><span class="topnav-logo-text">버즈빌 광고센터</span></a>
+    <div class="topnav-divider"></div>
+    <div class="topnav-breadcrumb">
+      <span class="crumb-muted">캠페인</span><span class="crumb-sep">›</span>
+      <span class="crumb-current">올리브영 4월 봄 시즌 캠페인</span>
+    </div>
+    <div class="topnav-right"><div class="topnav-user"><span class="icon icon-18">person</span> user@oliveyoung.com</div></div>
+  </div>
+  <main class="main-full" style="padding-top:calc(100px + var(--huge))">
+    <button class="back-btn"><span class="icon icon-18">arrow_back</span> 캠페인 목록으로</button>
+
+    <!-- 캠페인 헤더 -->
+    <div class="camp-header">
+      <div class="camp-header-top">
+        <div class="camp-header-info">
+          <div class="camp-name">올리브영 4월 봄 시즌 캠페인</div>
+          <div class="camp-meta">(주) 올리브영 · 2026.04.01 ~ 2026.04.30 · <span class="badge badge-running" style="font-size:11px">집행 중</span></div>
+        </div>
+        <div class="camp-stats">
+          <div class="cs-item"><div class="cs-val">3</div><div class="cs-label">광고세트</div></div>
+          <div class="cs-item"><div class="cs-val">2,800만원</div><div class="cs-label">총 예산</div></div>
+        </div>
+      </div>
+      <!-- 적용 쿠폰 -->
+      <div style="border-top:1px solid var(--border);padding-top:var(--lg);margin-top:var(--lg)">
+        <div style="font-size:12px;font-weight:700;color:var(--text-default);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--md)">적용 쿠폰</div>
+        <div id="s6-campaign-coupon"></div>
+      </div>
+    </div>
+
+    <!-- 광고세트 목록 -->
+    <div style="font-size:16px;font-weight:700;color:var(--text-high);margin-bottom:var(--md)">광고세트</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>광고세트명</th>
+            <th>소재 유형</th>
+            <th>예산</th>
+            <th>집행 기간</th>
+            <th>상태</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="s6-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+var salesManagers = [
+  { name: 'Jerry Park', code: 'jerry', email: 'jerry@buzzvil.com' },
+  { name: '김소연', code: 'soyeon', email: 'soyeon@buzzvil.com' },
+  { name: '이민재', code: 'minjae', email: 'minjae@buzzvil.com' },
+  { name: '한나영', code: 'hanna', email: 'hanna@buzzvil.com' }
+];
+
+var coupons = [
+  { id:1, name:'올리브영 봄 시즌 단가할인', code:'BZV-2604-A1K9', type:'unit', rate:20, maxDiscount:200000, minSpend:null, target:'(주) 올리브영 장하늘 팀장', manager:'jerry', issuedDate:'2026-04-01', expiryDate:'2026-04-08', validDays:7, status:'active', appliedCampaignId:'c1' },
+  { id:2, name:'BAT 단독 단가할인', code:'BZV-2604-B2L0', type:'unit', rate:15, maxDiscount:150000, minSpend:null, target:'주식회사 BAT 김유진 대리', manager:'soyeon', issuedDate:'2026-04-02', expiryDate:'2026-04-09', validDays:7, status:'active', appliedCampaignId:null },
+  { id:3, name:'LG생건 정액할인', code:'BZV-2604-C3M1', type:'fixed', fixedAmount:300000, maxDiscount:300000, minSpend:1000000, target:'(주) LG생활건강 임수빈', manager:'minjae', issuedDate:'2026-04-03', expiryDate:'2026-04-17', validDays:14, status:'active', appliedCampaignId:null },
+  { id:4, name:'아모레 정액할인 프리미엄', code:'BZV-2604-D4N2', type:'fixed', fixedAmount:500000, maxDiscount:500000, minSpend:2000000, target:'(주) 아모레퍼시픽 정다은', manager:'jerry', issuedDate:'2026-04-05', expiryDate:'2026-05-05', validDays:30, status:'active', appliedCampaignId:null },
+  { id:5, name:'2월 올영 단가할인', code:'BZV-2602-E5O3', type:'unit', rate:10, maxDiscount:100000, minSpend:null, target:'(주) 올리브영', manager:'hanna', issuedDate:'2026-02-10', expiryDate:'2026-02-17', validDays:7, status:'expired', appliedCampaignId:null },
+  { id:6, name:'3월 BAT 정액할인', code:'BZV-2603-F6P4', type:'fixed', fixedAmount:200000, maxDiscount:200000, minSpend:800000, target:'주식회사 BAT', manager:'soyeon', issuedDate:'2026-03-15', expiryDate:'2026-03-29', validDays:14, status:'expired', appliedCampaignId:null },
+  { id:7, name:'LG생건 2차 단가할인', code:'BZV-2604-G7Q5', type:'unit', rate:25, maxDiscount:250000, minSpend:null, target:'(주) LG생활건강 강민호', manager:'minjae', issuedDate:'2026-04-08', expiryDate:'2026-04-22', validDays:14, status:'active', appliedCampaignId:null },
+  { id:8, name:'아모레 라이브 단가할인', code:'BZV-2604-H8R6', type:'unit', rate:20, maxDiscount:180000, minSpend:null, target:'(주) 아모레퍼시픽', manager:'hanna', issuedDate:'2026-04-10', expiryDate:'2026-04-17', validDays:7, status:'active', appliedCampaignId:null }
+];
+
+// Wallet = user's coupons (S4)
+var walletCoupons = [
+  { couponId:1, walletStatus:'used' },    // 사용됨
+  { couponId:2, walletStatus:'active' },  // 사용전
+  { couponId:4, walletStatus:'active' },  // 사용전
+  { couponId:5, walletStatus:'expired' }  // 만료됨
+];
+
+// Campaign + adsets for S6
+var campaign6 = {
+  id: 'c1',
+  name: '올리브영 4월 봄 시즌 캠페인',
+  appliedCouponId: 1,
+  adsets: [
+    { id:101, name:'봄 리뷰+숏츠 세트', creativeTypes:['리뷰','숏츠'], budget:10000000, period:'2026.04.01 ~ 2026.04.15', status:'running' },
+    { id:102, name:'해피알림 단독 세트', creativeTypes:['해피알림'], budget:8000000, period:'2026.04.01 ~ 2026.04.30', status:'running' },
+    { id:103, name:'LG 협력 OX퀴즈 세트', creativeTypes:['OX퀴즈','추천상품배너'], budget:10000000, period:'2026.04.08 ~ 2026.04.30', status:'paused' }
+  ]
+};
+
+// ══════════════════════════════════════
+// SCREEN SWITCH
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('flow-' + id).classList.add('active');
+  if (id === 's2') renderS2();
+  if (id === 's4') renderS4('active');
+  if (id === 's5') initS5();
+  if (id === 's6') renderS6();
+}
+
+// ══════════════════════════════════════
+// S1: COUPON ISSUE
+// ══════════════════════════════════════
+var s1DiscountType = 'unit';
+var s1GeneratedCode = 'BZV-2604-A1K9';
+
+function regenCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var part = '';
+  for (var i = 0; i < 4; i++) part += chars[Math.floor(Math.random() * chars.length)];
+  var d = new Date();
+  var ym = String(d.getFullYear()).slice(2) + String(d.getMonth()+1).padStart(2,'0');
+  s1GeneratedCode = 'BZV-' + ym + '-' + part;
+  document.getElementById('s1-code-display').textContent = s1GeneratedCode;
+  document.getElementById('pv-code').textContent = s1GeneratedCode;
+}
+
+function selectDiscountType(t) {
+  s1DiscountType = t;
+  document.getElementById('dt-unit').classList.toggle('sel', t === 'unit');
+  document.getElementById('dt-fixed').classList.toggle('sel', t === 'fixed');
+  document.getElementById('fields-unit').style.display = t === 'unit' ? '' : 'none';
+  document.getElementById('fields-fixed').style.display = t === 'fixed' ? '' : 'none';
+  updateS1Preview();
+}
+
+function setDays(n) {
+  document.getElementById('s1-days').value = n;
+  syncPresets();
+  updateS1Preview();
+}
+
+function syncPresets() {
+  var v = parseInt(document.getElementById('s1-days').value) || 7;
+  document.getElementById('preset-7').classList.toggle('on', v === 7);
+  document.getElementById('preset-14').classList.toggle('on', v === 14);
+  document.getElementById('preset-30').classList.toggle('on', v === 30);
+}
+
+function updateS1Preview() {
+  var target = document.getElementById('s1-target').value || '—';
+  var days = document.getElementById('s1-days').value || 7;
+  var benefit, cond, typeLabel;
+  if (s1DiscountType === 'unit') {
+    var rate = document.getElementById('s1-rate').value || 0;
+    var maxD = document.getElementById('s1-max-discount').value || '0';
+    benefit = '단가 할인 ' + rate + '%';
+    cond = '최대 ' + maxD + '원 할인';
+    typeLabel = '단가 할인';
+  } else {
+    var amt = document.getElementById('s1-fixed-amount').value || '0';
+    var minS = document.getElementById('s1-min-spend').value || '0';
+    benefit = '정액 할인 ' + amt + '원';
+    cond = minS + '원 이상 집행 시';
+    typeLabel = '정액 할인';
+  }
+  document.getElementById('pv-benefit').textContent = benefit;
+  document.getElementById('pv-cond').textContent = cond;
+  document.getElementById('pv-target').textContent = target;
+  document.getElementById('pv-validity').textContent = '발급일로부터 ' + days + '일 유효';
+  document.getElementById('pv-sum-type').textContent = typeLabel;
+  document.getElementById('pv-sum-target').textContent = target.length > 18 ? target.slice(0,18)+'…' : target;
+  document.getElementById('pv-sum-days').textContent = days + '일';
+}
+
+function issueS1() {
+  document.getElementById('s1-form').style.display = 'none';
+  document.getElementById('s1-success').style.display = '';
+  var c = document.getElementById('pv-benefit').textContent;
+  var cond = document.getElementById('pv-cond').textContent;
+  var tgt = document.getElementById('s1-target').value;
+  var days = document.getElementById('s1-days').value;
+  document.getElementById('s1-success-card').innerHTML = buildCpv3(c, cond, tgt, s1GeneratedCode, days + '일 유효');
+}
+
+function resetS1() {
+  document.getElementById('s1-form').style.display = '';
+  document.getElementById('s1-success').style.display = 'none';
+  regenCode();
+}
+
+function buildCpv3(benefit, cond, target, code, validity) {
+  return '<div class="cpv3"><div class="cpv3-brand">BUZZVIL COUPON</div><div class="cpv3-benefit">'+benefit+'</div><div class="cpv3-cond">'+cond+'</div><div class="cpv3-divider"></div><div class="cpv3-target">'+target+'</div><div class="cpv3-code">'+code+'</div><div class="cpv3-validity">발급일로부터 '+validity+'</div></div>';
+}
+
+// ══════════════════════════════════════
+// S2: COUPON LIST
+// ══════════════════════════════════════
+function initS2Filters() {
+  var sel = document.getElementById('s2-manager-filter');
+  if (sel.options.length <= 1) {
+    salesManagers.forEach(function(m) {
+      var o = document.createElement('option');
+      o.value = m.code; o.textContent = m.name;
+      sel.appendChild(o);
+    });
+  }
+}
+
+function renderS2() {
+  initS2Filters();
+  var manFilter = document.getElementById('s2-manager-filter').value;
+  var typeFilter = document.getElementById('s2-type-filter').value;
+  var statusFilter = document.getElementById('s2-status-filter').value;
+  var search = document.getElementById('s2-search').value.toLowerCase();
+
+  var filtered = coupons.filter(function(c) {
+    if (manFilter && c.manager !== manFilter) return false;
+    if (typeFilter && c.type !== typeFilter) return false;
+    if (statusFilter && c.status !== statusFilter) return false;
+    if (search && !(c.name.toLowerCase().includes(search) || c.code.toLowerCase().includes(search) || c.target.toLowerCase().includes(search))) return false;
+    return true;
+  });
+
+  document.getElementById('s2-count').textContent = '쿠폰 ' + filtered.length + '건';
+  var tb = document.getElementById('s2-tbody');
+  tb.innerHTML = '';
+
+  if (filtered.length === 0) {
+    tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-subtle)">조건에 맞는 쿠폰이 없습니다.</td></tr>';
+    return;
+  }
+
+  filtered.forEach(function(c) {
+    var m = salesManagers.find(function(x){ return x.code === c.manager; });
+    var benefitText = c.type === 'unit'
+      ? '단가 ' + c.rate + '% 할인 (최대 ' + fmtNum(c.maxDiscount) + '원)'
+      : '정액 ' + fmtNum(c.fixedAmount) + '원 할인';
+    var condText = c.type === 'fixed' ? '최소 집행 ' + fmtNum(c.minSpend) + '원' : '';
+    var statusBadge = c.status === 'active'
+      ? '<span class="badge badge-active">활성</span>'
+      : '<span class="badge badge-expired">만료</span>';
+    var typeBadge = c.type === 'unit'
+      ? '<span class="badge badge-unit">단가 할인</span>'
+      : '<span class="badge badge-fixed">정액 할인</span>';
+
+    var appliedAdset = '';
+    if (c.appliedCampaignId) {
+      appliedAdset = '<div style="font-size:11px;color:var(--primary);margin-top:2px"><span class="icon icon-16" style="color:var(--primary)">campaign</span> '+campaign6.name+'</div>';
+    }
+
+    var tr = document.createElement('tr');
+    tr.className = 'row-click';
+    tr.setAttribute('data-id', c.id);
+    tr.onclick = function() { toggleS2Drawer(c.id); };
+    tr.innerHTML = '<td><div class="cell-main">'+c.name+'</div>'+appliedAdset+'</td>'
+      + '<td><span class="cell-code">'+c.code+'</span></td>'
+      + '<td>'+typeBadge+'</td>'
+      + '<td><div style="font-size:13px">'+benefitText+'</div>'+(condText?'<div class="cell-sub">'+condText+'</div>':'')+'</td>'
+      + '<td><div style="font-size:13px">'+c.target+'</div></td>'
+      + '<td><div style="font-size:13px">'+(m?m.name:'—')+'</div></td>'
+      + '<td><div style="font-size:13px">'+c.issuedDate+'</div><div class="cell-sub">~ '+c.expiryDate+'</div></td>'
+      + '<td>'+statusBadge+'</td>'
+      + '<td><span class="icon icon-18" style="color:var(--text-subtle)">expand_more</span></td>';
+    tb.appendChild(tr);
+
+    // drawer row
+    var drawerTr = document.createElement('tr');
+    drawerTr.id = 'drawer-' + c.id;
+    drawerTr.style.display = 'none';
+    var appliedAdsetInfo = '';
+    if (c.appliedCampaignId) {
+      appliedAdsetInfo = '<div class="applied-adset-item"><span class="icon icon-16" style="color:var(--primary)">campaign</span> '+campaign6.name+' <span class="badge badge-running" style="margin-left:auto">집행 중</span></div>';
+    } else {
+      appliedAdsetInfo = '<div style="font-size:13px;color:var(--text-subtle)">아직 캠페인에 적용되지 않았습니다.</div>';
+    }
+
+    var condDetail = '';
+    if (c.type === 'unit') {
+      condDetail = '<div class="meta-row"><span class="meta-label">할인율</span><span class="meta-value">'+c.rate+'%</span></div>'
+        + '<div class="meta-row"><span class="meta-label">최대 할인 금액</span><span class="meta-value">'+fmtNum(c.maxDiscount)+'원</span></div>';
+    } else {
+      condDetail = '<div class="meta-row"><span class="meta-label">할인 금액</span><span class="meta-value">'+fmtNum(c.fixedAmount)+'원</span></div>'
+        + '<div class="meta-row"><span class="meta-label">최소 집행 금액</span><span class="meta-value">'+fmtNum(c.minSpend)+'원</span></div>'
+        + '<div class="meta-row"><span class="meta-label">최대 할인 금액</span><span class="meta-value">'+fmtNum(c.maxDiscount)+'원</span></div>';
+    }
+
+    drawerTr.innerHTML = '<td colspan="9"><div class="drawer-inner"><div class="drawer-grid">'
+      + '<div><div class="drawer-section-title">쿠폰 상세</div>'
+      + '<div class="meta-row"><span class="meta-label">발급 대상</span><span class="meta-value">'+c.target+'</span></div>'
+      + '<div class="meta-row"><span class="meta-label">유효기간</span><span class="meta-value">'+c.validDays+'일 ('+c.issuedDate+' ~ '+c.expiryDate+')</span></div>'
+      + condDetail + '</div>'
+      + '<div><div class="drawer-section-title">적용 캠페인</div>'+appliedAdsetInfo+'</div>'
+      + '<div><div class="drawer-section-title">안내</div>'
+      + '<div style="font-size:12px;color:var(--text-default);line-height:1.7">쿠폰은 광고세트 1개에만 적용 가능합니다.<br>적용 후 다른 광고세트로 이관할 수 없습니다.</div></div>'
+      + '</div></div></td>';
+    tb.appendChild(drawerTr);
+  });
+}
+
+function toggleS2Drawer(id) {
+  var dr = document.getElementById('drawer-' + id);
+  var tr = dr.previousElementSibling;
+  var isOpen = dr.style.display !== 'none';
+  // close all
+  document.querySelectorAll('#s2-tbody tr[data-id]').forEach(function(r){ r.classList.remove('row-open'); });
+  document.querySelectorAll('#s2-tbody tr[id^="drawer-"]').forEach(function(r){ r.style.display='none'; });
+  if (!isOpen) {
+    dr.style.display = '';
+    tr.classList.add('row-open');
+  }
+}
+
+function statusLabel(s) {
+  return {running:'집행 중', paused:'일시정지', ready:'준비 중'}[s] || s;
+}
+
+// ══════════════════════════════════════
+// S3: REGISTER COUPON
+// ══════════════════════════════════════
+function s3Register() {
+  var code = document.getElementById('s3-code-input').value.trim().toUpperCase();
+  var err = document.getElementById('s3-error');
+  err.style.display = 'none';
+  if (!code) { err.textContent = '쿠폰 코드를 입력해 주세요.'; err.style.display = ''; return; }
+  var found = coupons.find(function(c){ return c.code === code; });
+  if (!found) { err.textContent = '유효하지 않은 쿠폰 코드입니다.'; err.style.display = ''; return; }
+  if (found.status === 'expired') { err.textContent = '이미 만료된 쿠폰입니다.'; err.style.display = ''; return; }
+  // show reveal
+  var benefitText = found.type === 'unit' ? '단가 할인 '+found.rate+'%' : '정액 할인 '+fmtNum(found.fixedAmount)+'원';
+  var condText = found.type === 'unit' ? '최대 '+fmtNum(found.maxDiscount)+'원 할인' : fmtNum(found.minSpend)+'원 이상 집행 시 '+fmtNum(found.maxDiscount)+'원 할인';
+  document.getElementById('s3-result-card').innerHTML = buildCpv3(benefitText, condText, found.target, found.code, found.validDays+'일');
+  document.getElementById('s3-result').style.display = '';
+}
+
+// ══════════════════════════════════════
+// S4: WALLET
+// ══════════════════════════════════════
+function s4Switch(status) {
+  document.querySelectorAll('#s4-tabs .pill-tab').forEach(function(t, i) {
+    var statuses = ['active', 'used', 'expired'];
+    t.classList.toggle('active', statuses[i] === status);
+  });
+  renderS4(status);
+}
+
+function renderS4(status) {
+  var grid = document.getElementById('s4-grid');
+  var filtered = walletCoupons.filter(function(w){ return w.walletStatus === status; });
+  if (filtered.length === 0) {
+    var labels = {active:'사용 가능한 쿠폰이 없습니다.', used:'사용한 쿠폰이 없습니다.', expired:'만료된 쿠폰이 없습니다.'};
+    grid.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-subtle);font-size:14px;grid-column:1/-1">'+labels[status]+'</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(w) {
+    var c = coupons.find(function(x){ return x.id === w.couponId; });
+    if (!c) return '';
+    var benefitText = c.type === 'unit' ? '단가 할인 ' + c.rate + '%' : '정액 ' + fmtNum(c.fixedAmount) + '원 할인';
+    var condText = c.type === 'unit'
+      ? '최대 ' + fmtNum(c.maxDiscount) + '원 할인'
+      : fmtNum(c.minSpend) + '원 이상 집행 시';
+    var statusBadge = {
+      active: '<span class="badge badge-active">사용전</span>',
+      used:   '<span class="badge badge-used">사용됨</span>',
+      expired:'<span class="badge badge-expired">만료됨</span>'
+    }[w.walletStatus];
+    var dimStyle = w.walletStatus !== 'active' ? 'opacity:0.65;' : '';
+    return '<div class="cpv3 s-'+w.walletStatus+'" style="'+dimStyle+'">'
+      + '<div style="position:absolute;top:12px;right:14px">'+statusBadge+'</div>'
+      + '<div class="cpv3-brand">BUZZVIL COUPON</div>'
+      + '<div class="cpv3-benefit">'+benefitText+'</div>'
+      + '<div class="cpv3-cond">'+condText+'</div>'
+      + '<div class="cpv3-divider"></div>'
+      + '<div class="cpv3-target">'+c.target+'</div>'
+      + '<div class="cpv3-code">'+c.code+'</div>'
+      + '<div class="cpv3-validity">'+c.expiryDate+' 까지</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// S5: ADSET SETTING
+// ══════════════════════════════════════
+var s5Selected = ['리뷰', '숏츠'];
+var s5ActivePreviewTab = '리뷰';
+var s5DailyLimitShown = false;
+
+var previewMocks = {
+  '리뷰': '<div style="width:100%;background:#fff;border-radius:8px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.1)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:#dbeafe"></div><div style="font-size:12px;font-weight:700">추천 리뷰</div></div><div style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px">요즘 가장 신경 쓰이는 피부 고민은?<br>올리브영 봄 신상품을 사용해보세요.</div><div style="display:flex;gap:4px;flex-wrap:wrap">'
+    + ['피부가 자꾸 건조해요','오일이 더 드러지려요','피부가 칙칙해 보여요','트러블이 자꾸 생겨요'].map(function(t){ return '<span style="background:#f1f5f9;border-radius:999px;font-size:10px;padding:3px 8px;color:#334155">'+t+'</span>'; }).join('')
+    + '</div></div>',
+  '숏츠': '<div style="width:120px;height:180px;background:linear-gradient(180deg,#1e293b,#334155);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><span style="color:#fff;font-size:32px">▶</span><span style="color:#94a3b8;font-size:10px">15초 영상</span></div>',
+  '해피알림': '<div style="background:#fff;border-radius:8px;padding:12px;width:100%;box-shadow:0 1px 4px rgba(0,0,0,.1)"><div style="font-size:11px;font-weight:700;color:#3b82f6;margin-bottom:4px">🎉 특별 혜택 알림</div><div style="font-size:12px;color:#334155;margin-bottom:8px">올리브영 봄 신상품<br>단독 할인 쿠폰 지급!</div><div style="background:#3b82f6;color:#fff;border-radius:6px;padding:6px;text-align:center;font-size:11px;font-weight:700">혜택 받기</div></div>',
+  'OX퀴즈': '<div style="background:#fff;border-radius:8px;padding:12px;width:100%;box-shadow:0 1px 4px rgba(0,0,0,.1)"><div style="font-size:11px;color:#64748b;margin-bottom:6px">브랜드 퀴즈</div><div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:10px">올리브영은 2024년<br>뷰티 앱 1위입니다.</div><div style="display:flex;gap:8px;justify-content:center"><div style="width:48px;height:48px;border-radius:50%;background:#f0fdf4;border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#15803d">O</div><div style="width:48px;height:48px;border-radius:50%;background:#fef2f2;border:2px solid #ef4444;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#dc2626">X</div></div></div>',
+  '추천상품배너': '<div style="background:#fff;border-radius:8px;padding:8px;width:100%;box-shadow:0 1px 4px rgba(0,0,0,.1)"><div style="font-size:10px;color:#64748b;margin-bottom:6px">추천 상품</div><div style="display:flex;gap:6px">'
+    + ['🧴','💄','🧴'].map(function(e,i){ return '<div style="flex:1;background:#f1f5f9;border-radius:6px;padding:8px;text-align:center"><div style="font-size:20px">'+e+'</div><div style="font-size:9px;color:#334155;margin-top:4px">상품 '+(i+1)+'</div></div>'; }).join('')
+    + '</div></div>'
+};
+
+function initS5() {
+  renderS5PreviewTabs();
+  renderS5Preview();
+}
+
+function toggleCreative(name) {
+  var idx = s5Selected.indexOf(name);
+  if (idx >= 0) {
+    if (s5Selected.length === 1) return; // at least one
+    s5Selected.splice(idx, 1);
+    if (s5ActivePreviewTab === name) s5ActivePreviewTab = s5Selected[0];
+  } else {
+    s5Selected.push(name);
+    s5ActivePreviewTab = name;
+  }
+  ['리뷰','숏츠','해피알림','OX퀴즈','추천상품배너'].forEach(function(n) {
+    var el = document.getElementById('ct-' + n);
+    if (el) el.classList.toggle('on', s5Selected.includes(n));
+  });
+  renderS5PreviewTabs();
+  renderS5Preview();
+}
+
+function renderS5PreviewTabs() {
+  var tabs = document.getElementById('s5-ptabs');
+  tabs.innerHTML = s5Selected.map(function(n) {
+    return '<button class="ptab'+(n===s5ActivePreviewTab?' on':'')+'" onclick="setPreviewTab(\''+n+'\')">'+n+'</button>';
+  }).join('');
+}
+
+function setPreviewTab(name) {
+  s5ActivePreviewTab = name;
+  renderS5PreviewTabs();
+  renderS5Preview();
+}
+
+function renderS5Preview() {
+  var mock = document.getElementById('s5-preview-mock');
+  if (!s5ActivePreviewTab || !previewMocks[s5ActivePreviewTab]) {
+    mock.innerHTML = '<span class="icon" style="font-size:36px;color:var(--border)">image</span><p class="pm-empty">소재 유형을 선택하면<br>미리보기가 표시됩니다.</p>';
+    return;
+  }
+  mock.innerHTML = '<div style="width:100%">' + previewMocks[s5ActivePreviewTab] + '</div>';
+}
+
+function toggleDailyLimit() {
+  s5DailyLimitShown = !s5DailyLimitShown;
+  document.getElementById('s5-daily-limit-field').style.display = s5DailyLimitShown ? '' : 'none';
+  document.getElementById('s5-daily-btn').innerHTML = s5DailyLimitShown
+    ? '<span class="icon icon-16">close</span> 한도 취소'
+    : '<span class="icon icon-16">add</span> 한도 설정하기';
+}
+
+// ══════════════════════════════════════
+// S6: CAMPAIGN DETAIL
+// ══════════════════════════════════════
+function renderS6() {
+  // campaign-level coupon
+  var campCouponEl = document.getElementById('s6-campaign-coupon');
+  if (campaign6.appliedCouponId) {
+    var cc = coupons.find(function(x){ return x.id === campaign6.appliedCouponId; });
+    if (cc) {
+      var bText = cc.type === 'unit' ? '단가 할인 '+cc.rate+'% · 최대 '+fmtNum(cc.maxDiscount)+'원 할인' : '정액 '+fmtNum(cc.fixedAmount)+'원 할인 · 최소 '+fmtNum(cc.minSpend)+'원 이상 집행 시';
+      var tBadge2 = cc.type === 'unit' ? '<span class="badge badge-unit">단가 할인</span>' : '<span class="badge badge-fixed">정액 할인</span>';
+      campCouponEl.innerHTML = '<div class="applied-coupon-box" style="display:flex;align-items:center;justify-content:space-between;gap:var(--xl)">'
+        + '<div style="flex:1">'
+        + '<div style="display:flex;align-items:center;gap:var(--sm);margin-bottom:var(--xs)">'+tBadge2+'<span class="acb-name" style="margin:0">'+cc.name+'</span></div>'
+        + '<div class="acb-meta">'+bText+'</div>'
+        + '<div class="acb-code">'+cc.code+' · ~'+cc.expiryDate+'</div>'
+        + '</div>'
+        + '<span class="badge badge-active">활성</span>'
+        + '</div>';
+    }
+  } else {
+    campCouponEl.innerHTML = '<div class="no-coupon-box"><span class="icon icon-20" style="color:var(--border);display:block;margin-bottom:4px">confirmation_number</span>적용된 쿠폰이 없습니다.</div>';
+  }
+
+  var tb = document.getElementById('s6-tbody');
+  tb.innerHTML = '';
+  campaign6.adsets.forEach(function(as) {
+    var statusBadge = '<span class="badge badge-'+as.status+'">'+statusLabel(as.status)+'</span>';
+    var tr = document.createElement('tr');
+    tr.className = 'row-click';
+    tr.setAttribute('data-asid', as.id);
+    tr.onclick = function() { toggleAdsetDrawer(as.id); };
+    tr.innerHTML = '<td><div class="cell-main">'+as.name+'</div></td>'
+      + '<td><div style="display:flex;gap:4px;flex-wrap:wrap">'+as.creativeTypes.map(function(t){ return '<span class="badge" style="background:var(--bg-page);color:var(--text-default)">'+t+'</span>'; }).join('')+'</div></td>'
+      + '<td><div style="font-size:13px;font-weight:600">'+fmtNum(as.budget)+'원</div></td>'
+      + '<td><div style="font-size:13px">'+as.period+'</div></td>'
+      + '<td>'+statusBadge+'</td>'
+      + '<td><span class="icon icon-18" style="color:var(--text-subtle)">expand_more</span></td>';
+    tb.appendChild(tr);
+
+    // adset drawer
+    var drawerTr = document.createElement('tr');
+    drawerTr.id = 'adset-drawer-' + as.id;
+    drawerTr.style.display = 'none';
+
+    drawerTr.innerHTML = '<td colspan="6"><div class="adset-drawer">'
+      + '<div class="adset-section-title">광고세트 정보</div>'
+      + '<div style="display:flex;gap:var(--huge)">'
+      + '<div class="meta-row" style="flex:1;border:none"><span class="meta-label">소재 유형</span><span class="meta-value">'+as.creativeTypes.join(', ')+'</span></div>'
+      + '<div class="meta-row" style="flex:1;border:none"><span class="meta-label">예산</span><span class="meta-value">'+fmtNum(as.budget)+'원</span></div>'
+      + '<div class="meta-row" style="flex:1;border:none"><span class="meta-label">집행 기간</span><span class="meta-value">'+as.period+'</span></div>'
+      + '<div class="meta-row" style="flex:1;border:none"><span class="meta-label">상태</span><span class="meta-value">'+statusLabel(as.status)+'</span></div>'
+      + '</div>'
+      + '</div></td>';
+    tb.appendChild(drawerTr);
+  });
+}
+
+function toggleAdsetDrawer(id) {
+  var dr = document.getElementById('adset-drawer-' + id);
+  var tr = dr.previousElementSibling;
+  var isOpen = dr.style.display !== 'none';
+  document.querySelectorAll('#s6-tbody tr[data-asid]').forEach(function(r){ r.classList.remove('row-open'); });
+  document.querySelectorAll('#s6-tbody tr[id^="adset-drawer-"]').forEach(function(r){ r.style.display='none'; });
+  if (!isOpen) { dr.style.display = ''; tr.classList.add('row-open'); }
+}
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+function fmtNum(n) {
+  return (n || 0).toLocaleString('ko-KR');
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+regenCode();
+updateS1Preview();
+</script>
+</body>
+</html>
