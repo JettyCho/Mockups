@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>광고센터 셀프서브 이관 로드맵 2026–2027</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+    background: #F8F9FB;
+    color: #0f1117;
+    padding: 40px 32px 64px;
+    min-width: 1200px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 24px;
+  }
+  .page-header h1 { font-size: 22px; font-weight: 700; color: #0f1117; line-height: 1.4; }
+  .page-header .meta { font-size: 13px; color: #6b7280; margin-top: 4px; }
+  .accent { color: #E8352A; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    background: #fff; border: 1px solid #e8eaed; border-radius: 10px;
+    padding: 12px 16px; flex-shrink: 0;
+  }
+  .legend-title { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; margin-right: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #374151; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── Timeline header ── */
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 130px repeat(5, 1fr);
+    gap: 8px; margin-bottom: 8px; padding: 0 4px;
+  }
+  .phase-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .phase-dot-row {
+    display: flex; align-items: center; width: 100%; position: relative;
+  }
+  .phase-dot-row::before {
+    content: ''; position: absolute; top: 50%; left: 0; right: 0;
+    height: 2px; background: #d1d5db; transform: translateY(-50%); z-index: 0;
+  }
+  .phase-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #E8352A; border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #E8352A;
+    position: relative; z-index: 1; margin: 0 auto; flex-shrink: 0;
+  }
+  .phase-dot.future { background: #9ca3af; box-shadow: 0 0 0 2px #9ca3af; }
+  .phase-label { font-size: 13px; font-weight: 700; color: #0f1117; text-align: center; white-space: nowrap; }
+  .phase-sub { font-size: 11px; color: #6b7280; text-align: center; }
+
+  /* ── Swimlane grid ── */
+  .swimlanes { display: flex; flex-direction: column; gap: 8px; }
+  .swimlane {
+    display: grid;
+    grid-template-columns: 130px repeat(5, 1fr);
+    gap: 8px; align-items: stretch;
+  }
+
+  /* ── Group label (큰 축 이름) ── */
+  .group-divider {
+    display: grid;
+    grid-template-columns: 130px repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .group-label-full {
+    grid-column: 1 / -1;
+    font-size: 11px; font-weight: 700; color: #6b7280;
+    text-transform: uppercase; letter-spacing: .06em;
+    padding: 4px 6px; border-left: 3px solid #E8352A;
+  }
+
+  /* ── Lane label ── */
+  .lane-label {
+    background: #F0F2F5; border-radius: 10px;
+    padding: 12px 10px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 5px; text-align: center;
+  }
+  .lane-label.sub { background: #fafafa; border: 1.5px dashed #e0e0e0; }
+  .lane-icon { font-size: 20px; }
+  .lane-name { font-size: 11px; font-weight: 700; color: #374151; line-height: 1.35; }
+  .lane-sub-tag {
+    font-size: 10px; color: #fff; font-weight: 600;
+    background: #6b7280; border-radius: 20px; padding: 1px 7px; white-space: nowrap;
+  }
+  .lane-sub-tag.blue  { background: #2563eb; }
+  .lane-sub-tag.green { background: #16a34a; }
+
+  /* ── Cell ── */
+  .cell {
+    background: #fff; border: 1.5px solid #e8eaed;
+    border-radius: 10px; padding: 13px 13px 11px;
+    display: flex; flex-direction: column; gap: 7px;
+    position: relative; transition: box-shadow .15s, transform .15s; cursor: default;
+  }
+  .cell:hover { box-shadow: 0 4px 16px rgba(0,0,0,.10); transform: translateY(-2px); z-index: 10; }
+  .cell.empty  { background: #fafafa; border-style: dashed; border-color: #e0e0e0; }
+  .cell.green  { background: #F0FDF4; border-color: #86EFAC; }
+  .cell.blue   { background: #EFF6FF; border-color: #93C5FD; }
+  .cell.yellow { background: #FFFBEB; border-color: #FCD34D; }
+  .cell.pink   { background: #FFF1F2; border-color: #FDA4AF; }
+  .cell.purple { background: #F5F3FF; border-color: #C4B5FD; }
+  .cell.gray   { background: #F8F9FB; border-color: #d1d5db; }
+  .cell.teal   { background: #F0FDFA; border-color: #5EEAD4; }
+
+  /* ── Card items ── */
+  .card-item { display: flex; flex-direction: column; gap: 3px; }
+  .card-item-label { font-size: 12px; font-weight: 600; color: #1f2937; line-height: 1.4; }
+  .card-item-sub   { font-size: 11px; color: #6b7280; line-height: 1.45; }
+  .divider { height: 1px; background: rgba(0,0,0,.06); margin: 2px 0; }
+
+  /* ── Chips ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .chip-green  { background: #dcfce7; color: #166534; }
+  .chip-blue   { background: #dbeafe; color: #1d4ed8; }
+  .chip-yellow { background: #fef3c7; color: #92400e; }
+  .chip-pink   { background: #ffe4e6; color: #9f1239; }
+  .chip-gray   { background: #f3f4f6; color: #374151; }
+  .chip-red    { background: #fee2e2; color: #991b1b; }
+  .chip-orange { background: #ffedd5; color: #9a3412; }
+  .chip-purple { background: #ede9fe; color: #5b21b6; }
+  .chip-teal   { background: #ccfbf1; color: #115e59; }
+
+  /* ── Highlight box (특이사항) ── */
+  .highlight {
+    background: rgba(37,99,235,.07); border-radius: 6px;
+    padding: 5px 8px; font-size: 11px; color: #1d4ed8; line-height: 1.4;
+    font-weight: 500;
+  }
+  .highlight.orange { background: rgba(234,88,12,.07); color: #9a3412; }
+  .highlight.green  { background: rgba(22,163,74,.07); color: #166534; }
+
+  /* ── Bottom summary ── */
+  .summary-section {
+    margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .summary-box {
+    background: #fff; border: 1.5px solid #e8eaed;
+    border-radius: 12px; padding: 20px 22px;
+  }
+  .summary-box h3 { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .summary-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .summary-list li { font-size: 12px; color: #374151; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .summary-list li::before { content: '→'; color: #E8352A; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .incentive-box { border-color: #FCD34D; background: #FFFBEB; }
+  .incentive-box h3 { color: #92400e; }
+  .risk-box { border-color: #FDA4AF; background: #FFF1F2; }
+  .risk-box h3 { color: #9f1239; }
+
+  /* ── Footnote ── */
+  .footnote {
+    margin-top: 24px; font-size: 11px; color: #9ca3af;
+    display: flex; justify-content: space-between; align-items: center; padding: 0 2px;
+  }
+
+  /* ── Tooltip ── */
+  .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #1f2937; color: #fff; font-size: 11px; line-height: 1.5;
+    padding: 8px 12px; border-radius: 8px; z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2); pointer-events: none;
+    max-width: 260px; white-space: normal; text-align: center;
+  }
+  .tooltip::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #1f2937;
+  }
+  .cell:hover .tooltip { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<div class="page-header">
+  <div>
+    <h1>광고센터 셀프서브 이관 로드맵 <span class="accent">2026–2027</span></h1>
+    <div class="meta">디맨드 제품팀 · 작성일 2026-04-14 · Jetty Cho</div>
+  </div>
+  <div class="legend">
+    <span class="legend-title">범례</span>
+    <div class="legend-item"><div class="legend-dot" style="background:#86EFAC;"></div>기존 운영 중</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#93C5FD;"></div>신규 추가</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FCD34D;"></div>전환 / 변경</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#C4B5FD;"></div>개발 완비</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FDA4AF;"></div>이관 실행 (고난이도)</div>
+  </div>
+</div>
+
+<!-- ═══ Timeline Phase Header ═══ -->
+<div class="timeline-header">
+  <div></div>
+  <div class="phase-col">
+    <div class="phase-dot-row"><div class="phase-dot"></div></div>
+    <div class="phase-label">현재</div>
+    <div class="phase-sub">2025 이전</div>
+  </div>
+  <div class="phase-col">
+    <div class="phase-dot-row"><div class="phase-dot"></div></div>
+    <div class="phase-label">2026 H1</div>
+    <div class="phase-sub">상반기</div>
+  </div>
+  <div class="phase-col">
+    <div class="phase-dot-row"><div class="phase-dot"></div></div>
+    <div class="phase-label">2026 H2</div>
+    <div class="phase-sub">하반기</div>
+  </div>
+  <div class="phase-col">
+    <div class="phase-dot-row"><div class="phase-dot future"></div></div>
+    <div class="phase-label">2027 H1</div>
+    <div class="phase-sub">이관 준비 완료</div>
+  </div>
+  <div class="phase-col">
+    <div class="phase-dot-row"><div class="phase-dot future"></div></div>
+    <div class="phase-label">2027 H2</div>
+    <div class="phase-sub">완전 전환</div>
+  </div>
+</div>
+
+<!-- ═══ Swimlanes ═══ -->
+<div class="swimlanes">
+
+  <!-- ─── LANE 1: 상품 ─── -->
+  <div class="swimlane">
+    <div class="lane-label">
+      <div class="lane-icon">🏷️</div>
+      <div class="lane-name">상품</div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">이미 광고센터에서 집행 가능한 상품. 그 외 전 상품은 Dash 매니지드 전용.</div>
+      <div class="card-item">
+        <div class="card-item-label">라이브커머스</div>
+        <div class="card-item-sub">매니지드+셀프 혼재 / 매출 40%</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">협력광고</div>
+        <div class="card-item-sub">100% 셀프서빙</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">운영 중</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">이관 난이도 낮음 상품부터 광고센터에 추가</div>
+      <div class="card-item">
+        <div class="card-item-label">노출형</div>
+        <div class="card-item-sub">CPM · CPC</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">비연동 액션형</div>
+        <div class="card-item-sub">CPI · CPE · CPQ · CPQlite · SNS구독</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">신규 추가</span><span class="chip chip-gray">난이도 낮음</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">보통 난이도 상품까지 2026년 내 완비</div>
+      <div class="card-item">
+        <div class="card-item-label">스크린샷 CPA</div>
+        <div class="card-item-sub">비연동 액션형</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">픽셀 연동 액션형</div>
+        <div class="card-item-sub">카페24 등 전환추적도구 지원</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">신규 추가</span><span class="chip chip-yellow">난이도 보통</span></div>
+    </div>
+
+    <div class="cell purple">
+      <div class="tooltip">2027 H2 이관을 위해 H1 중 개발 완비 필수. 전체 고객의 ~13%가 이 상품을 사용 중.</div>
+      <div class="card-item">
+        <div class="card-item-label">RCPM (리타겟팅)</div>
+        <div class="card-item-sub">DynamicAd CPM · 개발 완비</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">MMP 연동 액션형</div>
+        <div class="card-item-sub">Appsflyer · AB180 · Adjust 등 · 개발 완비</div>
+      </div>
+      <div class="chips"><span class="chip chip-purple">개발 완비</span><span class="chip chip-yellow">난이도 높음</span></div>
+    </div>
+
+    <div class="cell pink">
+      <div class="tooltip">상품이 완비된 상태에서 RCPM·MMP 고객 이관 실행</div>
+      <div class="card-item">
+        <div class="card-item-label">전 상품 완비</div>
+        <div class="card-item-sub">RCPM · MMP 포함 모든 상품<br>광고센터에서 집행 가능</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">전 상품 완비</span></div>
+    </div>
+  </div>
+
+  <!-- ─── LANE GROUP: 고객 ─── -->
+  <div class="group-divider">
+    <div class="group-label-full">👥 고객 — 기존 고객 / 신규 고객(영업 유입) / 신규 고객(오가닉 유입) 으로 구분</div>
+  </div>
+
+  <!-- ─── LANE 2: 기존 고객 ─── -->
+  <div class="swimlane">
+    <div class="lane-label">
+      <div class="lane-icon">🔄</div>
+      <div class="lane-name">기존<br>고객</div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">기존 계약 고객 전체. 라방·협력광고 외에는 매니지드(Dash)로만 집행 중.</div>
+      <div class="card-item">
+        <div class="card-item-label">전체 매니지드 운영</div>
+        <div class="card-item-sub">영업팀이 Dash에서<br>광고 설정·관리 대행</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">매니지드 중심</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">부킹센터: 기존 고객이 Dash에서 직접 예산·기간·소재를 등록하는 반셀프서빙 경험 제공</div>
+      <div class="card-item">
+        <div class="card-item-label">부킹센터 경험 학습</div>
+        <div class="card-item-sub">Dash에서 반셀프서빙으로<br>직접 등록 경험 유도</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">반셀프서빙</span><span class="chip chip-blue">부킹센터</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">선불충전 인센티브 마케팅과 함께 이관 준비</div>
+      <div class="card-item">
+        <div class="card-item-label">이관 준비 · 인센티브 설계</div>
+        <div class="card-item-sub">쿠폰·혜택 구조로<br>광고센터 전환 유도</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">전환 준비</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">RCPM·MMP 고객(~13%) 제외한 나머지 86.7%를 광고센터로 이관 실행</div>
+      <div class="card-item">
+        <div class="card-item-label">기존 고객 이관 실행</div>
+        <div class="card-item-sub">RCPM·MMP 제외 ~86.7%<br>광고센터로 전환</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">대규모 이관</span><span class="chip chip-green">~87%</span></div>
+    </div>
+
+    <div class="cell pink">
+      <div class="tooltip">상품 완비 후 RCPM·MMP 고객 이관. 강성 거부 고객은 매니지드 잔존(~1%).</div>
+      <div class="card-item">
+        <div class="card-item-label">RCPM·MMP 고객 이관</div>
+        <div class="card-item-sub">약 144명 (~13.3%) 이관 완료</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-sub">매니지드 잔존 10개 거래처 (~1%)</div>
+      </div>
+      <div class="chips"><span class="chip chip-pink">~13%</span><span class="chip chip-red">매니지드 ~1%</span></div>
+    </div>
+  </div>
+
+  <!-- ─── LANE 3: 신규 고객 - 영업 유입 ─── -->
+  <div class="swimlane">
+    <div class="lane-label sub">
+      <div class="lane-icon">🤝</div>
+      <div class="lane-name">신규<br>고객</div>
+      <div class="lane-sub-tag blue">영업 유입</div>
+    </div>
+
+    <div class="cell gray">
+      <div class="tooltip">세일즈팀 영업을 통해 계약한 신규 고객. 라방·협력광고 외에는 모두 매니지드로 운영.</div>
+      <div class="card-item">
+        <div class="card-item-label">세일즈팀 영업 → 매니지드</div>
+        <div class="card-item-sub">라방·협력광고 외<br>전 상품 매니지드 운영</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">매니지드</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">상품이 확대됨에 따라 영업 유입 신규도 일부 광고센터 셀프서빙으로 안내 가능</div>
+      <div class="card-item">
+        <div class="card-item-label">일부 셀프서빙 유도 시작</div>
+        <div class="card-item-sub">상품 확대로 광고센터<br>직접 집행 안내 가능</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">전환 시작</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">충분한 상품이 광고센터에 갖춰짐. 매니지드 대신 광고센터 온보딩 안내 강화.</div>
+      <div class="card-item">
+        <div class="card-item-label">광고센터 온보딩 강화</div>
+        <div class="card-item-sub">매니지드 대신 광고센터로<br>직접 집행 유도</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">온보딩 전환</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">영업을 통해 들어온 신규 고객도 광고센터에서 직접 집행하는 것이 기본</div>
+      <div class="card-item">
+        <div class="card-item-label">광고센터 직접 온보딩</div>
+        <div class="card-item-sub">영업 계약 후<br>광고센터에서 자체 집행</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">셀프서빙 기본</span></div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">영업 유입 신규도 대부분 셀프서빙으로 전환 완료</div>
+      <div class="card-item">
+        <div class="card-item-label">셀프서빙 정착</div>
+        <div class="card-item-sub">일부 복잡한 케이스만<br>매니지드 지원 유지</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">정착</span></div>
+    </div>
+  </div>
+
+  <!-- ─── LANE 4: 신규 고객 - 오가닉 유입 ─── -->
+  <div class="swimlane">
+    <div class="lane-label sub">
+      <div class="lane-icon">🌱</div>
+      <div class="lane-name">신규<br>고객</div>
+      <div class="lane-sub-tag green">오가닉 유입</div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">광고센터를 통해 영업 채널 없이 직접 가입한 고객. 라방·협력광고만 집행 가능. 세일즈팀이 일부를 리드로 판별·관리.</div>
+      <div class="card-item">
+        <div class="card-item-label">광고센터 자체 유입</div>
+        <div class="card-item-sub">라방·협력광고만 집행 가능</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-sub">일부 → 세일즈팀 리드 관리<br>나머지 → CRM으로 관리</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">셀프서빙</span><span class="chip chip-gray">CRM 관리</span></div>
+    </div>
+
+    <div class="cell teal">
+      <div class="tooltip">상품 확대로 집행 가능한 광고 종류가 늘어남. 오가닉 인입 고객의 광고센터 활용도 증가. CRM 강화 필요.</div>
+      <div class="card-item">
+        <div class="card-item-label">집행 가능 상품 확대</div>
+        <div class="card-item-sub">노출형·비연동 액션형도<br>자체 집행 가능</div>
+      </div>
+      <div class="divider"></div>
+      <div class="highlight green">📬 광고센터 CRM 고도화<br>마케팅팀 협업 시작</div>
+      <div class="chips"><span class="chip chip-teal">활용도 증가</span></div>
+    </div>
+
+    <div class="cell teal">
+      <div class="tooltip">선불충전 마케팅과 연계해 오가닉 유입 고객을 늘리는 마케팅 시작. CRM 기반 재구매·업셀 자동화 강화 필요.</div>
+      <div class="card-item">
+        <div class="card-item-label">오가닉 인입 마케팅 시작</div>
+        <div class="card-item-sub">선불충전 인센티브와 연계<br>직접 인입 고객 증가 목표</div>
+      </div>
+      <div class="divider"></div>
+      <div class="highlight green">📊 CRM 강화<br>재구매·업셀 자동화<br>마케팅팀 협업 핵심</div>
+      <div class="chips"><span class="chip chip-teal">마케팅 드라이브</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">오가닉 유입이 주요 신규 고객 채널로 자리잡기 시작. 영업 없이 들어오는 고객 비중 증가.</div>
+      <div class="card-item">
+        <div class="card-item-label">오가닉 인입 채널 성장</div>
+        <div class="card-item-sub">영업 없이 광고센터로<br>직접 유입되는 고객 증가</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">채널 성장</span></div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">오가닉 기반 셀프서빙 생태계 완성. CRM 및 마케팅 자동화로 관리.</div>
+      <div class="card-item">
+        <div class="card-item-label">오가닉 생태계 정착</div>
+        <div class="card-item-sub">CRM + 마케팅 자동화로<br>고객 유지·성장 관리</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">생태계 완성</span></div>
+    </div>
+  </div>
+
+  <!-- ─── LANE 5: 집행방식 ─── -->
+  <div class="swimlane" style="margin-top:12px;">
+    <div class="lane-label">
+      <div class="lane-icon">⚙️</div>
+      <div class="lane-name">집행<br>방식</div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">매니지드(Dash)가 중심이지만, 라이브커머스·협력광고는 이미 광고센터 셀프서빙으로 운영 중. 두 방식이 공존하는 상태.</div>
+      <div class="card-item">
+        <div class="card-item-label">매니지드 + 광고센터 공존</div>
+        <div class="card-item-sub">대부분 매니지드(Dash)<br>라방·협력광고는 셀프서빙</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">매니지드 중심</span><span class="chip chip-green">일부 셀프서빙</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">부킹센터: 예산·기간·소재를 고객이 직접 등록하는 반셀프서빙 징검다리 도입</div>
+      <div class="card-item">
+        <div class="card-item-label">부킹센터 도입</div>
+        <div class="card-item-sub">예산 / 기간 / 소재<br>고객이 직접 등록 (반셀프서빙)</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">반셀프서빙 추가</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">매니지드 · 부킹센터 · 광고센터 셀프서빙 세 방식이 공존하는 과도기</div>
+      <div class="card-item">
+        <div class="card-item-label">3방식 혼합 운영</div>
+        <div class="card-item-sub">매니지드 + 부킹센터<br>+ 광고센터 셀프서빙</div>
+      </div>
+      <div class="chips"><span class="chip chip-yellow">전환 과도기</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">셀프서빙이 기본으로 자리잡지만, 일부 복잡한 상품·고객은 매니지드가 여전히 공존</div>
+      <div class="card-item">
+        <div class="card-item-label">셀프서브 기본화</div>
+        <div class="card-item-sub">광고센터 직접 집행이 기본<br>매니지드 일부 병행 유지</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">셀프서빙 기본</span><span class="chip chip-gray">매니지드 일부</span></div>
+    </div>
+
+    <div class="cell pink">
+      <div class="tooltip">매니지드 서비스는 극소수(10개 거래처, ~1%)에게만 유지. 셀프서빙이 사실상 전부.</div>
+      <div class="card-item">
+        <div class="card-item-label">셀프서빙 완전화</div>
+        <div class="card-item-sub">매니지드 극소수 잔존<br>(10개 거래처, ~1%)</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">~99% 셀프서빙</span><span class="chip chip-red">매니지드 ~1%</span></div>
+    </div>
+  </div>
+
+  <!-- ─── LANE 6~7: 정산방식 (고객 유형별) ─── -->
+  <div class="group-divider" style="margin-top:12px;">
+    <div class="group-label-full">💳 정산방식 — 고객 유형별 전략이 다름</div>
+  </div>
+
+  <!-- 정산 서브레인: 기존 고객 & 영업 유입 신규 -->
+  <div class="swimlane">
+    <div class="lane-label sub">
+      <div class="lane-icon">💳</div>
+      <div class="lane-name">정산</div>
+      <div class="lane-sub-tag">기존 & 영업유입</div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">기존 계약 고객과 영업 유입 신규 고객은 모두 후불정산으로 운영 중</div>
+      <div class="card-item">
+        <div class="card-item-label">후불정산</div>
+        <div class="card-item-sub">집행 후 청구하는<br>후불 방식</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">후불정산</span></div>
+    </div>
+
+    <div class="cell gray">
+      <div class="tooltip">후불정산 유지. 선불 전환 구조 및 기준 설계 중.</div>
+      <div class="card-item">
+        <div class="card-item-label">후불정산 유지</div>
+        <div class="card-item-sub">선불 전환 기준 설계 중</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">유지</span></div>
+    </div>
+
+    <div class="cell gray">
+      <div class="tooltip">2026년까지 후불정산 유지. 선불 옵션은 열리지만 기존·영업유입 고객에게는 선택 사항.</div>
+      <div class="card-item">
+        <div class="card-item-label">후불정산 유지</div>
+        <div class="card-item-sub">선불 옵션 오픈되나<br>기존 고객은 선택 사항</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">후불 유지</span></div>
+    </div>
+
+    <div class="cell blue">
+      <div class="tooltip">광고센터 이관 시점(2027 H1)부터 거래액 규모 기준으로 선불 의무화. 이관 인센티브 5% 할인 적용.</div>
+      <div class="card-item">
+        <div class="card-item-label">거래액 기준 선불 의무화</div>
+        <div class="card-item-sub">규모 큰 고객부터<br>선불 방식 강제 전환</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">🎁 셀프서빙 이관 시 5% 할인</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">선불 의무화</span><span class="chip chip-orange">-5% 할인</span></div>
+    </div>
+
+    <div class="cell yellow">
+      <div class="tooltip">대부분 선불 전환 완료. 단, 일부 고객은 규모·계약 구조상 후불 유지가 불가피하며, 영구 잔존 가능성 있음.</div>
+      <div class="card-item">
+        <div class="card-item-label">선불 전환 완료 (대부분)</div>
+        <div class="card-item-sub">일부 고객은 후불 영구 잔존<br>가능성 인정</div>
+      </div>
+      <div class="chips"><span class="chip chip-blue">대부분 선불</span><span class="chip chip-yellow">후불 일부 잔존</span></div>
+    </div>
+  </div>
+
+  <!-- 정산 서브레인: 오가닉 신규 -->
+  <div class="swimlane">
+    <div class="lane-label sub">
+      <div class="lane-icon">💳</div>
+      <div class="lane-name">정산</div>
+      <div class="lane-sub-tag green">오가닉 신규</div>
+    </div>
+
+    <div class="cell gray">
+      <div class="tooltip">현재 오가닉 유입 신규의 정산 방식은 운영그룹 기준 후불 또는 미정</div>
+      <div class="card-item">
+        <div class="card-item-label">운영그룹 기준 적용</div>
+        <div class="card-item-sub">후불 또는 개별 조건</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">기존 방식</span></div>
+    </div>
+
+    <div class="cell gray">
+      <div class="tooltip">오가닉 신규 고객 대상 선불 기본 적용 정책 설계 중</div>
+      <div class="card-item">
+        <div class="card-item-label">선불 기본 정책 설계</div>
+        <div class="card-item-sub">2026 H2 시행을 위한<br>준비 단계</div>
+      </div>
+      <div class="chips"><span class="chip chip-gray">설계 중</span></div>
+    </div>
+
+    <div class="cell teal">
+      <div class="tooltip">오가닉으로 광고센터에 가입하는 신규 고객은 선불충전을 기본으로 적용. 선불충전 시 +5% 크레딧 인센티브 제공.</div>
+      <div class="card-item">
+        <div class="card-item-label">선불 기본 적용</div>
+        <div class="card-item-sub">오가닉 신규 가입 시<br>선불충전이 기본 방식</div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-item">
+        <div class="card-item-label">🎁 선불충전 시 +5% 크레딧</div>
+      </div>
+      <div class="chips"><span class="chip chip-teal">선불 기본</span><span class="chip chip-orange">+5% 크레딧</span></div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">오가닉 신규는 처음부터 선불 기반으로 운영. 안정적으로 정착.</div>
+      <div class="card-item">
+        <div class="card-item-label">선불 정착</div>
+        <div class="card-item-sub">신규 오가닉 고객<br>선불 방식 표준화</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">선불 표준</span></div>
+    </div>
+
+    <div class="cell green">
+      <div class="tooltip">오가닉 신규의 선불 기반 생태계 완성</div>
+      <div class="card-item">
+        <div class="card-item-label">선불 생태계 완성</div>
+        <div class="card-item-sub">오가닉 고객 전체<br>선불 기반 운영</div>
+      </div>
+      <div class="chips"><span class="chip chip-green">완성</span></div>
+    </div>
+  </div>
+
+</div><!-- /swimlanes -->
+
+<!-- ═══ Bottom Summary ═══ -->
+<div class="summary-section">
+  <div class="summary-box incentive-box">
+    <h3>🎁 인센티브 & 정산 전략 요약</h3>
+    <ul class="summary-list">
+      <li><strong>오가닉 신규 (2026 H2~)</strong>: 선불충전 기본 적용 + <strong>+5% 크레딧</strong></li>
+      <li><strong>기존 & 영업유입 (2027 H1~)</strong>: 거래액 규모 기준 선불 의무화 + 셀프서빙 이관 시 <strong>5% 할인</strong></li>
+      <li>일부 고객은 계약·규모 구조상 후불 영구 잔존 가능성 인정</li>
+      <li>영업팀을 통한 쿠폰 기반 혜택으로 이관 독려 병행</li>
+    </ul>
+  </div>
+  <div class="summary-box risk-box">
+    <h3>⚠️ 추가 논의 필요 항목</h3>
+    <ul class="summary-list">
+      <li><strong>광고센터 CRM 고도화</strong>: 오가닉 인입 증가를 위해 CRM이 더 잘 갖춰져야 함. 마케팅팀 협업 필수.</li>
+      <li><strong>고객 커뮤니케이션 계획</strong>: 이관 시기·방법을 고객에게 어떻게 알릴 것인가</li>
+      <li><strong>KPI 정의</strong>: 셀프서빙 전환율 목표, 오가닉 인입 비율 목표 수립 필요</li>
+      <li><strong>영업팀 역할 재정의</strong>: 셀프서브 기본화 이후 세일즈팀 역할·구조 변화</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ Footnote ═══ -->
+<div class="footnote">
+  <span>📊 RCPM·MMP 고객 데이터: 최근 2년(2024~2025) 기준 / 전체 활성 고객 1,082명 중 이관 제외 대상 144명(~13.3%)</span>
+  <span>Demand Product Team · 2026-04-14</span>
+</div>
+
+</body>
+</html>
