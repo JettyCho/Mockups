@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>버즈빌 광고센터 — 대행사 이관 프로토타입</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #e8eaed; }
+
+/* ── FLOW NAV ── */
+.flow-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: #1c2033; height: 48px;
+  display: flex; align-items: center; gap: 0;
+  font-size: 12px; overflow-x: auto; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.flow-nav-brand {
+  padding: 0 20px; font-weight: 800; font-size: 13px;
+  color: #ff6b5b; border-right: 1px solid #2e3350;
+  height: 100%; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.flow-btn {
+  padding: 0 14px; height: 100%; border: none; background: none;
+  color: #8892a4; cursor: pointer; font-size: 12px;
+  border-right: 1px solid #2e3350; transition: all .15s;
+  font-family: inherit; flex-shrink: 0; line-height: 1.3; text-align: center;
+}
+.flow-btn:hover { background: #252b42; color: #fff; }
+.flow-btn.active { background: #2563eb; color: #fff; font-weight: 700; }
+.flow-sep { color: #3d4460; font-size: 16px; padding: 0 8px; flex-shrink: 0; user-select: none; }
+.flow-label { color: #4a5275; font-size: 10px; padding: 0 10px; flex-shrink: 0; letter-spacing: .5px; font-weight: 600; border-right: 1px solid #2e3350; height: 100%; display: flex; align-items: center; }
+
+/* ── SCREEN ── */
+.screen { display: none; padding-top: 48px; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── APP SHELL ── */
+.app { display: flex; min-height: calc(100vh - 48px); max-width: 1440px; margin: 0 auto; background: #fff; box-shadow: 0 0 60px rgba(0,0,0,.15); position: relative; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 52px; background: #fff; border-bottom: 1px solid #e5e7eb;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; width: 100%; flex-shrink: 0;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 17px; color: #111; }
+.logo-mark { width: 28px; height: 28px; background: #E8352A; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px; font-style: italic; }
+.topbar-right { display: flex; align-items: center; gap: 20px; font-size: 13px; color: #555; }
+.user-btn { display: flex; align-items: center; gap: 6px; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: #333; cursor: pointer; }
+.user-icon { width: 18px; height: 18px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #4f46e5; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: #f9fafb; border-right: 1px solid #e5e7eb;
+  padding: 16px 0; display: flex; flex-direction: column;
+}
+.biz-selector { margin: 0 12px 8px; padding: 10px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.biz-selector .biz-label { font-size: 10px; color: #999; margin-bottom: 2px; }
+.biz-selector .biz-name { font-size: 13px; font-weight: 600; color: #111; }
+.og-selector { margin: 0 12px 20px; padding: 10px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.og-selector .og-name { font-size: 13px; font-weight: 600; color: #111; }
+.chevron { color: #999; font-size: 11px; }
+.nav-section-label { font-size: 10px; color: #999; font-weight: 600; padding: 12px 20px 6px; letter-spacing: .5px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: #555; cursor: pointer; transition: all .12s; }
+.nav-item:hover { background: #f0f0f0; color: #111; }
+.nav-item.active { background: #eff4ff; color: #2563eb; font-weight: 600; }
+.nav-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: #f0f0f0; color: #999; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
+.sidebar-bottom { margin-top: auto; padding: 12px 0; border-top: 1px solid #e5e7eb; }
+.sidebar-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 20px; font-size: 12px; color: #999; cursor: pointer; }
+
+/* ── MAIN ── */
+.main { flex: 1; padding: 32px 36px; background: #fff; min-width: 0; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.page-title { font-size: 22px; font-weight: 700; color: #111; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-primary { background: #2563eb; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary { background: #fff; color: #374151; border: 1.5px solid #d1d5db; }
+.btn-secondary:hover { background: #f9fafb; }
+.btn-danger { background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; font-size: 12px; padding: 5px 12px; border-radius: 6px; }
+.btn-danger:hover { background: #dc2626; color: #fff; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+.btn-ghost { background: none; color: #6b7280; border: 1.5px solid #e5e7eb; }
+.btn-ghost:hover { color: #111; border-color: #9ca3af; }
+.btn-transfer { background: #fff; color: #374151; border: 1.5px solid #d1d5db; font-size: 13px; padding: 7px 14px; border-radius: 7px; cursor: pointer; font-family: inherit; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.btn-transfer:hover { background: #f9fafb; border-color: #9ca3af; }
+
+/* ── SECTION CARD ── */
+.section-card { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+.section-card-header { padding: 16px 20px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; }
+.section-card-title { font-size: 15px; font-weight: 700; color: #111; }
+
+/* ── BILLING MANAGER ── */
+.billing-manager-wrap { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+.billing-label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.billing-value { font-size: 14px; font-weight: 600; color: #374151; }
+.info-icon { display: inline-flex; width: 14px; height: 14px; background: #e5e7eb; border-radius: 50%; align-items: center; justify-content: center; font-size: 9px; color: #6b7280; cursor: default; }
+
+/* ── TABLE ── */
+.table-wrap { border-radius: 10px; overflow: hidden; border: 1px solid #e5e7eb; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: #f9fafb; }
+th { padding: 11px 16px; text-align: left; color: #6b7280; font-weight: 600; font-size: 12px; border-bottom: 1px solid #e5e7eb; }
+td { padding: 14px 16px; color: #374151; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+.member-name { font-weight: 500; color: #111; display: flex; align-items: center; gap: 6px; }
+.buzzvil-badge { background: #fef9c3; color: #854d0e; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+.agency-badge { background: #f0f9ff; color: #0369a1; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+.invited-tag { background: #dcfce7; color: #16a34a; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+
+/* ── TRANSFER ACTIONS ── */
+.transfer-actions { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f3f4f6; }
+.transfer-request-link { font-size: 12px; color: #9ca3af; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.transfer-request-link:hover { color: #6b7280; }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  position: fixed; inset: 48px 0 0 0; z-index: 500;
+  background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal { background: #fff; border-radius: 16px; box-shadow: 0 24px 64px rgba(0,0,0,.22); overflow: hidden; max-height: calc(100vh - 80px); display: flex; flex-direction: column; }
+.modal-sm { width: 480px; }
+.modal-md { width: 540px; }
+.modal-header { padding: 24px 24px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; }
+.modal-title { font-size: 18px; font-weight: 700; color: #111; }
+.modal-subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; line-height: 1.5; }
+.modal-close { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; padding: 0; line-height: 1; margin-top: 2px; }
+.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; flex-shrink: 0; background: #fff; }
+.modal-footer .btn { flex: 1; justify-content: center; }
+
+/* ── STEP INDICATOR ── */
+.step-indicator { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.step-dot.done { background: #2563eb; color: #fff; }
+.step-dot.current { background: #2563eb; color: #fff; box-shadow: 0 0 0 3px #bfdbfe; }
+.step-dot.future { background: #f3f4f6; color: #9ca3af; }
+.step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 0 4px; }
+.step-line.done { background: #2563eb; }
+.step-labels { display: flex; justify-content: space-between; margin-top: 8px; margin-bottom: 24px; }
+.step-label-item { font-size: 11px; color: #9ca3af; text-align: center; flex: 1; }
+.step-label-item.current { color: #2563eb; font-weight: 700; }
+
+/* ── PRE-CHECK ── */
+.precheck-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; border-radius: 10px; margin-bottom: 12px; border: 1.5px solid transparent; }
+.precheck-item.ok { background: #f0fdf4; border-color: #bbf7d0; }
+.precheck-item.block { background: #fff7ed; border-color: #fed7aa; }
+.precheck-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.precheck-item.ok .precheck-icon { background: #dcfce7; color: #16a34a; }
+.precheck-item.block .precheck-icon { background: #fef3c7; color: #d97706; }
+.precheck-text { flex: 1; }
+.precheck-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 2px; }
+.precheck-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+.precheck-cta { font-size: 12px; color: #2563eb; cursor: pointer; text-decoration: underline; margin-top: 4px; display: inline-block; }
+
+/* ── MEMBER LIST IN MODAL ── */
+.member-row-modal { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #4f46e5; flex-shrink: 0; }
+.member-info { flex: 1; min-width: 0; }
+.member-name-modal { font-size: 13px; font-weight: 600; color: #111; }
+.member-email-modal { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+.remove-icon { color: #dc2626; font-size: 16px; }
+
+/* ── WARNING / INFO BOX ── */
+.warning-box { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #dc2626; line-height: 1.6; display: flex; gap: 8px; }
+.warning-box-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #1e40af; line-height: 1.6; display: flex; gap: 8px; margin-bottom: 16px; }
+
+/* ── FORM ── */
+.form-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; display: block; }
+.form-group { margin-bottom: 20px; }
+.form-input { width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111; outline: none; font-family: inherit; transition: border-color .15s; }
+.form-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+.form-input::placeholder { color: #9ca3af; }
+.form-hint { font-size: 11px; color: #9ca3af; margin-top: 5px; line-height: 1.5; }
+.form-textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111; outline: none; font-family: inherit; transition: border-color .15s; resize: vertical; min-height: 80px; }
+.form-textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+
+/* ── EMAIL TAG INPUT ── */
+.email-tag-area {
+  border: 1.5px solid #d1d5db; border-radius: 8px; padding: 8px 10px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  cursor: text; min-height: 46px; transition: border-color .15s;
+}
+.email-tag-area:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+.email-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px;
+  padding: 3px 8px; font-size: 12px; font-weight: 600; color: #1e40af;
+}
+.email-tag-remove { cursor: pointer; color: #93c5fd; font-size: 13px; line-height: 1; }
+.email-tag-remove:hover { color: #1e40af; }
+.email-tag-input {
+  border: none; outline: none; font-size: 13px; font-family: inherit;
+  color: #111; flex: 1; min-width: 160px; padding: 2px 4px;
+  background: transparent;
+}
+.email-tag-input::placeholder { color: #9ca3af; }
+.add-email-btn {
+  background: none; border: none; color: #2563eb; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; padding: 4px 0; display: flex; align-items: center; gap: 3px;
+  white-space: nowrap;
+}
+.add-email-btn:hover { color: #1d4ed8; }
+
+/* ── SUMMARY TABLE ── */
+.summary-table { width: 100%; font-size: 13px; }
+.summary-table tr td { padding: 10px 0; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+.summary-table tr:last-child td { border-bottom: none; }
+.summary-table .s-key { color: #6b7280; width: 110px; padding-top: 11px; }
+.summary-table .s-val { font-weight: 600; color: #111; }
+.summary-table .s-val.add { color: #16a34a; }
+.summary-section { background: #f9fafb; border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; }
+.summary-section-title { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+.invited-pill { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 3px 8px; font-size: 11px; font-weight: 600; color: #1e40af; margin: 2px 0; }
+
+/* ── COMPLETE ── */
+.complete-wrap { text-align: center; padding: 8px 0 4px; }
+.complete-icon { width: 64px; height: 64px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+.complete-title { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 8px; }
+.complete-desc { font-size: 13px; color: #6b7280; line-height: 1.7; }
+
+/* ── REQUEST FORM ── */
+.request-section { background: #f9fafb; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+.request-section-title { font-size: 12px; font-weight: 700; color: #6b7280; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+.current-agency-info { display: flex; align-items: center; gap: 10px; }
+.agency-avatar { width: 36px; height: 36px; border-radius: 8px; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #4f46e5; flex-shrink: 0; }
+.agency-name { font-size: 14px; font-weight: 600; color: #111; }
+.agency-sub { font-size: 12px; color: #9ca3af; }
+
+/* ── TOOLTIP ── */
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+.tooltip-wrap .tooltip-box { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #1c2033; color: #fff; font-size: 11px; padding: 7px 10px; border-radius: 6px; white-space: nowrap; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,.2); pointer-events: none; }
+.tooltip-wrap .tooltip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1c2033; }
+.tooltip-wrap:hover .tooltip-box { display: block; }
+
+/* Help fab */
+.help-fab { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 4px 16px rgba(37,99,235,.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ FLOW NAVIGATION ════════════════════ -->
+<nav class="flow-nav">
+  <div class="flow-nav-brand">🔄 대행사 이관</div>
+  <div class="flow-label">직접 이관</div>
+  <button class="flow-btn active"    data-screen="0" onclick="showScreen(0)">① 멤버 페이지</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="1" onclick="showScreen(1)">② 사전 조건<br><span style="font-size:10px;color:#f87171">차단 있음</span></button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="2" onclick="showScreen(2)">③ 사전 조건<br><span style="font-size:10px;color:#4ade80">모두 충족</span></button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="3" onclick="showScreen(3)">④ 기존 대행사<br>멤버 삭제</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="4" onclick="showScreen(4)">⑤ 신규 대행사<br>초대</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="5" onclick="showScreen(5)">⑥ 최종 확인</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="6" onclick="showScreen(6)">⑦ 이관 완료</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="9" onclick="showScreen(9)">⑧ 이관 후<br>멤버 화면</button>
+  <div class="flow-label" style="margin-left:8px;">버즈빌 대행</div>
+  <button class="flow-btn" data-screen="7" onclick="showScreen(7)">⑨ 이관 요청 폼</button>
+</nav>
+
+<!-- ════════════════════ SHARED SIDEBAR / TOPBAR SNIPPET ════════════════════ -->
+<!-- Reusable inline fragments duplicated per screen for simplicity -->
+
+<!-- ════ SCREEN 0 — 멤버 페이지 (기본) ════ -->
+<div class="screen active" id="screen-0">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">B</div> buzzvil</div>
+        <div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div>
+      </div>
+    </div>
+    <div class="sidebar" style="margin-top:52px;">
+      <div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div>
+      <div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item"><div class="nav-icon">▶️</div> 라이브커머스</div>
+      <div class="nav-item"><div class="nav-icon">🤝</div> 협력광고</div>
+      <div class="nav-item"><div class="nav-icon">🤖</div> AI 리뷰픽 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">도구</div>
+      <div class="nav-item"><div class="nav-icon">📊</div> 리포트</div>
+      <div class="nav-item"><div class="nav-icon">🏷</div> 카탈로그</div>
+      <div class="nav-item"><div class="nav-icon">🎯</div> 타겟팅 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item"><div class="nav-icon">🏦</div> 정산</div>
+      <div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div>
+      <div class="nav-item"><div class="nav-icon">⚙️</div> 운영 그룹 정보</div>
+      <div class="sidebar-bottom"><div class="sidebar-toggle">◀ 접기</div></div>
+    </div>
+    <div class="main" style="margin-top:52px;">
+      <div class="page-header">
+        <div class="page-title">멤버</div>
+        <button class="btn btn-primary btn-sm">초대</button>
+      </div>
+      <div class="billing-manager-wrap">
+        <div>
+          <div class="billing-label">정산 담당자 <div class="tooltip-wrap"><div class="info-icon">?</div><div class="tooltip-box">광고 관련 정산 이메일을 받는 담당자입니다</div></div></div>
+          <div class="billing-value">ads-center+hkinnon@buzzvil.com</div>
+        </div>
+        <button class="btn btn-secondary btn-sm">변경</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><div class="section-card-title">비원초 운영 그룹</div></div>
+        <div class="table-wrap" style="border-radius:0;border:none;">
+          <table>
+            <thead><tr><th>이름</th><th>이메일</th><th>참여일</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="member-name">조현아(버즈빌) <span class="buzzvil-badge">👑 BV</span></div></td><td style="color:#9ca3af">ads-center+hkinnon@buzzvil.com</td><td style="color:#9ca3af">2026.02.21 (토) 16:09</td><td></td></tr>
+              <tr><td><div class="member-name">이서영</div></td><td>seoyoung.lee@inno-n.com</td><td style="color:#9ca3af">2026.04.02 (목) 16:55</td><td><button class="btn btn-danger">멤버 삭제</button></td></tr>
+              <tr><td><div class="member-name">김민아 <span class="agency-badge">대행사</span></div></td><td>cross1@nasmedia.co.kr</td><td style="color:#9ca3af">2026.04.02 (목) 17:22</td><td><button class="btn btn-danger">멤버 삭제</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="transfer-actions">
+        <button class="btn-transfer" onclick="showScreen(1)">🔄 대행사 이관</button>
+        <span class="transfer-request-link" onclick="showScreen(7)">직접 이관이 어려우신가요? 버즈빌에 요청하기</span>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 1 — 사전 조건 (차단) ════ -->
+<div class="screen" id="screen-1">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"><div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div><div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div><div class="nav-section-label">관리</div><div class="nav-item"><div class="nav-icon">🏦</div> 정산</div><div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div><div class="nav-item"><div class="nav-icon">⚙️</div> 운영 그룹 정보</div></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 전 확인이 필요해요</div><div class="modal-subtitle">아래 항목을 모두 해결해야 이관을 진행할 수 있어요</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="precheck-item block"><div class="precheck-icon">⚠️</div><div class="precheck-text"><div class="precheck-title">집행 중인 광고가 있어요</div><div class="precheck-desc">현재 집행 중인 광고가 <strong>2건</strong> 있어요. 모든 광고를 중지하고 정산을 완료한 뒤 이관할 수 있어요.</div><a class="precheck-cta">광고 목록 보기 →</a></div></div>
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">광고머니 잔액 없음</div><div class="precheck-desc">선불충전금 잔액이 없어요. 이 항목은 통과되었어요.</div></div></div>
+        <div class="precheck-item block"><div class="precheck-icon">⚠️</div><div class="precheck-text"><div class="precheck-title">수락 대기 중인 초대가 있어요</div><div class="precheck-desc">초대 수락을 기다리는 멤버가 <strong>1명</strong> 있어요. 초대가 수락되거나 취소되어야 이관할 수 있어요.</div><a class="precheck-cta">멤버 관리하기 →</a></div></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="showScreen(0)">닫기</button></div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 2 — 사전 조건 (모두 충족) ════ -->
+<div class="screen" id="screen-2">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-header"><div><div class="modal-title">대행사 이관</div><div class="modal-subtitle">이관 전 조건을 모두 확인했어요. 이관을 시작할게요.</div></div><button class="modal-close" onclick="showScreen(0)">✕</button></div>
+      <div class="modal-body">
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">집행 중인 광고 없음</div><div class="precheck-desc">모든 광고가 중지되고 정산이 완료되었어요.</div></div></div>
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">광고머니 잔액 없음</div><div class="precheck-desc">선불충전금 잔액이 없어요.</div></div></div>
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">대기 중인 초대 없음</div><div class="precheck-desc">모든 초대가 완료되었어요.</div></div></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="showScreen(0)">취소</button><button class="btn btn-primary" onclick="showScreen(3)">이관 시작 →</button></div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 3 — Step 1: 기존 대행사 멤버 삭제 ════ -->
+<div class="screen" id="screen-3">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header"><div><div class="modal-title">대행사 이관</div></div><button class="modal-close" onclick="showScreen(0)">✕</button></div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot current">1</div><div class="step-line"></div>
+          <div class="step-dot future">2</div><div class="step-line"></div>
+          <div class="step-dot future">3</div>
+        </div>
+        <div class="step-labels">
+          <div class="step-label-item current">기존 대행사 멤버 삭제</div>
+          <div class="step-label-item">신규 대행사 초대</div>
+          <div class="step-label-item">최종 확인</div>
+        </div>
+        <div class="info-box"><span>ℹ️</span><span>이관 시 기존 대행사 멤버의 운영 그룹 접근 권한이 즉시 해제됩니다. 아래 멤버를 확인해 주세요.</span></div>
+        <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:10px;">삭제될 대행사 멤버 (나스미디어)</div>
+        <div class="member-row-modal">
+          <div class="avatar">김</div>
+          <div class="member-info"><div class="member-name-modal">김민아</div><div class="member-email-modal">cross1@nasmedia.co.kr</div></div>
+          <span class="remove-icon">✕</span>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="warning-box"><span class="warning-box-icon">⚠️</span><span>이 작업은 되돌릴 수 없어요. 기존 대행사(나스미디어)는 이관 완료 후 더 이상 이 운영 그룹에 접근할 수 없어요.</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(2)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(4)">확인 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 4 — Step 2: 신규 대행사 초대 (멀티 이메일) ════ -->
+<div class="screen" id="screen-4">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header"><div><div class="modal-title">대행사 이관</div></div><button class="modal-close" onclick="showScreen(0)">✕</button></div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot current">2</div><div class="step-line"></div>
+          <div class="step-dot future">3</div>
+        </div>
+        <div class="step-labels">
+          <div class="step-label-item">기존 대행사 멤버 삭제</div>
+          <div class="step-label-item current">신규 대행사 초대</div>
+          <div class="step-label-item">최종 확인</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">신규 대행사 담당자 초대 <span style="color:#ef4444">*</span></label>
+          <!-- Email tag input -->
+          <div class="email-tag-area" id="tagArea" onclick="document.getElementById('tagInput').focus()">
+            <!-- pre-filled tags -->
+            <span class="email-tag">kim.team@cheilww.com <span class="email-tag-remove" onclick="removeTag(this)">✕</span></span>
+            <span class="email-tag">park.media@cheilww.com <span class="email-tag-remove" onclick="removeTag(this)">✕</span></span>
+            <input class="email-tag-input" id="tagInput" type="email" placeholder="이메일 주소 입력 후 Enter" onkeydown="handleTagInput(event)">
+          </div>
+          <div class="form-hint" style="margin-top:6px;">이메일을 입력하고 <strong>Enter</strong>를 누르면 추가돼요. 여러 명의 담당자를 한 번에 초대할 수 있어요.<br>초대 즉시 운영 그룹에 접근할 수 있으니 이관 전에 신규 대행사와 충분히 협의해 주세요.</div>
+        </div>
+
+        <div class="info-box" style="margin-top:4px;margin-bottom:0;">
+          <span>ℹ️</span>
+          <span>초대받은 담당자는 초대 즉시 운영 그룹에 접근할 수 있어요.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(3)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(5)">다음 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 5 — Step 3: 최종 확인 ════ -->
+<div class="screen" id="screen-5">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header"><div><div class="modal-title">대행사 이관</div></div><button class="modal-close" onclick="showScreen(0)">✕</button></div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot current">3</div>
+        </div>
+        <div class="step-labels">
+          <div class="step-label-item">기존 대행사 멤버 삭제</div>
+          <div class="step-label-item">신규 대행사 초대</div>
+          <div class="step-label-item current">최종 확인</div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-section-title">대행사 변경</div>
+          <table class="summary-table">
+            <tr>
+              <td class="s-key">기존 대행사</td>
+              <td class="s-val">나스미디어<br><span style="font-size:11px;color:#9ca3af;font-weight:400;">김민아 (cross1@nasmedia.co.kr)</span></td>
+            </tr>
+            <tr>
+              <td class="s-key">신규 초대 멤버</td>
+              <td class="s-val add" style="padding-top:10px;">
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <span class="invited-pill">✉ kim.team@cheilww.com</span>
+                  <span class="invited-pill">✉ park.media@cheilww.com</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="warning-box" style="margin-top:4px;">
+          <span class="warning-box-icon">⚠️</span>
+          <div>이관을 완료하면 <strong>나스미디어</strong>는 즉시 이 운영 그룹에 접근할 수 없게 되며, 이관 완료 이메일이 발송됩니다.<br>이 작업은 되돌릴 수 없어요.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(4)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(6)">이관 완료하기</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 6 — 이관 완료 모달 ════ -->
+<div class="screen" id="screen-6">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"><div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div><div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div><div class="nav-section-label">관리</div><div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div></div>
+    <div class="main" style="margin-top:52px;filter:blur(2px);opacity:.25;pointer-events:none;">
+      <div class="page-header"><div class="page-title">멤버</div></div>
+    </div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-body" style="padding:36px 28px;">
+        <div class="complete-wrap">
+          <div class="complete-icon">✅</div>
+          <div class="complete-title">대행사 이관이 완료되었어요</div>
+          <div class="complete-desc">
+            <strong>나스미디어</strong>에서 <strong>제일기획</strong>으로<br>
+            비원초 운영 그룹의 대행사가 변경되었어요.<br>
+            이관 일시: 2026.05.04 (월) 11:20
+          </div>
+          <div style="margin-top:24px;">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="showScreen(9)">멤버 페이지로 돌아가기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 7 — 이관 요청 폼 (버즈빌 대행) ════ -->
+<div class="screen" id="screen-7">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 요청</div><div class="modal-subtitle">버즈빌이 대신 이관을 처리해 드릴게요. 아래 정보를 입력해 주세요.</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="request-section">
+          <div class="request-section-title">현재 대행사</div>
+          <div class="current-agency-info">
+            <div class="agency-avatar">나</div>
+            <div><div class="agency-name">나스미디어</div><div class="agency-sub">김민아 (cross1@nasmedia.co.kr)</div></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">신규 대행사 회사명 <span style="color:#ef4444">*</span></label>
+          <input class="form-input" type="text" placeholder="대행사 회사명을 입력해 주세요" value="제일기획">
+        </div>
+        <div class="form-group">
+          <label class="form-label">사업자등록번호</label>
+          <input class="form-input" type="text" placeholder="000-00-00000">
+          <div class="form-hint">입력하시면 더 빠르게 처리됩니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">신규 대행사 담당자 이메일 <span style="color:#ef4444">*</span></label>
+          <input class="form-input" type="email" placeholder="manager@new-agency.com" value="kim.team@cheilww.com">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">요청 메모</label>
+          <textarea class="form-textarea" placeholder="이관 요청 사유나 특이사항을 입력해 주세요 (선택)">계약 만료로 인한 대행사 변경 요청드립니다.</textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="showScreen(8)">이관 요청 제출</button>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="showScreen(0)">취소</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 8 — 이관 요청 접수 완료 ════ -->
+<div class="screen" id="screen-8">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(2px);opacity:.25;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-body" style="padding:36px 28px;">
+        <div class="complete-wrap">
+          <div class="complete-icon" style="background:#eff6ff;">📨</div>
+          <div class="complete-title">이관 요청이 접수되었어요</div>
+          <div class="complete-desc">
+            버즈빌 담당자가 확인 후<br>
+            빠르게 처리해 드릴게요.<br>
+            완료되면 이메일로 안내해 드릴게요.
+          </div>
+          <div style="margin-top:24px;background:#f9fafb;border-radius:8px;padding:14px 18px;text-align:left;">
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:8px;">접수 내용</div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#374151;padding:6px 0;border-bottom:1px solid #e5e7eb;"><span>🏢</span><span>신규 대행사: <strong>제일기획</strong></span></div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#374151;padding:6px 0;"><span>📧</span><span>담당자: kim.team@cheilww.com</span></div>
+          </div>
+          <div style="margin-top:20px;">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="showScreen(0)">멤버 페이지로 돌아가기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 9 — 이관 완료 후 멤버 화면 ════ -->
+<div class="screen" id="screen-9">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">B</div> buzzvil</div>
+        <div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div>
+      </div>
+    </div>
+    <div class="sidebar" style="margin-top:52px;">
+      <div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div>
+      <div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item"><div class="nav-icon">▶️</div> 라이브커머스</div>
+      <div class="nav-item"><div class="nav-icon">🤝</div> 협력광고</div>
+      <div class="nav-item"><div class="nav-icon">🤖</div> AI 리뷰픽 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">도구</div>
+      <div class="nav-item"><div class="nav-icon">📊</div> 리포트</div>
+      <div class="nav-item"><div class="nav-icon">🏷</div> 카탈로그</div>
+      <div class="nav-item"><div class="nav-icon">🎯</div> 타겟팅 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item"><div class="nav-icon">🏦</div> 정산</div>
+      <div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div>
+      <div class="nav-item"><div class="nav-icon">⚙️</div> 운영 그룹 정보</div>
+      <div class="sidebar-bottom"><div class="sidebar-toggle">◀ 접기</div></div>
+    </div>
+    <div class="main" style="margin-top:52px;">
+      <div class="page-header">
+        <div class="page-title">멤버</div>
+        <button class="btn btn-primary btn-sm">초대</button>
+      </div>
+
+      <div class="billing-manager-wrap">
+        <div>
+          <div class="billing-label">정산 담당자 <div class="tooltip-wrap"><div class="info-icon">?</div><div class="tooltip-box">광고 관련 정산 이메일을 받는 담당자입니다</div></div></div>
+          <div class="billing-value">ads-center+hkinnon@buzzvil.com</div>
+        </div>
+        <button class="btn btn-secondary btn-sm">변경</button>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header"><div class="section-card-title">비원초 운영 그룹</div></div>
+        <div class="table-wrap" style="border-radius:0;border:none;">
+          <table>
+            <thead><tr><th>이름</th><th>이메일</th><th>참여일</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="member-name">조현아(버즈빌) <span class="buzzvil-badge">👑 BV</span></div></td>
+                <td style="color:#9ca3af">ads-center+hkinnon@buzzvil.com</td>
+                <td style="color:#9ca3af">2026.02.21 (토) 16:09</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><div class="member-name">이서영</div></td>
+                <td>seoyoung.lee@inno-n.com</td>
+                <td style="color:#9ca3af">2026.04.02 (목) 16:55</td>
+                <td><button class="btn btn-danger">멤버 삭제</button></td>
+              </tr>
+              <tr>
+                <td><div class="member-name">kim.team <span class="agency-badge">대행사</span> <span class="invited-tag">초대됨</span></div></td>
+                <td>kim.team@cheilww.com</td>
+                <td style="color:#9ca3af">2026.05.04 (월) 11:20</td>
+                <td><button class="btn btn-danger">멤버 삭제</button></td>
+              </tr>
+              <tr>
+                <td><div class="member-name">park.media <span class="agency-badge">대행사</span> <span class="invited-tag">초대됨</span></div></td>
+                <td>park.media@cheilww.com</td>
+                <td style="color:#9ca3af">2026.05.04 (월) 11:20</td>
+                <td><button class="btn btn-danger">멤버 삭제</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="transfer-actions">
+        <button class="btn-transfer" onclick="showScreen(1)">🔄 대행사 이관</button>
+        <span class="transfer-request-link" onclick="showScreen(7)">직접 이관이 어려우신가요? 버즈빌에 요청하기</span>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<script>
+function showScreen(index) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.flow-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.screen) === index);
+  });
+  const el = document.getElementById('screen-' + index);
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function removeTag(btn) {
+  btn.parentElement.remove();
+}
+
+function handleTagInput(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const input = e.target;
+    const val = input.value.trim();
+    if (!val) return;
+    const tag = document.createElement('span');
+    tag.className = 'email-tag';
+    tag.innerHTML = val + ' <span class="email-tag-remove" onclick="removeTag(this)">✕</span>';
+    input.parentElement.insertBefore(tag, input);
+    input.value = '';
+  }
+}
+</script>
+</body>
+</html>
