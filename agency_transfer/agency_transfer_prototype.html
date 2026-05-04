@@ -271,6 +271,38 @@ tr:last-child td { border-bottom: none; }
 .notice-list li::before { content: '•'; position: absolute; left: 0; color: #9ca3af; }
 .notice-list a { color: #2563eb; text-decoration: underline; }
 .contact-required { color: #ef4444; }
+
+/* ── SCHEDULE BANNER ── */
+.schedule-banner {
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;
+  padding: 12px 16px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-size: 13px; color: #1e40af;
+}
+.schedule-banner-text { display: flex; align-items: center; gap: 8px; line-height: 1.5; }
+.schedule-cancel-btn {
+  background: none; border: 1px solid #93c5fd; color: #1e40af; border-radius: 6px;
+  padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+  white-space: nowrap; flex-shrink: 0;
+}
+.schedule-cancel-btn:hover { background: #dbeafe; }
+.btn-transfer-disabled {
+  background: #f9fafb; color: #9ca3af; border: 1.5px solid #e5e7eb; font-size: 13px;
+  padding: 7px 14px; border-radius: 7px; cursor: not-allowed; font-family: inherit;
+  font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+}
+.date-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; color: #111; outline: none; font-family: inherit;
+  transition: border-color .15s; background: #fff; cursor: pointer;
+}
+.date-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #eff6ff; }
+.schedule-confirm-box {
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+  padding: 16px 18px; margin-top: 12px; text-align: center;
+}
+.schedule-confirm-date { font-size: 20px; font-weight: 800; color: #15803d; margin-bottom: 4px; }
+.schedule-confirm-sub { font-size: 12px; color: #6b7280; }
 </style>
 </head>
 <body>
@@ -296,6 +328,18 @@ tr:last-child td { border-bottom: none; }
   <button class="flow-btn" data-screen="9" onclick="showScreen(9)">⑧ 이관 후<br>멤버 화면</button>
   <div class="flow-label" style="margin-left:8px;">버즈빌 대행</div>
   <button class="flow-btn" data-screen="7" onclick="showScreen(7)">⑨ 문의하기<br><span style="font-size:10px;color:#93c5fd">대행사 이관</span></button>
+  <div class="flow-label" style="margin-left:8px;">이관 예약</div>
+  <button class="flow-btn" data-screen="10" onclick="showScreen(10)">⑩ 사전 조건<br><span style="font-size:10px;color:#fbbf24">집행중만 차단</span></button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="11" onclick="showScreen(11)">⑪ 예약<br>Step 1</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="12" onclick="showScreen(12)">⑫ 예약<br>Step 2</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="13" onclick="showScreen(13)">⑬ 예약<br>Step 3</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="14" onclick="showScreen(14)">⑭ 예약<br>Step 4</button>
+  <div class="flow-sep">›</div>
+  <button class="flow-btn" data-screen="15" onclick="showScreen(15)">⑮ 예약 후<br>멤버 화면</button>
 </nav>
 
 <!-- ════════════════════ SHARED SIDEBAR / TOPBAR SNIPPET ════════════════════ -->
@@ -774,6 +818,308 @@ tr:last-child td { border-bottom: none; }
 
       <div class="transfer-actions">
         <button class="btn-transfer" onclick="showScreen(1)">🔄 대행사 이관</button>
+        <span class="transfer-request-link" onclick="showScreen(7)">직접 이관이 어려우신가요? 버즈빌에 요청하기</span>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 10 — 사전 조건 (집행중 광고만 차단, 예약 가능) ════ -->
+<div class="screen" id="screen-10">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"><div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div><div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div><div class="nav-section-label">관리</div><div class="nav-item"><div class="nav-icon">🏦</div> 정산</div><div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div><div class="nav-item"><div class="nav-icon">⚙️</div> 운영 그룹 정보</div></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">즉시 이관이 어려워요</div>
+          <div class="modal-subtitle">집행 중인 광고가 있어 즉시 이관은 불가해요.<br>광고 종료일 이후 날짜로 <strong>이관을 예약</strong>할 수 있어요.</div>
+        </div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="precheck-item block"><div class="precheck-icon">⚠️</div><div class="precheck-text"><div class="precheck-title">집행 중인 광고가 있어요</div><div class="precheck-desc">현재 집행 중인 광고가 <strong>2건</strong> 있어요. 즉시 이관은 불가하지만, 광고 종료 예정일 이후로 예약 이관할 수 있어요.</div><a class="precheck-cta">광고 목록 보기 →</a></div></div>
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">광고머니 잔액 없음</div><div class="precheck-desc">선불충전금 잔액이 없어요.</div></div></div>
+        <div class="precheck-item ok"><div class="precheck-icon">✓</div><div class="precheck-text"><div class="precheck-title">대기 중인 초대 없음</div><div class="precheck-desc">모든 초대가 완료되었어요.</div></div></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(0)">닫기</button>
+        <button class="btn btn-primary" onclick="showScreen(11)">특정일에 이관 예약하기 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 11 — 이관 예약 Step 1: 기존 대행사 확인 ════ -->
+<div class="screen" id="screen-11">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 예약</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot current">1</div><div class="step-line"></div>
+          <div class="step-dot future">2</div><div class="step-line"></div>
+          <div class="step-dot future">3</div><div class="step-line"></div>
+          <div class="step-dot future">4</div>
+        </div>
+        <div class="step-labels" style="justify-content:space-between;">
+          <div class="step-label-item current" style="flex:none;width:25%;">기존 대행사 확인</div>
+          <div class="step-label-item" style="flex:none;width:25%;">신규 대행사 초대</div>
+          <div class="step-label-item" style="flex:none;width:25%;">예약일 선택</div>
+          <div class="step-label-item" style="flex:none;width:25%;">최종 확인</div>
+        </div>
+        <div class="info-box"><span>ℹ️</span><span>예약 실행 시 기존 대행사 멤버의 운영 그룹 접근 권한이 해제됩니다. 아래 멤버를 확인해 주세요.</span></div>
+        <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:10px;">삭제될 대행사 멤버 (나스미디어)</div>
+        <div class="member-row-modal">
+          <div class="avatar">김</div>
+          <div class="member-info"><div class="member-name-modal">김민아</div><div class="member-email-modal">cross1@nasmedia.co.kr</div></div>
+          <span class="remove-icon">✕</span>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="warning-box"><span class="warning-box-icon">⚠️</span><span>예약 실행 시 기존 대행사(나스미디어)는 이 운영 그룹에 더 이상 접근할 수 없어요.</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(10)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(12)">확인 후 다음 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 12 — 이관 예약 Step 2: 신규 대행사 이메일 ════ -->
+<div class="screen" id="screen-12">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 예약</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot current">2</div><div class="step-line"></div>
+          <div class="step-dot future">3</div><div class="step-line"></div>
+          <div class="step-dot future">4</div>
+        </div>
+        <div class="step-labels" style="justify-content:space-between;">
+          <div class="step-label-item" style="flex:none;width:25%;">기존 대행사 확인</div>
+          <div class="step-label-item current" style="flex:none;width:25%;">신규 대행사 초대</div>
+          <div class="step-label-item" style="flex:none;width:25%;">예약일 선택</div>
+          <div class="step-label-item" style="flex:none;width:25%;">최종 확인</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">신규 대행사 담당자 초대 <span style="color:#ef4444">*</span></label>
+          <div class="email-tag-area">
+            <span class="email-tag">kim.team@cheilww.com <span class="email-tag-remove" onclick="removeTag(this)">✕</span></span>
+            <input class="email-tag-input" type="email" placeholder="이메일 주소 입력 후 Enter" onkeydown="handleTagInput(event)">
+          </div>
+          <div class="form-hint" style="margin-top:6px;">이메일을 입력하고 <strong>Enter</strong>를 누르면 추가돼요. 예약 실행일에 즉시 운영 그룹에 초대됩니다.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(11)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(13)">다음 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 13 — 이관 예약 Step 3: 예약일 선택 ════ -->
+<div class="screen" id="screen-13">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 예약</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot current">3</div><div class="step-line"></div>
+          <div class="step-dot future">4</div>
+        </div>
+        <div class="step-labels" style="justify-content:space-between;">
+          <div class="step-label-item" style="flex:none;width:25%;">기존 대행사 확인</div>
+          <div class="step-label-item" style="flex:none;width:25%;">신규 대행사 초대</div>
+          <div class="step-label-item current" style="flex:none;width:25%;">예약일 선택</div>
+          <div class="step-label-item" style="flex:none;width:25%;">최종 확인</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">이관 예약일 <span style="color:#ef4444">*</span></label>
+          <input type="date" class="date-input" value="2026-06-01" min="2026-05-05">
+          <div class="form-hint" style="margin-top:6px;">선택한 날짜의 <strong>00:00 (KST)</strong>에 이관이 자동 실행됩니다. 오늘 이후 날짜만 선택할 수 있어요.</div>
+        </div>
+        <div class="info-box" style="margin-bottom:0;">
+          <span>ℹ️</span>
+          <span>예약 실행 시점에 집행 중인 광고가 있으면 이관이 실행되지 않아요. 광고 종료 예정일 이후 날짜로 선택해 주세요.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(12)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(14)">다음 →</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 14 — 이관 예약 Step 4: 최종 확인 ════ -->
+<div class="screen" id="screen-14">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;"><div class="topbar"><div class="logo"><div class="logo-mark">B</div> buzzvil</div><div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div></div></div>
+    <div class="sidebar" style="margin-top:52px;"></div>
+    <div class="main" style="margin-top:52px;filter:blur(1px);opacity:.4;pointer-events:none;"></div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <div><div class="modal-title">대행사 이관 예약</div></div>
+        <button class="modal-close" onclick="showScreen(0)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot done">✓</div><div class="step-line done"></div>
+          <div class="step-dot current">4</div>
+        </div>
+        <div class="step-labels" style="justify-content:space-between;">
+          <div class="step-label-item" style="flex:none;width:25%;">기존 대행사 확인</div>
+          <div class="step-label-item" style="flex:none;width:25%;">신규 대행사 초대</div>
+          <div class="step-label-item" style="flex:none;width:25%;">예약일 선택</div>
+          <div class="step-label-item current" style="flex:none;width:25%;">최종 확인</div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-section-title">대행사 변경</div>
+          <table class="summary-table">
+            <tr>
+              <td class="s-key">기존 대행사</td>
+              <td class="s-val">나스미디어<br><span style="font-size:11px;color:#9ca3af;font-weight:400;">김민아 (cross1@nasmedia.co.kr)</span></td>
+            </tr>
+            <tr>
+              <td class="s-key">신규 초대 멤버</td>
+              <td class="s-val add" style="padding-top:10px;">
+                <span class="invited-pill">✉ kim.team@cheilww.com</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="schedule-confirm-box">
+          <div class="schedule-confirm-date">2026.06.01 00:00 (KST)</div>
+          <div class="schedule-confirm-sub">위 시각에 이관이 자동 실행됩니다</div>
+        </div>
+
+        <div class="warning-box" style="margin-top:12px;">
+          <span class="warning-box-icon">⚠️</span>
+          <div>예약 실행 시점에 집행 중인 광고가 있으면 이관이 실행되지 않고 취소돼요. 광고 종료일을 미리 확인해 주세요.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="showScreen(13)">← 이전</button>
+        <button class="btn btn-primary" onclick="showScreen(15)">예약 확정하기</button>
+      </div>
+    </div>
+  </div>
+  <button class="help-fab">?</button>
+</div>
+
+<!-- ════ SCREEN 15 — 예약 완료 후 멤버 화면 (예약 배너 표시) ════ -->
+<div class="screen" id="screen-15">
+  <div class="app">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">B</div> buzzvil</div>
+        <div class="topbar-right"><span>이용 방법</span><div class="user-btn"><div class="user-icon">👤</div> ads-center+hkinnon@buzzvil.com <span class="chevron">▾</span></div></div>
+      </div>
+    </div>
+    <div class="sidebar" style="margin-top:52px;">
+      <div class="biz-selector"><div><div class="biz-label">비즈니스</div><div class="biz-name">에이치케이이노엔(주)</div></div><span class="chevron">▾</span></div>
+      <div class="og-selector"><div class="og-name">비원초</div><span class="chevron">▾</span></div>
+      <div class="nav-section-label">광고</div>
+      <div class="nav-item"><div class="nav-icon">▶️</div> 라이브커머스</div>
+      <div class="nav-item"><div class="nav-icon">🤝</div> 협력광고</div>
+      <div class="nav-item"><div class="nav-icon">🤖</div> AI 리뷰픽 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">도구</div>
+      <div class="nav-item"><div class="nav-icon">📊</div> 리포트</div>
+      <div class="nav-item"><div class="nav-icon">🏷</div> 카탈로그</div>
+      <div class="nav-item"><div class="nav-icon">🎯</div> 타겟팅 <span class="nav-badge">예정</span></div>
+      <div class="nav-section-label">관리</div>
+      <div class="nav-item"><div class="nav-icon">🏦</div> 정산</div>
+      <div class="nav-item active"><div class="nav-icon">👥</div> 멤버</div>
+      <div class="nav-item"><div class="nav-icon">⚙️</div> 운영 그룹 정보</div>
+      <div class="sidebar-bottom"><div class="sidebar-toggle">◀ 접기</div></div>
+    </div>
+    <div class="main" style="margin-top:52px;">
+      <div class="page-header">
+        <div class="page-title">멤버</div>
+        <button class="btn btn-primary btn-sm">초대</button>
+      </div>
+
+      <!-- 예약 배너 -->
+      <div class="schedule-banner">
+        <div class="schedule-banner-text">
+          <span style="font-size:16px;">📅</span>
+          <span><strong>2026.06.01 00:00</strong>에 대행사 이관이 예약되어 있습니다. 해당 시각에 나스미디어 → 제일기획으로 자동 이관됩니다.</span>
+        </div>
+        <button class="schedule-cancel-btn" onclick="showScreen(0)">취소하기</button>
+      </div>
+
+      <div class="billing-manager-wrap">
+        <div>
+          <div class="billing-label">정산 담당자 <div class="tooltip-wrap"><div class="info-icon">?</div><div class="tooltip-box">광고 관련 정산 이메일을 받는 담당자입니다</div></div></div>
+          <div class="billing-value">ads-center+hkinnon@buzzvil.com</div>
+        </div>
+        <button class="btn btn-secondary btn-sm">변경</button>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header"><div class="section-card-title">비원초 운영 그룹</div></div>
+        <div class="table-wrap" style="border-radius:0;border:none;">
+          <table>
+            <thead><tr><th>이름</th><th>이메일</th><th>참여일</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="member-name">조현아(버즈빌) <span class="buzzvil-badge">👑 BV</span></div></td><td style="color:#9ca3af">ads-center+hkinnon@buzzvil.com</td><td style="color:#9ca3af">2026.02.21 (토) 16:09</td><td></td></tr>
+              <tr><td><div class="member-name">이서영</div></td><td>seoyoung.lee@inno-n.com</td><td style="color:#9ca3af">2026.04.02 (목) 16:55</td><td><button class="btn btn-danger">멤버 삭제</button></td></tr>
+              <tr><td><div class="member-name">김민아 <span class="agency-badge">대행사</span></div></td><td>cross1@nasmedia.co.kr</td><td style="color:#9ca3af">2026.04.02 (목) 17:22</td><td><button class="btn btn-danger">멤버 삭제</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="transfer-actions">
+        <div class="tooltip-wrap">
+          <div class="btn-transfer-disabled">🔄 대행사 이관</div>
+          <div class="tooltip-box" style="white-space:nowrap;">이관 예약이 진행 중이에요</div>
+        </div>
         <span class="transfer-request-link" onclick="showScreen(7)">직접 이관이 어려우신가요? 버즈빌에 요청하기</span>
       </div>
     </div>
